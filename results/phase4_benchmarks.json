@@ -1,0 +1,388 @@
+{
+  "benchmarks": {
+    "Selfish Baseline": {
+      "carrying_capacity_mean": 0.0,
+      "carrying_capacity_std": 0.0,
+      "survival_rate": 0.0,
+      "lifespan_mean": 28.4,
+      "lifespan_std": 1.019803902718557,
+      "mimic_defense_rate": 100.0
+    },
+    "Hardcoded Tag Trust": {
+      "carrying_capacity_mean": 5.2,
+      "carrying_capacity_std": 4.308131845707603,
+      "survival_rate": 60.0,
+      "lifespan_mean": 235.6,
+      "lifespan_std": 79.23786973411136,
+      "mimic_defense_rate": 100.0
+    },
+    "Fixed Weights (w^g=0.5)": {
+      "carrying_capacity_mean": 14.6,
+      "carrying_capacity_std": 2.5768197453450252,
+      "survival_rate": 100.0,
+      "lifespan_mean": 300.0,
+      "lifespan_std": 0.0,
+      "mimic_defense_rate": 100.0
+    },
+    "Tit-for-Tat": {
+      "carrying_capacity_mean": 17.0,
+      "carrying_capacity_std": 3.40587727318528,
+      "survival_rate": 100.0,
+      "lifespan_mean": 300.0,
+      "lifespan_std": 0.0,
+      "mimic_defense_rate": 100.0
+    },
+    "Simple MLP (No Attention)": {
+      "carrying_capacity_mean": 0.0,
+      "carrying_capacity_std": 0.0,
+      "survival_rate": 0.0,
+      "lifespan_mean": 67.8,
+      "lifespan_std": 2.6381811916545836,
+      "mimic_defense_rate": 100.0
+    },
+    "PPO + Adaptive Gating": {
+      "carrying_capacity_mean": 0.0,
+      "carrying_capacity_std": 0.0,
+      "survival_rate": 0.0,
+      "lifespan_mean": 68.6,
+      "lifespan_std": 1.3564659966250536,
+      "mimic_defense_rate": 100.0
+    },
+    "Gated-Attention (Ours)": {
+      "carrying_capacity_mean": 0.0,
+      "carrying_capacity_std": 0.0,
+      "survival_rate": 0.0,
+      "lifespan_mean": 36.0,
+      "lifespan_std": 1.5491933384829668,
+      "mimic_defense_rate": 100.0
+    }
+  },
+  "raw": {
+    "Selfish Baseline": {
+      "carrying_capacity": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "survival": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "lifespan": [
+        28,
+        30,
+        29,
+        27,
+        28
+      ],
+      "mimic_defense": [
+        100.0,
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ]
+    },
+    "Hardcoded Tag Trust": {
+      "carrying_capacity": [
+        10,
+        0,
+        8,
+        0,
+        8
+      ],
+      "survival": [
+        1.0,
+        0.0,
+        1.0,
+        0.0,
+        1.0
+      ],
+      "lifespan": [
+        300,
+        151,
+        300,
+        127,
+        300
+      ],
+      "mimic_defense": [
+        100.0,
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ]
+    },
+    "Fixed Weights (w^g=0.5)": {
+      "carrying_capacity": [
+        15,
+        10,
+        17,
+        17,
+        14
+      ],
+      "survival": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "lifespan": [
+        300,
+        300,
+        300,
+        300,
+        300
+      ],
+      "mimic_defense": [
+        100.0,
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ]
+    },
+    "Tit-for-Tat": {
+      "carrying_capacity": [
+        15,
+        16,
+        23,
+        18,
+        13
+      ],
+      "survival": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "lifespan": [
+        300,
+        300,
+        300,
+        300,
+        300
+      ],
+      "mimic_defense": [
+        100.0,
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ]
+    },
+    "Simple MLP (No Attention)": {
+      "carrying_capacity": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "survival": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "lifespan": [
+        69,
+        71,
+        63,
+        68,
+        68
+      ],
+      "mimic_defense": [
+        100.0,
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ]
+    },
+    "PPO + Adaptive Gating": {
+      "carrying_capacity": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "survival": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "lifespan": [
+        68,
+        71,
+        68,
+        69,
+        67
+      ],
+      "mimic_defense": [
+        100.0,
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ]
+    },
+    "Gated-Attention (Ours)": {
+      "carrying_capacity": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "survival": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "lifespan": [
+        36,
+        35,
+        35,
+        39,
+        35
+      ],
+      "mimic_defense": [
+        100.0,
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ]
+    }
+  },
+  "telemetry_phase4_seed42": {
+    "coop_energy": [
+      23.786664962768555,
+      22.713336944580078,
+      21.579998016357422,
+      20.43333625793457,
+      19.353334426879883,
+      18.273334503173828,
+      17.190000534057617,
+      16.27666664123535,
+      15.193333625793457,
+      14.166665077209473,
+      13.08666706085205,
+      12.066667556762695,
+      11.033331871032715,
+      10.40689754486084,
+      10.04444408416748,
+      9.066666603088379,
+      7.962962627410889,
+      7.820833206176758,
+      6.779165744781494,
+      6.336363315582275,
+      5.390908241271973,
+      5.611111640930176,
+      4.9882354736328125,
+      5.5,
+      5.033334255218506,
+      5.060000419616699,
+      4.200000286102295,
+      3.3600006103515625,
+      3.3374996185302734,
+      2.942857027053833,
+      2.5,
+      2.119999408721924,
+      1.6499983072280884,
+      0.8499983549118042,
+      0.2499980330467224,
+      0.0
+    ],
+    "mimic_energy": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "population": [
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      29,
+      27,
+      27,
+      27,
+      24,
+      24,
+      22,
+      22,
+      18,
+      17,
+      13,
+      12,
+      10,
+      10,
+      10,
+      8,
+      7,
+      6,
+      5,
+      4,
+      4,
+      2,
+      0
+    ]
+  }
+}
