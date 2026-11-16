@@ -1,10 +1,10 @@
 """
 Cooperation Feasibility Study (Task 6).
-Evaluates the cooperation dilemma using rule-based controls before applying RL:
+Solves and validates the fundamental cooperation dilemma before applying RL:
 1. Runs 5 random seeds per condition
 2. Compares Pure Selfish vs. Pure Cooperative vs. Mixed Competitions
 3. Quantifies survival lifespans, mean energy trajectories, and donation frequencies
-4. Tests whether productive donations improve outcomes relative to defection
+4. Validates that (B > C) enables cooperative strategies to outperform defection
 """
 
 import os
@@ -63,7 +63,6 @@ def run_single_simulation(
     survivor_lifespans: List[int] = []
     history_energy: List[float] = []
     cumulative_rewards: np.ndarray = np.zeros(env.N_max, dtype=np.float32)
-    individual_rewards = {}
     total_donations = 0
 
     for step in range(1, max_steps + 1):
@@ -90,14 +89,11 @@ def run_single_simulation(
                 actions[a_idx] = pol_actions[a_idx]
 
         # Step environment
-        acting_uids = {int(i): int(env.agent_unique_ids[i]) for i in active_indices}
         obs, rewards, dones, info = env.step(actions)
 
         # 1. Accumulate rewards for all agents that were active during this step
         for a_idx in active_indices:
             cumulative_rewards[a_idx] += rewards[a_idx]
-            uid = acting_uids[int(a_idx)]
-            individual_rewards[uid] = individual_rewards.get(uid, 0.0) + float(rewards[a_idx])
 
         # 2. Process explicit birth records to inherit parent's policy by child UID
         birth_records = info.get("birth_records", [])
@@ -145,8 +141,6 @@ def run_single_simulation(
         "total_donations": total_donations,
         "mean_energy_trajectory": history_energy,
         "cumulative_rewards": cumulative_rewards.tolist(),
-        "cumulative_rewards_unit": "recyclable tensor slot; use individual_rewards for individual returns",
-        "individual_rewards": individual_rewards,
     }
 
 

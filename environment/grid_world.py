@@ -59,13 +59,7 @@ class GridWorld:
         history_window_k: int = 10,
         max_steps: int = 1000,
         seed: Optional[int] = None,
-        offspring_placement: str = "adjacent",
-        enable_starvation: bool = True,
     ):
-        if offspring_placement not in ("adjacent", "random"):
-            raise ValueError("offspring_placement must be adjacent or random")
-        self.offspring_placement = offspring_placement
-        self.enable_starvation = enable_starvation
         if num_agents is not None and initial_population is None:
             initial_population = num_agents
             max_capacity = max(max_capacity, num_agents)
@@ -336,7 +330,7 @@ class GridWorld:
 
         # 1. Starvation Phase
         for i in active_indices:
-            if self.energy[i] <= 0.0 and self.enable_starvation:
+            if self.energy[i] <= 0.0:
                 uid = int(self.agent_unique_ids[i])
                 age = int(self.age[i])
                 p_uid = int(self.parent_unique_ids[i])
@@ -380,8 +374,6 @@ class GridWorld:
                         (pi[0], (pi[1] - 1) % self.L),
                     ]
                     empty_cells = [c for c in candidates if self.grid[c[0], c[1]] == -1]
-                    if self.offspring_placement == "random":
-                        empty_cells = [tuple(p) for p in np.argwhere(self.grid == -1)]
 
                     if empty_cells:
                         free_slots = np.where(~self.mask)[0]
