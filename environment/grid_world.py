@@ -48,6 +48,8 @@ class GridWorld:
         initial_energy: float = 30.0,
         e_mitosis: float = 60.0,
         enable_mitosis: bool = True,
+        enable_starvation: bool = True,
+        offspring_placement: str = "adjacent",
         mutation_rate: float = 0.05,
         c_base: float = 0.5,
         c_density: float = 0.1,
@@ -72,6 +74,8 @@ class GridWorld:
         self.initial_energy = initial_energy
         self.e_mitosis = e_mitosis
         self.enable_mitosis = enable_mitosis
+        self.enable_starvation = enable_starvation
+        self.offspring_placement = offspring_placement
         self.mu = mutation_rate
         self.c_base = c_base
         self.c_density = c_density
@@ -330,7 +334,7 @@ class GridWorld:
 
         # 1. Starvation Phase
         for i in active_indices:
-            if self.energy[i] <= 0.0:
+            if self.enable_starvation and self.energy[i] <= 0.0:
                 uid = int(self.agent_unique_ids[i])
                 age = int(self.age[i])
                 p_uid = int(self.parent_unique_ids[i])
@@ -365,15 +369,18 @@ class GridWorld:
             active_after_starve = np.where(self.mask)[0]
             for i in active_after_starve:
                 if self.energy[i] >= self.e_mitosis and self.active_count < self.N_max:
-                    pi = self.positions[i]
-                    # Check 4 adjacent Von Neumann neighbors
-                    candidates = [
-                        ((pi[0] + 1) % self.L, pi[1]),
-                        ((pi[0] - 1) % self.L, pi[1]),
-                        (pi[0], (pi[1] + 1) % self.L),
-                        (pi[0], (pi[1] - 1) % self.L),
-                    ]
-                    empty_cells = [c for c in candidates if self.grid[c[0], c[1]] == -1]
+                    if self.offspring_placement == "random":
+                        empty_cells = [(x, y) for x in range(self.L) for y in range(self.L) if self.grid[x, y] == -1]
+                    else:
+                        pi = self.positions[i]
+                        # Check 4 adjacent Von Neumann neighbors
+                        candidates = [
+                            ((pi[0] + 1) % self.L, pi[1]),
+                            ((pi[0] - 1) % self.L, pi[1]),
+                            (pi[0], (pi[1] + 1) % self.L),
+                            (pi[0], (pi[1] - 1) % self.L),
+                        ]
+                        empty_cells = [c for c in candidates if self.grid[c[0], c[1]] == -1]
 
                     if empty_cells:
                         free_slots = np.where(~self.mask)[0]

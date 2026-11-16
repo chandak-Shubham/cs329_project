@@ -26,22 +26,22 @@ Phase 2 final populations: [0, 0, 0, 0, 0]
 
 Intervals use independent training-seed differences. Tests are exploratory and unadjusted; zero-width mean intervals for identical outcomes are not population-level certainty.
 
-Genetic-weight pre/post difference in differences: -0.0082 (95% CI -0.0100 to -0.0064; n=5).
+Genetic-weight pre/post difference in differences: -0.0087 (95% CI -0.0119 to -0.0054; n=5).
 
 | Contrast | Metric | Mean difference and 95% CI |
 | --- | --- | --- |
 | fixed_attack_minus_clean | resident_survival | 0.0000 (95% CI 0.0000 to 0.0000; n=5) |
 | fixed_attack_minus_clean | final_residents | 0.0000 (95% CI 0.0000 to 0.0000; n=5) |
-| fixed_attack_minus_clean | duration | -6.6000 (95% CI -14.8175 to 1.6175; n=5) |
-| fixed_attack_minus_clean | donations | -4.2000 (95% CI -21.8997 to 13.4997; n=5) |
+| fixed_attack_minus_clean | duration | -3.6000 (95% CI -15.1348 to 7.9348; n=5) |
+| fixed_attack_minus_clean | donations | 7.8000 (95% CI -1.1710 to 16.7710; n=5) |
 | adaptive_attack_minus_clean | resident_survival | 0.0000 (95% CI 0.0000 to 0.0000; n=5) |
 | adaptive_attack_minus_clean | final_residents | 0.0000 (95% CI 0.0000 to 0.0000; n=5) |
-| adaptive_attack_minus_clean | duration | -6.6000 (95% CI -21.0429 to 7.8429; n=5) |
-| adaptive_attack_minus_clean | donations | -1.0000 (95% CI -20.0950 to 18.0950; n=5) |
+| adaptive_attack_minus_clean | duration | -10.6000 (95% CI -36.2967 to 15.0967; n=5) |
+| adaptive_attack_minus_clean | donations | -4.6000 (95% CI -17.1586 to 7.9586; n=5) |
 | adaptive_minus_fixed_clean | resident_survival | 0.0000 (95% CI 0.0000 to 0.0000; n=5) |
-| adaptive_minus_fixed_clean | duration | 4.8000 (95% CI -22.5645 to 32.1645; n=5) |
-| adaptive_minus_fixed_clean | donations | 18.4000 (95% CI -40.0809 to 76.8809; n=5) |
-| trust_shift_difference_in_differences | genetic weight | -0.0082 (95% CI -0.0100 to -0.0064; n=5) |
+| adaptive_minus_fixed_clean | duration | 7.6000 (95% CI -22.8474 to 38.0474; n=5) |
+| adaptive_minus_fixed_clean | donations | 19.6000 (95% CI -25.5170 to 64.7170; n=5) |
+| trust_shift_difference_in_differences | genetic weight | -0.0087 (95% CI -0.0119 to -0.0054; n=5) |
 | phase4_attack_minus_clean_Selfish Baseline | survival | 0.0000 (95% CI 0.0000 to 0.0000; n=5) |
 | phase4_attack_minus_clean_Selfish Baseline | carrying_capacity | 0.0000 (95% CI 0.0000 to 0.0000; n=5) |
 | phase4_attack_minus_clean_Selfish Baseline | lifespan | 0.0000 (95% CI 0.0000 to 0.0000; n=5) |
@@ -76,10 +76,10 @@ Independent policies trained at each B/C, paired by seed; fixed synthetic inputs
 
 | Mutation | Adjacent-minus-random pairs | Paired p | Local-minus-random offspring placement |
 | --- | --- | --- | --- |
-| 0.01 | 0.0370 (95% CI 0.0002 to 0.0739; n=5) | 0.049260277620193034 | 0.0256 (95% CI 0.0091 to 0.0421; n=5) |
-| 0.05 | 0.0662 (95% CI 0.0448 to 0.0876; n=5) | 0.0010124640695394539 | 0.0412 (95% CI 0.0161 to 0.0663; n=5) |
-| 0.1 | 0.0439 (95% CI 0.0052 to 0.0826; n=5) | 0.03442622450463244 | 0.0415 (95% CI -0.0256 to 0.1085; n=5) |
-| 0.2 | 0.0292 (95% CI -0.0004 to 0.0587; n=5) | 0.05205893025478512 | 0.0145 (95% CI -0.0412 to 0.0702; n=5) |
+| 0.01 | 0.0232 (95% CI 0.0023 to 0.0440; n=5) | 0.03670672265737803 | 0.0343 (95% CI -0.0048 to 0.0734; n=5) |
+| 0.05 | 0.0310 (95% CI -0.0262 to 0.0883; n=5) | 0.20658608875296278 | 0.0408 (95% CI -0.0086 to 0.0901; n=5) |
+| 0.1 | 0.0303 (95% CI -0.0053 to 0.0660; n=5) | 0.07746587018098812 | 0.0243 (95% CI -0.0062 to 0.0547; n=5) |
+| 0.2 | 0.0342 (95% CI 0.0021 to 0.0663; n=5) | 0.04155311511528426 | 0.0341 (95% CI -0.0131 to 0.0812; n=5) |
 
 Matched high reserve exercises reproduction; low-reserve exploratory check had only 0-1 births per seed. This is a diagnostic regime, not a confirmatory test.
 
@@ -87,10 +87,10 @@ The initial low-reserve data are retained in `results/placement_low_reserve_expl
 
 Placement birth counts (local / global placement, by training seed):
 
-- Mutation 0.01: [30, 30, 30, 31, 30] / [30, 30, 30, 30, 30]
-- Mutation 0.05: [30, 30, 30, 31, 30] / [30, 30, 30, 30, 30]
+- Mutation 0.01: [30, 30, 30, 30, 30] / [30, 30, 30, 30, 30]
+- Mutation 0.05: [30, 30, 30, 30, 30] / [30, 30, 30, 30, 30]
 - Mutation 0.1: [30, 30, 30, 30, 30] / [30, 30, 30, 30, 30]
-- Mutation 0.2: [30, 30, 30, 30, 30] / [30, 30, 30, 30, 30]
+- Mutation 0.2: [30, 31, 30, 30, 30] / [30, 30, 30, 30, 30]
 
 ## Limits on conclusions
 

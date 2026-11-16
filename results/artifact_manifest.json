@@ -8,7 +8,7 @@
     "results\\phase4_benchmarks.json": "ff231eed12ba39807a07fef88ac785a5f634e4080fbb7c10047ae583e0e507fc",
     "results\\phase4_no_invasion.json": "bd58b95cde635de9fbf9f6117006d9b93a90d05728cdb38356cb2e46124f4b7f",
     "results\\placement_low_reserve_exploratory.json": "dd005be0b44341f1255cc369c7eb68313b7d513ea989a780ed7bd33b0c56e9bc",
-    "results\\research_controls.json": "a8c75e00846d559f98f4c293576a282836116199ceb122001efe808282528d83",
+    "results\\research_controls.json": "d148185057306569b976319f758f37a675f0485f9657c4745a645baf2e3c89f0",
     "results\\retraining_verification.json": "ceee56a8a661b9d77e41431d354884a4201d4f842b970bed65885dd1f05c297e",
     "results\\statistical_analysis.json": "6ee6b26b2ebc3d13e27b3d2b5ae8d08c945c0d33bb0eed1a9a7618dfb837d810",
     "results\\checkpoints\\fixed_attention.json": "80da471218894727a64c3c547a734afd85c2fb5e593b58fce2e9d1c3b7474935",
@@ -97,20 +97,20 @@
     "results\\figures\\fig4_spatial_assortment.png": "96634c90ce373686ef10bc2df39d1ba468dac654d89bfddfd1341a10c519a34e",
     "results\\figures\\fig5_hamilton_phase_diagram.png": "63245cca6d6b3025b9fc685a717b792feb36bd8fcce99fc43a32180e9daac10e",
     "results\\figures\\fig6_regression_coefficients.png": "0001f8de4d4c3971420aead7d2e6b3e0de0df3b9f911e038110c00de73ec0241",
-    "results\\figures\\fig7_learning_curves.png": "d992bf9a52c3ca69fa715f42e628756cba70fb700d9d996da439c8cf95f1cd2c",
+    "results\\figures\\fig7_learning_curves.png": "7850ddcc99d0f68af10bd2a35bd5d0867c1d42bf2e850e114852910964300ab3",
     "results\\tables\\table1_benchmarks.md": "18f8847d2ba3fd357df9f5426700d1d4b5a53da7e45cf0492cd7f1488052d69b",
     "results\\tables\\table2_cue_sweeps.md": "7f8e853041f46e36f0f7d0289414332d8a2885e8f358c9b5d9c8e9dbe885055a",
     "results\\tables\\table3_regression.md": "5c7ba261c5fe8ffcc1014de35e002d94393ef1d92bb8d3d6ac44d12af6091f8b",
-    "results\\tables\\table4_controls.md": "d82533fe607e470c4bb7f97647145d2508612488335d55b927a3a1d676943035"
+    "results\\tables\\table4_controls.md": "a7e72f8d6c1b248bcdc7bd7a74af7268e426d7d7a20c333540bccd521616dd15"
   },
   "packages": {
-    "numpy": "2.3.2",
-    "torch": "2.5.1+cu121",
-    "scipy": "1.15.1",
-    "matplotlib": "3.10.0",
-    "pillow": "11.1.0",
+    "numpy": "2.5.4",
+    "torch": "2.15.0+cpu",
+    "scipy": "1.18.1",
+    "matplotlib": "3.11.2",
+    "pillow": "13.0.0",
     "pytest": "9.2.0"
   },
-  "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+  "python": "3.12.4 (tags/v3.12.4:8e8a4ba, Jun  6 2024, 19:30:16) [MSC v.1940 64 bit (AMD64)]",
   "independent_training_runs": 35
 }
