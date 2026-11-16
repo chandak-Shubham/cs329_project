@@ -59,7 +59,13 @@ class GridWorld:
         history_window_k: int = 10,
         max_steps: int = 1000,
         seed: Optional[int] = None,
+        offspring_placement: str = "adjacent",
+        enable_starvation: bool = True,
     ):
+        if offspring_placement not in ("adjacent", "random"):
+            raise ValueError("offspring_placement must be adjacent or random")
+        self.offspring_placement = offspring_placement
+        self.enable_starvation = enable_starvation
         if num_agents is not None and initial_population is None:
             initial_population = num_agents
             max_capacity = max(max_capacity, num_agents)
@@ -100,6 +106,10 @@ class GridWorld:
         self.generations = np.zeros(self.N_max, dtype=np.int32)
         self.birth_steps = np.zeros(self.N_max, dtype=np.int32)
         self.is_parasite = np.zeros(self.N_max, dtype=bool)  # For Phase 4 mimicry
+        self.next_agent_id = 0
+        self.agent_unique_ids = np.full(self.N_max, -1, dtype=np.int64)
+        self.parent_unique_ids = np.full(self.N_max, -1, dtype=np.int64)
+        self.ancestry_records: Dict[int, Dict[str, Any]] = {}
 
         # Behavioral History Tracker
         self.history = BehavioralHistoryTracker(self.N_max, window_k=self.window_k)
@@ -134,11 +144,27 @@ class GridWorld:
         self.generations.fill(0)
         self.birth_steps.fill(0)
         self.is_parasite.fill(False)
+        self.next_agent_id = 0
+        self.agent_unique_ids.fill(-1)
+        self.parent_unique_ids.fill(-1)
+        self.ancestry_records.clear()
         self.step_count = 0
 
         # Activate initial N_init slots
         self.mask[:self.N_init] = True
         self.energy[:self.N_init] = self.initial_energy
+        for i in range(self.N_init):
+            founder_uid = self.next_agent_id
+            self.next_agent_id += 1
+            self.agent_unique_ids[i] = founder_uid
+            self.parent_unique_ids[i] = -1
+            self.ancestry_records[founder_uid] = {
+                "uid": founder_uid,
+                "parent_uid": -1,
+                "birth_step": 0,
+                "generation": 0,
+                "is_parasite": False,
+            }
 
         # Assign random non-overlapping coordinates
         all_cells = [(x, y) for x in range(self.L) for y in range(self.L)]
@@ -190,6 +216,9 @@ class GridWorld:
             slot = free_slots[s_idx]
             pos = all_empty[s_idx]
 
+            mimic_uid = self.next_agent_id
+            self.next_agent_id += 1
+
             self.mask[slot] = True
             self.energy[slot] = self.initial_energy
             self.positions[slot] = pos
@@ -198,6 +227,19 @@ class GridWorld:
             self.is_parasite[slot] = True
             self.history.reset_agent(slot)
             self.age[slot] = 0
+            self.parent_ids[slot] = -1
+            self.generations[slot] = 0
+            self.birth_steps[slot] = self.step_count
+            self.agent_unique_ids[slot] = mimic_uid
+            self.parent_unique_ids[slot] = -1
+
+            self.ancestry_records[mimic_uid] = {
+                "uid": mimic_uid,
+                "parent_uid": -1,
+                "birth_step": self.step_count,
+                "generation": 0,
+                "is_parasite": True,
+            }
             spawned += 1
 
         self._update_cues()
@@ -238,7 +280,13 @@ class GridWorld:
         return [item[1] for item in neighbors_with_dist]
 
     def _resolve_movements(self, move_intents: Dict[int, Tuple[int, int]]):
-        """Resolves collisions with strict 1-agent-per-cell occupancy."""
+        """
+        Resolves simultaneous movements and collisions under strict 1-agent-per-cell occupancy.
+        If multiple agents target the same cell, exactly one winner is chosen randomly while other
+        conflicting intents are cancelled. Moves into stationary occupied cells are blocked; cyclic
+        swaps and movement chains are valid as cells vacated by moving agents become available in the
+        two-phase occupancy update.
+        """
         target_requests: Dict[Tuple[int, int], List[int]] = {}
         for agent_idx, target_cell in move_intents.items():
             target_requests.setdefault(target_cell, []).append(agent_idx)
@@ -263,31 +311,60 @@ class GridWorld:
                             has_changes = True
                     target_requests[target_cell] = [winner]
 
-        for agent_idx, target_cell in move_intents.items():
+        # Phase 1: Clear all moving agents from their current positions
+        for agent_idx in move_intents:
             old_pos = tuple(self.positions[agent_idx])
             self.grid[old_pos[0], old_pos[1]] = -1
+
+        # Phase 2: Place all moving agents into their target positions
+        for agent_idx, target_cell in move_intents.items():
             self.grid[target_cell[0], target_cell[1]] = agent_idx
             self.positions[agent_idx] = target_cell
 
-    def _step_demographics(self) -> Tuple[int, int]:
+    def _step_demographics(self) -> Tuple[int, int, np.ndarray, List[Dict[str, Any]], List[Dict[str, Any]]]:
         """
         Executes Starvation and Mitosis (Algorithm 1 lines 5-13).
         Enforces strict energy conservation: E_i, E_k <- E_i / 2.
-        Returns: (deaths_count, births_count)
+        Returns: (deaths_count, births_count, died_mask, death_records, birth_records)
         """
         deaths = 0
         births = 0
+        died_mask = np.zeros(self.N_max, dtype=bool)
+        death_records: List[Dict[str, Any]] = []
+        birth_records: List[Dict[str, Any]] = []
         active_indices = np.where(self.mask)[0]
 
         # 1. Starvation Phase
         for i in active_indices:
-            if self.energy[i] <= 0.0:
+            if self.energy[i] <= 0.0 and self.enable_starvation:
+                uid = int(self.agent_unique_ids[i])
+                age = int(self.age[i])
+                p_uid = int(self.parent_unique_ids[i])
+                gen = int(self.generations[i])
+                is_p = bool(self.is_parasite[i])
+
+                death_records.append({
+                    "slot": i,
+                    "uid": uid,
+                    "age": age,
+                    "parent_uid": p_uid,
+                    "generation": gen,
+                    "is_parasite": is_p,
+                    "death_step": self.step_count,
+                })
+                if uid in self.ancestry_records:
+                    self.ancestry_records[uid]["death_step"] = self.step_count
+                    self.ancestry_records[uid]["lifespan"] = age
+
                 self.mask[i] = False
                 pos = self.positions[i]
                 if self.grid[pos[0], pos[1]] == i:
                     self.grid[pos[0], pos[1]] = -1
                 self.positions[i] = -1
+                self.agent_unique_ids[i] = -1
+                self.parent_unique_ids[i] = -1
                 deaths += 1
+                died_mask[i] = True
 
         # 2. Mitosis Phase
         if self.enable_mitosis:
@@ -303,12 +380,18 @@ class GridWorld:
                         (pi[0], (pi[1] - 1) % self.L),
                     ]
                     empty_cells = [c for c in candidates if self.grid[c[0], c[1]] == -1]
+                    if self.offspring_placement == "random":
+                        empty_cells = [tuple(p) for p in np.argwhere(self.grid == -1)]
 
                     if empty_cells:
                         free_slots = np.where(~self.mask)[0]
                         if len(free_slots) > 0:
                             k = free_slots[0]
                             spawn_pos = empty_cells[self.rng.choice(len(empty_cells))]
+
+                            child_uid = self.next_agent_id
+                            self.next_agent_id += 1
+                            parent_uid = int(self.agent_unique_ids[i])
 
                             # Activate slot
                             self.mask[k] = True
@@ -330,12 +413,31 @@ class GridWorld:
                             self.birth_steps[k] = self.step_count
                             self.is_parasite[k] = self.is_parasite[i]
                             self.age[k] = 0
+                            self.agent_unique_ids[k] = child_uid
+                            self.parent_unique_ids[k] = parent_uid
+
+                            self.ancestry_records[child_uid] = {
+                                "uid": child_uid,
+                                "parent_uid": parent_uid,
+                                "birth_step": self.step_count,
+                                "generation": int(self.generations[k]),
+                                "is_parasite": bool(self.is_parasite[k]),
+                            }
+
+                            birth_records.append({
+                                "slot": k,
+                                "uid": child_uid,
+                                "parent_uid": parent_uid,
+                                "parent_slot": i,
+                                "generation": int(self.generations[k]),
+                                "birth_step": self.step_count,
+                            })
 
                             # Reset history to neutral prior
                             self.history.reset_agent(k)
                             births += 1
 
-        return deaths, births
+        return deaths, births, died_mask, death_records, birth_records
 
     def step(self, actions: np.ndarray) -> Tuple[Dict[str, Any], np.ndarray, np.ndarray, Dict[str, Any]]:
         """
@@ -399,7 +501,7 @@ class GridWorld:
             rewards[i] = delta
 
         # 4. Demographics (Starvation & Mitosis - Algorithm 1)
-        deaths, births = self._step_demographics()
+        deaths, births, died_mask, death_records, birth_records = self._step_demographics()
 
         # 5. Cue update
         self._update_cues()
@@ -409,12 +511,17 @@ class GridWorld:
         time_limit = bool(self.step_count >= self.max_steps)
         dones = np.full(self.N_max, all_extinct or time_limit, dtype=bool)
         dones[~self.mask] = True
+        dones[died_mask] = True  # Critical fix: dead agents are terminal even if slot was reused
 
         info = {
             "active_population": self.active_count,
             "donations_count": len(donations),
             "deaths_this_step": deaths,
             "births_this_step": births,
+            "died_mask": died_mask,
+            "death_records": death_records,
+            "birth_records": birth_records,
+            "ancestry_records": self.ancestry_records,
             "mean_energy": float(np.mean(self.energy[self.mask])) if self.active_count > 0 else 0.0,
             "mean_hbar": float(self.h_bar),
             "step": self.step_count,
@@ -431,10 +538,14 @@ class GridWorld:
         neighbor_indices = np.full((self.N_max, self.max_neighbors), -1, dtype=np.int32)
 
         b_scores = self.history.get_all_scores(self.mask)
+        action_mask = np.zeros((self.N_max, 13), dtype=bool)
 
         for i in range(self.N_max):
             if not self.mask[i]:
                 continue
+
+            action_mask[i, :5] = True  # Movement and stay always valid for active agents
+            can_afford = (self.energy[i] > self.C) and not self.is_parasite[i]
 
             self_state[i, 0] = self.energy[i] / float(self.e_mitosis)
             self_state[i, 1] = self.age[i] / 1000.0
@@ -449,6 +560,7 @@ class GridWorld:
                 neighbor_features[i, k, 4] = b_scores[n_idx]
                 neighbor_mask[i, k] = True
                 neighbor_indices[i, k] = n_idx
+                action_mask[i, 5 + k] = can_afford
 
         return {
             "self_state": self_state,
@@ -456,6 +568,7 @@ class GridWorld:
             "neighbor_mask": neighbor_mask,
             "neighbor_indices": neighbor_indices,
             "active_mask": self.mask.copy(),
+            "action_mask": action_mask,
             "r_tilde": self.r_tilde.copy(),
             "b_scores": b_scores,
         }

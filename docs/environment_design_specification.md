@@ -37,9 +37,7 @@ where:
 
 ### 2.2 Exclusion Principle (Cell Occupancy)
 * Strictly **at most one agent** per cell: $\forall (x, y) \in \mathcal{G}$, $|\{i \in \mathcal{N}_t \mid p_i = (x, y)\}| \le 1$.
-* Collision resolution: If multiple agents attempt to move into the same cell simultaneously, or an agent attempts to move into an already occupied cell:
-  - If target cell is already occupied: the movement action fails and the agent remains in its current cell.
-  - If multiple agents attempt to enter the same unoccupied cell in the same tick: one agent is selected uniformly at random to occupy the cell; the others remain in their origin cells.
+* Simultaneous movement: moves into cells vacated in the same tick are permitted, including swaps and chains. Competing destination intents are cancelled. Moves blocked by stationary agents fail; rejection propagates through dependent chains. Occupancy is rebuilt after resolving all intents.
 
 ---
 
@@ -88,7 +86,7 @@ $$\Delta E_i^{(t)} = -c_{\text{base}} - c_{\text{density}} |\Omega_i| - C \cdot 
    - **Precondition:** An agent can only execute $\text{Give}(j)$ if its current energy $E_i > C$. If $E_i \le C$, the donation action fails and reverts to $\text{Stay}$.
 4. **Donation Benefit ($B$):** Energy received by the recipient. Default: $B = 6.0$ (giving a baseline ratio $B/C = 3.0$).
 5. **Additive Reception:** If multiple neighbors donate to agent $i$ in the same tick, agent $i$ receives the sum of benefits: $\sum B$.
-6. **Strict Conservation:**
+6. **Productive Donation (not energy conservation):**
    - Donor energy: $E_i \leftarrow E_i - C$.
    - Recipient energy: $E_j \leftarrow E_j + B$.
    - Net ecosystem energy gain: $\Delta E_{\text{ecosystem}} = B - C = +4.0$ per successful donation.
@@ -173,7 +171,13 @@ For an active agent $i$, its local observation $o_i$ consists of:
 ## 9. Verification & Acceptance Criteria for Task 1
 The environment specification is considered complete and approved when:
 1. Toroidal coordinate wrapping and Chebyshev distance metrics are mathematically closed and unambiguous.
-2. Energy conservation laws are strictly enforced during both donation transfers and mitosis divisions.
+2. Mitosis conserves energy by equal splitting. Donation is productive: the donor loses C and the recipient gains B, changing total energy by B-C before metabolism.
 3. Death and reproduction rules do not create or destroy memory allocations (fixed tensor bounds).
 4. All observation dimensions and action indices are explicitly mapped for PyTorch tensor compatibility.
 
+
+## Implemented controls and scope (16 November 2026)
+
+`offspring_placement="adjacent"` is the default; `"random"` selects any empty cell for the placement control. `enable_starvation=False` disables energy-based culling for diagnostic runs only and permits negative reserves. All standard evaluations retain starvation.
+
+Neural populations share policy parameters within each run. The current experiments do not implement competing neural lineage policies. The reputation strategy is a behavioral-score threshold, not pairwise Tit-for-Tat. B/C is an environmental parameter absent from the policy observation. See README.md for actual training budgets, inference units, execution order, and limits on Hamilton interpretations.

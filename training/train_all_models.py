@@ -11,6 +11,10 @@ Saves verified model checkpoints to results/checkpoints/.
 import os
 import sys
 import time
+import json
+import hashlib
+import math
+from pathlib import Path
 from typing import Dict, Any, Type
 import numpy as np
 import torch
@@ -44,7 +48,9 @@ def train_model(
     ent_coef: float = 0.01,
     seed: int = 42,
     save_path: str = "",
+    bc_ratio: float = 2.5,
 ) -> Dict[str, Any]:
+    torch.set_num_threads(1)
     torch.manual_seed(seed)
     np.random.seed(seed)
     device = torch.device("cpu")
@@ -61,7 +67,7 @@ def train_model(
         c_base=0.6,
         c_density=0.08,
         donation_cost=2.0,
-        donation_benefit=5.0,  # B/C = 2.5
+        donation_benefit=2.0 * bc_ratio,
         seed=seed,
     )
 
@@ -72,8 +78,9 @@ def train_model(
     elif model_type == "gating":
         policy = GatingPolicy(max_neighbors=8, hidden_dim=64, action_dim=13).to(device)
         obs_dim = policy.input_dim
-    elif model_type == "attention":
-        policy = GatedAttentionPolicy(max_neighbors=8, d_model=32, num_heads=2, action_dim=13).to(device)
+    elif model_type in ("attention", "fixed_attention"):
+        policy = GatedAttentionPolicy(max_neighbors=8, d_model=32, num_heads=2, action_dim=13,
+                                      fixed_gate=0.5 if model_type == "fixed_attention" else None).to(device)
     else:
         raise ValueError(f"Unknown model_type: {model_type}")
 
@@ -92,8 +99,15 @@ def train_model(
     )
 
     obs = env.reset(seed=seed)
-    num_iterations = total_timesteps // (rollout_length * 24)
-    num_iterations = max(num_iterations, 8)
+    num_iterations = math.ceil(total_timesteps / (rollout_length * 24))
+    if num_iterations < 1:
+        raise ValueError("Training budget must be positive")
+    history = []
+    active_transitions = 0
+    started = time.time()
+    source_hashes = {str(p): hashlib.sha256(p.read_bytes()).hexdigest()
+                     for folder in ("environment", "models", "training")
+                     for p in sorted(Path(folder).glob("*.py"))}
 
     print(f"\n--- Training {model_type.upper()} Policy ({num_iterations} iterations, Seed={seed}) ---")
 
@@ -110,11 +124,14 @@ def train_model(
             n_count = n_mask.sum(dim=-1, keepdim=True).float() / 8.0
             flat_nfeats = n_feats.reshape(env.N_max, 40)
 
-            act_masks = torch.zeros((env.N_max, 13), dtype=torch.bool)
-            act_masks[:, :5] = True
-            can_afford = s_st[:, 0] > (2.0 / 60.0)
-            for k in range(8):
-                act_masks[:, 5 + k] = n_mask[:, k] & can_afford
+            if "action_mask" in obs:
+                act_masks = torch.as_tensor(obs["action_mask"], dtype=torch.bool)
+            else:
+                act_masks = torch.zeros((env.N_max, 13), dtype=torch.bool)
+                act_masks[:, :5] = True
+                can_afford = s_st[:, 0] > (2.0 / 60.0)
+                for k in range(8):
+                    act_masks[:, 5 + k] = n_mask[:, k] & can_afford
 
             buf_obs = torch.cat([s_st, flat_nfeats, n_mask.float(), n_count], dim=-1).detach()
 
@@ -126,7 +143,7 @@ def train_model(
                     actions, log_probs, _, values, _ = policy.get_action_and_value_from_tensors(
                         s_st, n_feats, n_mask, act_masks
                     )
-                elif model_type == "attention":
+                elif model_type in ("attention", "fixed_attention"):
                     actions, log_probs, _, values, _ = policy.get_action_and_value(
                         s_st, n_feats, n_mask, act_masks
                     )
@@ -140,6 +157,7 @@ def train_model(
             rewards_t = torch.as_tensor(rewards, dtype=torch.float32)
             dones_t = torch.as_tensor(dones, dtype=torch.bool)
             active_t = torch.as_tensor(obs["active_mask"], dtype=torch.bool)
+            active_transitions += int(active_t.sum())
 
             buffer.add(
                 obs=buf_obs,
@@ -153,7 +171,7 @@ def train_model(
             )
 
             obs = next_obs
-            if np.sum(obs["active_mask"]) == 0:
+            if np.sum(obs["active_mask"]) == 0 or np.all(dones):
                 obs = env.reset()
 
         # Compute GAE
@@ -162,18 +180,21 @@ def train_model(
             next_nf = torch.as_tensor(obs["neighbor_features"], dtype=torch.float32)
             next_nm = torch.as_tensor(obs["neighbor_mask"], dtype=torch.bool)
             next_nc = next_nm.sum(dim=-1, keepdim=True).float() / 8.0
-            next_act_masks = torch.zeros((env.N_max, 13), dtype=torch.bool)
-            next_act_masks[:, :5] = True
-            next_can_afford = next_s[:, 0] > (2.0 / 60.0)
-            for k in range(8):
-                next_act_masks[:, 5 + k] = next_nm[:, k] & next_can_afford
+            if "action_mask" in obs:
+                next_act_masks = torch.as_tensor(obs["action_mask"], dtype=torch.bool)
+            else:
+                next_act_masks = torch.zeros((env.N_max, 13), dtype=torch.bool)
+                next_act_masks[:, :5] = True
+                next_can_afford = next_s[:, 0] > (2.0 / 60.0)
+                for k in range(8):
+                    next_act_masks[:, 5 + k] = next_nm[:, k] & next_can_afford
 
             if model_type == "mlp":
                 next_mlp_in = torch.cat([next_s, next_nf.reshape(env.N_max, 40), next_nc], dim=-1)
                 _, next_values = policy.forward(next_mlp_in, next_act_masks)
             elif model_type == "gating":
                 _, next_values, _ = policy.forward_from_tensors(next_s, next_nf, next_nm, next_act_masks)
-            elif model_type == "attention":
+            elif model_type in ("attention", "fixed_attention"):
                 _, next_values, _ = policy.forward(next_s, next_nf, next_nm, next_act_masks)
 
             next_dones = torch.as_tensor(dones, dtype=torch.bool)
@@ -197,7 +218,7 @@ def train_model(
                     dist, v_pred = policy.forward(b_mlp_in, b_masks)
                 elif model_type == "gating":
                     dist, v_pred, _ = policy.forward_from_tensors(b_s, b_nf, b_nm, b_masks)
-                elif model_type == "attention":
+                elif model_type in ("attention", "fixed_attention"):
                     dist, v_pred, _ = policy.forward(b_s, b_nf, b_nm, b_masks)
 
                 new_log_probs = dist.log_prob(b_actions)
@@ -219,6 +240,12 @@ def train_model(
                 epoch_pi_losses.append(policy_loss.item())
                 epoch_v_losses.append(value_loss.item())
 
+        history.append({"iteration": iteration, "environment_steps": iteration * rollout_length,
+                        "active_agent_transitions": active_transitions,
+                        "mean_population": float(np.mean(active_counts)),
+                        "donations_per_step": float(np.mean(donations_counts)),
+                        "policy_loss": float(np.mean(epoch_pi_losses)),
+                        "value_loss": float(np.mean(epoch_v_losses))})
         print(
             f"  Iter {iteration:>2}/{num_iterations} | "
             f"Pop: {np.mean(active_counts):>4.1f} | "
@@ -229,45 +256,85 @@ def train_model(
 
     # Save trained checkpoint
     if save_path:
+        Path(save_path).parent.mkdir(parents=True, exist_ok=True)
         torch.save(policy.state_dict(), save_path)
+        provenance = {"model_type": model_type, "seed": seed, "bc_ratio": bc_ratio,
+                      "nominal_agent_budget_requested": total_timesteps,
+                      "environment_steps": num_iterations * rollout_length,
+                      "active_agent_transitions": active_transitions,
+                      "rollout_length": rollout_length, "num_epochs": num_epochs,
+                      "batch_size": batch_size, "lr": lr, "gamma": gamma,
+                      "gae_lambda": gae_lambda, "clip_eps": clip_eps,
+                      "vf_coef": vf_coef, "ent_coef": ent_coef,
+                      "environment": {"grid_size": 18, "max_capacity": 45, "initial_population": 24,
+                                      "initial_energy": 30, "e_mitosis": 60, "mutation_rate": .05,
+                                      "c_base": .6, "c_density": .08, "donation_cost": 2,
+                                      "donation_benefit": 2 * bc_ratio, "max_steps": env.max_steps},
+                      "torch_version": str(torch.__version__), "numpy_version": np.__version__,
+                      "source_sha256": source_hashes, "elapsed_seconds": time.time() - started,
+                      "checkpoint_sha256": hashlib.sha256(Path(save_path).read_bytes()).hexdigest(),
+                      "learning_curve": history}
+        Path(save_path).with_suffix(".json").write_text(json.dumps(provenance, indent=2))
         print(f"  Saved trained checkpoint to {save_path}")
 
     return {"model_type": model_type, "final_pop": float(np.mean(active_counts))}
 
 
 def train_all():
-    print("=" * 80)
-    print("STARTING UNIFIED PPO TRAINING FOR ALL THREE NEURAL ABLATIONS")
-    print("=" * 80)
+    """Compatibility entry point for the complete replicated study."""
+    return train_replicates()
 
-    # 1. Simple MLP (Ablation 1)
-    train_model(
-        model_type="mlp",
-        total_timesteps=10000,
-        rollout_length=64,
-        save_path=os.path.join(CHECKPOINTS_DIR, "simple_mlp.pt"),
-    )
 
-    # 2. Gating Policy (Ablation 2)
-    train_model(
-        model_type="gating",
-        total_timesteps=10000,
-        rollout_length=64,
-        save_path=os.path.join(CHECKPOINTS_DIR, "gating_policy.pt"),
-    )
-
-    # 3. Gated Attention (Full Model)
-    train_model(
-        model_type="attention",
-        total_timesteps=10000,
-        rollout_length=64,
-        save_path=os.path.join(CHECKPOINTS_DIR, "gated_attention.pt"),
-    )
-
-    print("\n" + "=" * 80)
-    print("ALL NEURAL MODELS SUCCESSFULLY TRAINED AND CHECKPOINTS SAVED.")
-    print("=" * 80)
+def train_replicates(seeds=(42, 101, 202, 303, 404), environment_steps=1024):
+    """Equal environment-transition budgets; independent network, action and world seeds."""
+    import shutil
+    aliases = {"mlp": "simple_mlp", "gating": "gating_policy", "attention": "gated_attention",
+               "fixed_attention": "fixed_attention"}
+    for seed in seeds:
+        for kind, alias in aliases.items():
+            path = f"{CHECKPOINTS_DIR}/{alias}_seed_{seed}.pt"
+            train_model(kind, total_timesteps=environment_steps * 24, seed=seed, save_path=path)
+            if seed == seeds[0]:
+                shutil.copyfile(path, f"{CHECKPOINTS_DIR}/{alias}.pt")
+                shutil.copyfile(Path(path).with_suffix('.json'), f"{CHECKPOINTS_DIR}/{alias}.json")
+        for ratio in (1.5, 3.0, 4.5):
+            train_model("attention", total_timesteps=environment_steps * 24, seed=seed, bc_ratio=ratio,
+                        save_path=f"{CHECKPOINTS_DIR}/incentive_{ratio}_seed_{seed}.pt")
 
 
 if __name__ == "__main__":
-    train_all()
+    import argparse
+    import subprocess
+    from concurrent.futures import ThreadPoolExecutor
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--environment-steps", type=int, default=1024)
+    parser.add_argument("--workers", type=int, default=4)
+    parser.add_argument("--worker-kind", choices=["mlp", "gating", "attention", "fixed_attention"])
+    parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--bc-ratio", type=float, default=2.5)
+    parser.add_argument("--output")
+    args = parser.parse_args()
+    if args.worker_kind:
+        train_model(args.worker_kind, total_timesteps=args.environment_steps*24,
+                    seed=args.seed, bc_ratio=args.bc_ratio, save_path=args.output)
+    else:
+        import shutil
+        aliases = {"mlp": "simple_mlp", "gating": "gating_policy", "attention": "gated_attention", "fixed_attention": "fixed_attention"}
+        jobs = []
+        for seed in (42, 101, 202, 303, 404):
+            for kind, alias in aliases.items():
+                jobs.append((kind, seed, 2.5, f"{CHECKPOINTS_DIR}/{alias}_seed_{seed}.pt"))
+            for ratio in (1.5, 3., 4.5):
+                jobs.append(("attention", seed, ratio, f"{CHECKPOINTS_DIR}/incentive_{ratio}_seed_{seed}.pt"))
+        def worker(job):
+            kind, seed, ratio, path = job
+            with open(Path(path).with_suffix('.log'), 'w') as log:
+                subprocess.run([sys.executable, '-u', __file__, '--worker-kind', kind, '--seed', str(seed),
+                                '--bc-ratio', str(ratio), '--environment-steps', str(args.environment_steps),
+                                '--output', path], stdout=log, stderr=subprocess.STDOUT, check=True)
+            print(f"Completed {path}", flush=True)
+        with ThreadPoolExecutor(max_workers=args.workers) as pool:
+            list(pool.map(worker, jobs))
+        for alias in aliases.values():
+            for suffix in ('.pt', '.json'):
+                shutil.copyfile(f"{CHECKPOINTS_DIR}/{alias}_seed_42{suffix}", f"{CHECKPOINTS_DIR}/{alias}{suffix}")

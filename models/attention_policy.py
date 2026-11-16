@@ -30,12 +30,14 @@ class GatedAttentionPolicy(nn.Module):
         d_model: int = 64,
         num_heads: int = 4,
         action_dim: int = 13,  # 5 movement/stay + 8 targeted donation slots
+        fixed_gate: Optional[float] = None,
     ):
         super().__init__()
         self.max_neighbors = max_neighbors
         self.d_model = d_model
         self.num_heads = num_heads
         self.action_dim = action_dim
+        self.fixed_gate = fixed_gate
 
         # 1. Gating Network (Equation 3)
         self.gating = GatingNetwork(hidden_dim=32)
@@ -110,6 +112,11 @@ class GatedAttentionPolicy(nn.Module):
         cue_inputs = torch.cat([r_tilde, b_score, e_norm], dim=-1)  # (N, K, 3)
 
         weights, q = self.gating(cue_inputs)  # weights: (N, K, 2), q: (N, K)
+        if self.fixed_gate is not None:
+            weights = torch.zeros_like(weights)
+            weights[..., 0] = self.fixed_gate
+            weights[..., 1] = 1.0 - self.fixed_gate
+            q = weights[..., 0] * r_tilde.squeeze(-1) + weights[..., 1] * b_score.squeeze(-1)
         q_masked = torch.where(neighbor_mask, q, torch.zeros_like(q)).unsqueeze(-1)  # (N, K, 1)
 
         # 2. Encoders
@@ -172,13 +179,18 @@ class GatedAttentionPolicy(nn.Module):
         neighbor_features = torch.as_tensor(obs["neighbor_features"], dtype=torch.float32, device=device)
         neighbor_mask = torch.as_tensor(obs["neighbor_mask"], dtype=torch.bool, device=device)
 
-        N = self_state.shape[0]
-        action_masks = torch.zeros((N, self.action_dim), dtype=torch.bool, device=device)
-        action_masks[:, :5] = True  # Movement and stay are always valid for active agents
+        if "action_mask" in obs:
+            action_masks = torch.as_tensor(obs["action_mask"], dtype=torch.bool, device=device).clone()
+            for k in range(self.max_neighbors):
+                action_masks[:, 5 + k] &= neighbor_mask[:, k]
+        else:
+            N = self_state.shape[0]
+            action_masks = torch.zeros((N, self.action_dim), dtype=torch.bool, device=device)
+            action_masks[:, :5] = True  # Movement and stay are always valid for active agents
 
-        can_afford = self_state[:, 0] > (2.0 / 60.0)
-        for k in range(self.max_neighbors):
-            action_masks[:, 5 + k] = neighbor_mask[:, k] & can_afford
+            can_afford = self_state[:, 0] > (2.0 / 60.0)
+            for k in range(self.max_neighbors):
+                action_masks[:, 5 + k] = neighbor_mask[:, k] & can_afford
 
         return self_state, neighbor_features, neighbor_mask, action_masks
 

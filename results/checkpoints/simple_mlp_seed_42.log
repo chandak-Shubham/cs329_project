@@ -1,0 +1,19 @@
+
+--- Training MLP Policy (16 iterations, Seed=42) ---
+  Iter  1/16 | Pop: 30.5 | Donations/step: 14.9 | Pi Loss: -0.0082 | V Loss: 75.2847
+  Iter  2/16 | Pop: 44.7 | Donations/step: 21.5 | Pi Loss: -0.0066 | V Loss: 48.8550
+  Iter  3/16 | Pop: 45.0 | Donations/step: 20.1 | Pi Loss: -0.0103 | V Loss: 52.7127
+  Iter  4/16 | Pop: 45.0 | Donations/step: 16.3 | Pi Loss: -0.0082 | V Loss: 36.2576
+  Iter  5/16 | Pop: 45.0 | Donations/step: 15.1 | Pi Loss:  0.0042 | V Loss: 40.2497
+  Iter  6/16 | Pop: 45.0 | Donations/step: 14.8 | Pi Loss:  0.0033 | V Loss: 39.2115
+  Iter  7/16 | Pop: 44.8 | Donations/step: 15.1 | Pi Loss: -0.0142 | V Loss: 31.6134
+  Iter  8/16 | Pop: 35.9 | Donations/step:  9.8 | Pi Loss: -0.0037 | V Loss: 27.3610
+  Iter  9/16 | Pop: 19.3 | Donations/step:  3.2 | Pi Loss:  0.0011 | V Loss: 15.2430
+  Iter 10/16 | Pop:  7.1 | Donations/step:  0.5 | Pi Loss: -0.0057 | V Loss: 13.5713
+  Iter 11/16 | Pop: 14.8 | Donations/step:  2.1 | Pi Loss: -0.0066 | V Loss: 18.4290
+  Iter 12/16 | Pop:  9.0 | Donations/step:  0.6 | Pi Loss: -0.0141 | V Loss: 11.1392
+  Iter 13/16 | Pop: 16.4 | Donations/step:  1.4 | Pi Loss: -0.0063 | V Loss: 10.4919
+  Iter 14/16 | Pop: 14.6 | Donations/step:  0.7 | Pi Loss: -0.0016 | V Loss: 11.5063
+  Iter 15/16 | Pop:  9.9 | Donations/step:  0.3 | Pi Loss:  0.0012 | V Loss:  9.3456
+  Iter 16/16 | Pop: 14.7 | Donations/step:  0.5 | Pi Loss: -0.0321 | V Loss:  9.2754
+  Saved trained checkpoint to results/checkpoints/simple_mlp_seed_42.pt

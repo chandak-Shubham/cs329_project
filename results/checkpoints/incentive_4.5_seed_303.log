@@ -1,0 +1,19 @@
+
+--- Training ATTENTION Policy (16 iterations, Seed=303) ---
+  Iter  1/16 | Pop: 41.4 | Donations/step: 20.0 | Pi Loss:  0.0036 | V Loss: 620.1504
+  Iter  2/16 | Pop: 45.0 | Donations/step: 17.1 | Pi Loss:  0.0043 | V Loss: 210.0725
+  Iter  3/16 | Pop: 45.0 | Donations/step: 12.2 | Pi Loss:  0.0003 | V Loss: 106.0987
+  Iter  4/16 | Pop: 45.0 | Donations/step:  9.1 | Pi Loss:  0.0031 | V Loss: 78.0486
+  Iter  5/16 | Pop: 45.0 | Donations/step:  5.7 | Pi Loss:  0.0045 | V Loss: 43.7218
+  Iter  6/16 | Pop: 45.0 | Donations/step:  6.6 | Pi Loss: -0.0015 | V Loss: 51.9545
+  Iter  7/16 | Pop: 45.0 | Donations/step:  5.8 | Pi Loss: -0.0020 | V Loss: 49.3643
+  Iter  8/16 | Pop: 45.0 | Donations/step:  4.8 | Pi Loss:  0.0001 | V Loss: 38.2937
+  Iter  9/16 | Pop: 45.0 | Donations/step:  4.8 | Pi Loss: -0.0007 | V Loss: 33.2083
+  Iter 10/16 | Pop: 45.0 | Donations/step:  3.7 | Pi Loss:  0.0011 | V Loss: 33.6455
+  Iter 11/16 | Pop: 45.0 | Donations/step:  4.4 | Pi Loss: -0.0013 | V Loss: 31.7631
+  Iter 12/16 | Pop: 45.0 | Donations/step:  4.3 | Pi Loss: -0.0040 | V Loss: 31.6766
+  Iter 13/16 | Pop: 45.0 | Donations/step:  4.7 | Pi Loss: -0.0049 | V Loss: 31.5173
+  Iter 14/16 | Pop: 45.0 | Donations/step:  4.7 | Pi Loss: -0.0036 | V Loss: 25.6244
+  Iter 15/16 | Pop: 45.0 | Donations/step:  5.3 | Pi Loss: -0.0038 | V Loss: 31.9123
+  Iter 16/16 | Pop: 37.1 | Donations/step:  3.8 | Pi Loss: -0.0011 | V Loss: 29.2294
+  Saved trained checkpoint to results/checkpoints/incentive_4.5_seed_303.pt

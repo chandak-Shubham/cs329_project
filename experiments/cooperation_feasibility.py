@@ -1,10 +1,10 @@
 """
 Cooperation Feasibility Study (Task 6).
-Solves and validates the fundamental cooperation dilemma before applying RL:
+Evaluates the cooperation dilemma using rule-based controls before applying RL:
 1. Runs 5 random seeds per condition
 2. Compares Pure Selfish vs. Pure Cooperative vs. Mixed Competitions
 3. Quantifies survival lifespans, mean energy trajectories, and donation frequencies
-4. Validates that (B > C) enables cooperative strategies to outperform defection
+4. Tests whether productive donations improve outcomes relative to defection
 """
 
 import os
@@ -15,7 +15,7 @@ import numpy as np
 # Ensure root directory is on PYTHONPATH
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 from environment.grid_world import GridWorld, ACTION_STAY
 from models.rule_based import (
     AlwaysDefectPolicy,
@@ -29,10 +29,13 @@ def run_single_simulation(
     env: GridWorld,
     policy_assignment: List[str],  # policy name for each agent index
     max_steps: int = 500,
-    seed: int = 42,
+    seed: Optional[int] = None,
 ) -> Dict[str, Any]:
     """Runs a single simulation episode with heterogeneous or homogeneous policies."""
-    obs = env.reset(seed=seed)
+    if seed is not None:
+        obs = env.reset(seed=seed)
+    else:
+        obs = env._get_observations()
     
     # Initialize policy instances
     policies = {
@@ -42,50 +45,108 @@ def run_single_simulation(
         "fixed": FixedWeightPolicy(w_g=0.5, w_b=0.5, threshold=0.35),
     }
 
+    # Map individual unique agent IDs to their assigned / inherited policy
+    uid_policy_map: Dict[int, str] = {}
+    founder_uids: List[int] = []
+    founder_lifespans: List[int] = [0] * len(policy_assignment)
+    founder_uid_to_idx: Dict[int, int] = {}
+
+    for i in range(len(policy_assignment)):
+        uid = int(env.agent_unique_ids[i])
+        pol = policy_assignment[i]
+        uid_policy_map[uid] = pol
+        founder_uids.append(uid)
+        founder_uid_to_idx[uid] = i
+
     # Tracking metrics
-    lifespans = np.zeros(env.N, dtype=np.int32)
-    cumulative_rewards = np.zeros(env.N, dtype=np.float32)
-    history_energy = []
+    completed_lifespans: List[int] = []
+    survivor_lifespans: List[int] = []
+    history_energy: List[float] = []
+    cumulative_rewards: np.ndarray = np.zeros(env.N_max, dtype=np.float32)
+    individual_rewards = {}
     total_donations = 0
 
     for step in range(1, max_steps + 1):
-        # Determine action for each agent according to its assigned policy
-        actions = np.zeros(env.N, dtype=np.int32)
         active_indices = np.where(obs["active_mask"])[0]
-
         if len(active_indices) == 0:
             break
 
-        # Group agents by assigned policy to call policy.act in batch
-        for pol_name in set(policy_assignment):
-            agents_with_pol = [i for i in active_indices if policy_assignment[i] == pol_name]
-            if not agents_with_pol:
+        # Determine action for each active agent by looking up its policy via unique ID
+        actions = np.zeros(env.N_max, dtype=np.int32)
+        unique_policies_active = set()
+        agent_pol_list = []
+        for a_idx in active_indices:
+            uid = int(env.agent_unique_ids[a_idx])
+            pol = uid_policy_map.get(uid, "defect")
+            unique_policies_active.add(pol)
+            agent_pol_list.append((a_idx, pol))
+
+        for pol_name in unique_policies_active:
+            sub_indices = [a_idx for a_idx, p in agent_pol_list if p == pol_name]
+            if not sub_indices:
                 continue
-            # Get actions from policy
             pol_actions = policies[pol_name].act(obs)
-            for a_idx in agents_with_pol:
+            for a_idx in sub_indices:
                 actions[a_idx] = pol_actions[a_idx]
 
+        # Step environment
+        acting_uids = {int(i): int(env.agent_unique_ids[i]) for i in active_indices}
         obs, rewards, dones, info = env.step(actions)
 
-        # Update metrics
-        for i in active_indices:
-            lifespans[i] = step
-            cumulative_rewards[i] += rewards[i]
+        # 1. Accumulate rewards for all agents that were active during this step
+        for a_idx in active_indices:
+            cumulative_rewards[a_idx] += rewards[a_idx]
+            uid = acting_uids[int(a_idx)]
+            individual_rewards[uid] = individual_rewards.get(uid, 0.0) + float(rewards[a_idx])
+
+        # 2. Process explicit birth records to inherit parent's policy by child UID
+        birth_records = info.get("birth_records", [])
+        for b_rec in birth_records:
+            c_uid = b_rec["uid"]
+            p_uid = b_rec["parent_uid"]
+            uid_policy_map[c_uid] = uid_policy_map.get(p_uid, "defect")
+
+        # 3. Process explicit death records (captures exact individual age before slot reuse)
+        death_records = info.get("death_records", [])
+        for d_rec in death_records:
+            completed_lifespans.append(d_rec["age"])
+            d_uid = d_rec["uid"]
+            if d_uid in founder_uid_to_idx:
+                f_idx = founder_uid_to_idx[d_uid]
+                founder_lifespans[f_idx] = d_rec["age"]
 
         total_donations += info["donations_count"]
         history_energy.append(info["mean_energy"])
 
-        if np.all(dones):
+        if np.all(dones) or info["active_population"] == 0:
             break
+
+    # Record surviving agents at end of simulation (right-censored)
+    final_active = np.where(obs["active_mask"])[0]
+    for a_idx in final_active:
+        surv_age = int(env.age[a_idx])
+        survivor_lifespans.append(surv_age)
+        uid = int(env.agent_unique_ids[a_idx])
+        if uid in founder_uid_to_idx:
+            f_idx = founder_uid_to_idx[uid]
+            founder_lifespans[f_idx] = surv_age
+
+    all_lifespans = completed_lifespans + survivor_lifespans
+    mean_lifespan = float(np.mean(all_lifespans)) if all_lifespans else 0.0
+    mean_completed = float(np.mean(completed_lifespans)) if completed_lifespans else 0.0
 
     return {
         "final_step": step,
-        "mean_lifespan": float(np.mean(lifespans)),
-        "lifespans": lifespans.tolist(),
+        "mean_lifespan": mean_lifespan,
+        "mean_completed_lifespan": mean_completed,
+        "completed_lifespans": completed_lifespans,
+        "survivor_lifespans": survivor_lifespans,
+        "founder_lifespans": founder_lifespans,
         "total_donations": total_donations,
         "mean_energy_trajectory": history_energy,
         "cumulative_rewards": cumulative_rewards.tolist(),
+        "cumulative_rewards_unit": "recyclable tensor slot; use individual_rewards for individual returns",
+        "individual_rewards": individual_rewards,
     }
 
 
@@ -147,9 +208,9 @@ def evaluate_feasibility(seeds: List[int] = [101, 102, 103, 104, 105]):
             if "Mixed" in cond_name:
                 for idx, pol in enumerate(assignment):
                     if pol == "defect":
-                        defector_lifespans.append(sim_res["lifespans"][idx])
+                        defector_lifespans.append(sim_res["founder_lifespans"][idx])
                     else:
-                        cooperator_lifespans.append(sim_res["lifespans"][idx])
+                        cooperator_lifespans.append(sim_res["founder_lifespans"][idx])
 
         results[cond_name] = {
             "mean_lifespan": float(np.mean(cond_lifespans)),

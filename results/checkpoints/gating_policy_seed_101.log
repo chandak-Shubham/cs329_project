@@ -1,0 +1,19 @@
+
+--- Training GATING Policy (16 iterations, Seed=101) ---
+  Iter  1/16 | Pop: 29.5 | Donations/step: 13.2 | Pi Loss: -0.0045 | V Loss: 63.6024
+  Iter  2/16 | Pop: 44.2 | Donations/step: 21.7 | Pi Loss:  0.0016 | V Loss: 43.9357
+  Iter  3/16 | Pop: 45.0 | Donations/step: 20.0 | Pi Loss: -0.0089 | V Loss: 47.9464
+  Iter  4/16 | Pop: 45.0 | Donations/step: 17.1 | Pi Loss: -0.0058 | V Loss: 31.7593
+  Iter  5/16 | Pop: 45.0 | Donations/step: 15.5 | Pi Loss:  0.0072 | V Loss: 44.5881
+  Iter  6/16 | Pop: 45.0 | Donations/step: 16.8 | Pi Loss: -0.0088 | V Loss: 36.5168
+  Iter  7/16 | Pop: 45.0 | Donations/step: 15.2 | Pi Loss: -0.0037 | V Loss: 42.7255
+  Iter  8/16 | Pop: 37.7 | Donations/step: 10.9 | Pi Loss: -0.0119 | V Loss: 35.7738
+  Iter  9/16 | Pop: 19.7 | Donations/step:  3.4 | Pi Loss: -0.0078 | V Loss: 22.8976
+  Iter 10/16 | Pop:  7.7 | Donations/step:  0.8 | Pi Loss: -0.0015 | V Loss: 15.3559
+  Iter 11/16 | Pop:  9.6 | Donations/step:  1.1 | Pi Loss: -0.0157 | V Loss: 14.2755
+  Iter 12/16 | Pop: 12.8 | Donations/step:  1.2 | Pi Loss: -0.0333 | V Loss: 12.2970
+  Iter 13/16 | Pop: 15.2 | Donations/step:  1.1 | Pi Loss: -0.0067 | V Loss: 17.2344
+  Iter 14/16 | Pop: 10.3 | Donations/step:  0.3 | Pi Loss: -0.0064 | V Loss: 10.5402
+  Iter 15/16 | Pop: 12.8 | Donations/step:  0.5 | Pi Loss: -0.0029 | V Loss:  5.8953
+  Iter 16/16 | Pop: 12.7 | Donations/step:  0.3 | Pi Loss: -0.0082 | V Loss:  6.7363
+  Saved trained checkpoint to results/checkpoints/gating_policy_seed_101.pt

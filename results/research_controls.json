@@ -1,0 +1,2127 @@
+{
+  "runs": {
+    "adaptive_clean": [
+      {
+        "training_seed": 42,
+        "evaluation_seed": 10042,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "adjacent",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 89,
+        "donations": 76,
+        "births": 0,
+        "genetic_weight_before": 0.41393058001995087,
+        "genetic_weight_after": 0.412093186378479,
+        "adjacent_similarity": 0.49608063031976074,
+        "random_pair_similarity": 0.4808042903151598,
+        "adjacency_observed_steps": 69
+      },
+      {
+        "training_seed": 101,
+        "evaluation_seed": 10101,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "adjacent",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 107,
+        "donations": 159,
+        "births": 0,
+        "genetic_weight_before": 0.17241018414497375,
+        "genetic_weight_after": 0.18064695000648498,
+        "adjacent_similarity": 0.49216958435708436,
+        "random_pair_similarity": 0.5011549495924496,
+        "adjacency_observed_steps": 74
+      },
+      {
+        "training_seed": 202,
+        "evaluation_seed": 10202,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "adjacent",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 110,
+        "donations": 123,
+        "births": 0,
+        "genetic_weight_before": 0.18924219012260438,
+        "genetic_weight_after": 0.19904629290103912,
+        "adjacent_similarity": 0.5106625258799172,
+        "random_pair_similarity": 0.5221366747181965,
+        "adjacency_observed_steps": 69
+      },
+      {
+        "training_seed": 303,
+        "evaluation_seed": 10303,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "adjacent",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 97,
+        "donations": 93,
+        "births": 0,
+        "genetic_weight_before": 0.23037591427564622,
+        "genetic_weight_after": 0.24492145776748658,
+        "adjacent_similarity": 0.5134091204787926,
+        "random_pair_similarity": 0.4911104605776737,
+        "adjacency_observed_steps": 61
+      },
+      {
+        "training_seed": 404,
+        "evaluation_seed": 10404,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "adjacent",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 95,
+        "donations": 45,
+        "births": 0,
+        "genetic_weight_before": 0.3295272260904312,
+        "genetic_weight_after": 0.3466229200363159,
+        "adjacent_similarity": 0.47635030864197536,
+        "random_pair_similarity": 0.5050429894179894,
+        "adjacency_observed_steps": 54
+      }
+    ],
+    "adaptive_attack": [
+      {
+        "training_seed": 42,
+        "evaluation_seed": 10042,
+        "fixed_gate": false,
+        "invasion": true,
+        "placement": "adjacent",
+        "invasion_time": 10,
+        "injected": 12,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 85,
+        "donations": 74,
+        "births": 0,
+        "genetic_weight_before": 0.41393058001995087,
+        "genetic_weight_after": 0.40453568696975706,
+        "adjacent_similarity": 0.588783832597929,
+        "random_pair_similarity": 0.5406821494585136,
+        "adjacency_observed_steps": 60
+      },
+      {
+        "training_seed": 101,
+        "evaluation_seed": 10101,
+        "fixed_gate": false,
+        "invasion": true,
+        "placement": "adjacent",
+        "invasion_time": 10,
+        "injected": 12,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 98,
+        "donations": 139,
+        "births": 0,
+        "genetic_weight_before": 0.17241018414497375,
+        "genetic_weight_after": 0.1709349647164345,
+        "adjacent_similarity": 0.581629829104959,
+        "random_pair_similarity": 0.534045076156315,
+        "adjacency_observed_steps": 68
+      },
+      {
+        "training_seed": 202,
+        "evaluation_seed": 10202,
+        "fixed_gate": false,
+        "invasion": true,
+        "placement": "adjacent",
+        "invasion_time": 10,
+        "injected": 12,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 89,
+        "donations": 128,
+        "births": 0,
+        "genetic_weight_before": 0.18924219012260438,
+        "genetic_weight_after": 0.19198502451181412,
+        "adjacent_similarity": 0.6350284007854431,
+        "random_pair_similarity": 0.5907108736334088,
+        "adjacency_observed_steps": 71
+      },
+      {
+        "training_seed": 303,
+        "evaluation_seed": 10303,
+        "fixed_gate": false,
+        "invasion": true,
+        "placement": "adjacent",
+        "invasion_time": 10,
+        "injected": 12,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 108,
+        "donations": 114,
+        "births": 0,
+        "genetic_weight_before": 0.23037591427564622,
+        "genetic_weight_after": 0.23509030640125275,
+        "adjacent_similarity": 0.64277669134235,
+        "random_pair_similarity": 0.5759403123917416,
+        "adjacency_observed_steps": 71
+      },
+      {
+        "training_seed": 404,
+        "evaluation_seed": 10404,
+        "fixed_gate": false,
+        "invasion": true,
+        "placement": "adjacent",
+        "invasion_time": 10,
+        "injected": 12,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 85,
+        "donations": 36,
+        "births": 0,
+        "genetic_weight_before": 0.3295272260904312,
+        "genetic_weight_after": 0.3397102028131485,
+        "adjacent_similarity": 0.6012405828704387,
+        "random_pair_similarity": 0.5872322471515767,
+        "adjacency_observed_steps": 63
+      }
+    ],
+    "fixed_clean": [
+      {
+        "training_seed": 42,
+        "evaluation_seed": 10042,
+        "fixed_gate": true,
+        "invasion": false,
+        "placement": "adjacent",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 122,
+        "donations": 93,
+        "births": 0,
+        "genetic_weight_before": 0.5,
+        "genetic_weight_after": 0.5,
+        "adjacent_similarity": 0.4918360016420361,
+        "random_pair_similarity": 0.4778487616310892,
+        "adjacency_observed_steps": 58
+      },
+      {
+        "training_seed": 101,
+        "evaluation_seed": 10101,
+        "fixed_gate": true,
+        "invasion": false,
+        "placement": "adjacent",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 86,
+        "donations": 61,
+        "births": 0,
+        "genetic_weight_before": 0.5,
+        "genetic_weight_after": 0.5,
+        "adjacent_similarity": 0.4952083333333333,
+        "random_pair_similarity": 0.5088070641479733,
+        "adjacency_observed_steps": 55
+      },
+      {
+        "training_seed": 202,
+        "evaluation_seed": 10202,
+        "fixed_gate": true,
+        "invasion": false,
+        "placement": "adjacent",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 94,
+        "donations": 99,
+        "births": 0,
+        "genetic_weight_before": 0.5,
+        "genetic_weight_after": 0.5,
+        "adjacent_similarity": 0.5070540156361052,
+        "random_pair_similarity": 0.494633972992182,
+        "adjacency_observed_steps": 67
+      },
+      {
+        "training_seed": 303,
+        "evaluation_seed": 10303,
+        "fixed_gate": true,
+        "invasion": false,
+        "placement": "adjacent",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 93,
+        "donations": 97,
+        "births": 0,
+        "genetic_weight_before": 0.5,
+        "genetic_weight_after": 0.5,
+        "adjacent_similarity": 0.5239958009719039,
+        "random_pair_similarity": 0.48285136024106606,
+        "adjacency_observed_steps": 68
+      },
+      {
+        "training_seed": 404,
+        "evaluation_seed": 10404,
+        "fixed_gate": true,
+        "invasion": false,
+        "placement": "adjacent",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 79,
+        "donations": 54,
+        "births": 0,
+        "genetic_weight_before": 0.5,
+        "genetic_weight_after": 0.5,
+        "adjacent_similarity": 0.49964569160997735,
+        "random_pair_similarity": 0.49377598261526834,
+        "adjacency_observed_steps": 63
+      }
+    ],
+    "fixed_attack": [
+      {
+        "training_seed": 42,
+        "evaluation_seed": 10042,
+        "fixed_gate": true,
+        "invasion": true,
+        "placement": "adjacent",
+        "invasion_time": 10,
+        "injected": 12,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 104,
+        "donations": 97,
+        "births": 0,
+        "genetic_weight_before": 0.5,
+        "genetic_weight_after": 0.5,
+        "adjacent_similarity": 0.5541297044852579,
+        "random_pair_similarity": 0.5537873997311884,
+        "adjacency_observed_steps": 66
+      },
+      {
+        "training_seed": 101,
+        "evaluation_seed": 10101,
+        "fixed_gate": true,
+        "invasion": true,
+        "placement": "adjacent",
+        "invasion_time": 10,
+        "injected": 12,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 80,
+        "donations": 73,
+        "births": 0,
+        "genetic_weight_before": 0.5,
+        "genetic_weight_after": 0.5,
+        "adjacent_similarity": 0.6187431655025345,
+        "random_pair_similarity": 0.5462322751963408,
+        "adjacency_observed_steps": 62
+      },
+      {
+        "training_seed": 202,
+        "evaluation_seed": 10202,
+        "fixed_gate": true,
+        "invasion": true,
+        "placement": "adjacent",
+        "invasion_time": 10,
+        "injected": 12,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 90,
+        "donations": 83,
+        "births": 0,
+        "genetic_weight_before": 0.5,
+        "genetic_weight_after": 0.5,
+        "adjacent_similarity": 0.5852027932385075,
+        "random_pair_similarity": 0.5479311253120777,
+        "adjacency_observed_steps": 63
+      },
+      {
+        "training_seed": 303,
+        "evaluation_seed": 10303,
+        "fixed_gate": true,
+        "invasion": true,
+        "placement": "adjacent",
+        "invasion_time": 10,
+        "injected": 12,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 92,
+        "donations": 75,
+        "births": 0,
+        "genetic_weight_before": 0.5,
+        "genetic_weight_after": 0.5,
+        "adjacent_similarity": 0.6442308857252467,
+        "random_pair_similarity": 0.546352380128226,
+        "adjacency_observed_steps": 63
+      },
+      {
+        "training_seed": 404,
+        "evaluation_seed": 10404,
+        "fixed_gate": true,
+        "invasion": true,
+        "placement": "adjacent",
+        "invasion_time": 10,
+        "injected": 12,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 75,
+        "donations": 55,
+        "births": 0,
+        "genetic_weight_before": 0.5,
+        "genetic_weight_after": 0.5,
+        "adjacent_similarity": 0.6664282873373529,
+        "random_pair_similarity": 0.5254949196407717,
+        "adjacency_observed_steps": 59
+      }
+    ],
+    "placement_adjacent_0.01": [
+      {
+        "training_seed": 42,
+        "evaluation_seed": 10042,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "adjacent",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 113,
+        "donations": 183,
+        "births": 30,
+        "genetic_weight_before": 0.4090743213891983,
+        "genetic_weight_after": 0.40704648196697235,
+        "adjacent_similarity": 0.5590456379153246,
+        "random_pair_similarity": 0.5138580787460705,
+        "adjacency_observed_steps": 68
+      },
+      {
+        "training_seed": 101,
+        "evaluation_seed": 10101,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "adjacent",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 132,
+        "donations": 417,
+        "births": 30,
+        "genetic_weight_before": 0.16236783266067506,
+        "genetic_weight_after": 0.18264437913894654,
+        "adjacent_similarity": 0.5438298987780521,
+        "random_pair_similarity": 0.5166103412872622,
+        "adjacency_observed_steps": 87
+      },
+      {
+        "training_seed": 202,
+        "evaluation_seed": 10202,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "adjacent",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 150,
+        "donations": 362,
+        "births": 30,
+        "genetic_weight_before": 0.18025802522897721,
+        "genetic_weight_after": 0.19672075808048248,
+        "adjacent_similarity": 0.5113160887218213,
+        "random_pair_similarity": 0.5179094614846802,
+        "adjacency_observed_steps": 97
+      },
+      {
+        "training_seed": 303,
+        "evaluation_seed": 10303,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "adjacent",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 117,
+        "donations": 303,
+        "births": 31,
+        "genetic_weight_before": 0.2211289271712303,
+        "genetic_weight_after": 0.24299907237291335,
+        "adjacent_similarity": 0.5724135529018455,
+        "random_pair_similarity": 0.49805597338582697,
+        "adjacency_observed_steps": 80
+      },
+      {
+        "training_seed": 404,
+        "evaluation_seed": 10404,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "adjacent",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 87,
+        "donations": 135,
+        "births": 30,
+        "genetic_weight_before": 0.32193069308996203,
+        "genetic_weight_after": 0.3436978042125702,
+        "adjacent_similarity": 0.5403113984121114,
+        "random_pair_similarity": 0.49525194193165184,
+        "adjacency_observed_steps": 56
+      }
+    ],
+    "placement_random_0.01": [
+      {
+        "training_seed": 42,
+        "evaluation_seed": 10042,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "random",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 88,
+        "donations": 165,
+        "births": 30,
+        "genetic_weight_before": 0.41334728598594667,
+        "genetic_weight_after": 0.4106228560209274,
+        "adjacent_similarity": 0.5302291402550262,
+        "random_pair_similarity": 0.48248968106487145,
+        "adjacency_observed_steps": 63
+      },
+      {
+        "training_seed": 101,
+        "evaluation_seed": 10101,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "random",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 125,
+        "donations": 378,
+        "births": 30,
+        "genetic_weight_before": 0.1658501997590065,
+        "genetic_weight_after": 0.18306090235710143,
+        "adjacent_similarity": 0.49924542702545505,
+        "random_pair_similarity": 0.4916305941066393,
+        "adjacency_observed_steps": 90
+      },
+      {
+        "training_seed": 202,
+        "evaluation_seed": 10202,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "random",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 130,
+        "donations": 333,
+        "births": 30,
+        "genetic_weight_before": 0.18354506194591522,
+        "genetic_weight_after": 0.20035776644945144,
+        "adjacent_similarity": 0.5036524007920197,
+        "random_pair_similarity": 0.5049798163720329,
+        "adjacency_observed_steps": 89
+      },
+      {
+        "training_seed": 303,
+        "evaluation_seed": 10303,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "random",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 113,
+        "donations": 307,
+        "births": 30,
+        "genetic_weight_before": 0.22466301769018174,
+        "genetic_weight_after": 0.24491530358791352,
+        "adjacent_similarity": 0.5503021043045461,
+        "random_pair_similarity": 0.50577391679021,
+        "adjacency_observed_steps": 88
+      },
+      {
+        "training_seed": 404,
+        "evaluation_seed": 10404,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "random",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 86,
+        "donations": 113,
+        "births": 30,
+        "genetic_weight_before": 0.3207523450255394,
+        "genetic_weight_after": 0.34371218681335447,
+        "adjacent_similarity": 0.5155863849795127,
+        "random_pair_similarity": 0.4963090851180003,
+        "adjacency_observed_steps": 57
+      }
+    ],
+    "placement_adjacent_0.05": [
+      {
+        "training_seed": 42,
+        "evaluation_seed": 10042,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "adjacent",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 93,
+        "donations": 181,
+        "births": 30,
+        "genetic_weight_before": 0.409794294834137,
+        "genetic_weight_after": 0.40717229843139646,
+        "adjacent_similarity": 0.6000475839529781,
+        "random_pair_similarity": 0.5147711440560827,
+        "adjacency_observed_steps": 65
+      },
+      {
+        "training_seed": 101,
+        "evaluation_seed": 10101,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "adjacent",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 139,
+        "donations": 408,
+        "births": 30,
+        "genetic_weight_before": 0.16319117844104766,
+        "genetic_weight_after": 0.18355740010738372,
+        "adjacent_similarity": 0.5561205111097516,
+        "random_pair_similarity": 0.4882416039570289,
+        "adjacency_observed_steps": 94
+      },
+      {
+        "training_seed": 202,
+        "evaluation_seed": 10202,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "adjacent",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 118,
+        "donations": 376,
+        "births": 30,
+        "genetic_weight_before": 0.18047496676445007,
+        "genetic_weight_after": 0.19669573456048967,
+        "adjacent_similarity": 0.563838391533725,
+        "random_pair_similarity": 0.5086356641479354,
+        "adjacency_observed_steps": 90
+      },
+      {
+        "training_seed": 303,
+        "evaluation_seed": 10303,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "adjacent",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 108,
+        "donations": 317,
+        "births": 31,
+        "genetic_weight_before": 0.2217714935541153,
+        "genetic_weight_after": 0.24350382536649703,
+        "adjacent_similarity": 0.5417066062408197,
+        "random_pair_similarity": 0.49845428448256685,
+        "adjacency_observed_steps": 83
+      },
+      {
+        "training_seed": 404,
+        "evaluation_seed": 10404,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "adjacent",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 88,
+        "donations": 134,
+        "births": 30,
+        "genetic_weight_before": 0.3223217621445656,
+        "genetic_weight_after": 0.344092333316803,
+        "adjacent_similarity": 0.5586152235940137,
+        "random_pair_similarity": 0.4791376546424685,
+        "adjacency_observed_steps": 55
+      }
+    ],
+    "placement_random_0.05": [
+      {
+        "training_seed": 42,
+        "evaluation_seed": 10042,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "random",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 102,
+        "donations": 161,
+        "births": 30,
+        "genetic_weight_before": 0.41347489356994627,
+        "genetic_weight_after": 0.41078866124153135,
+        "adjacent_similarity": 0.5431483533711577,
+        "random_pair_similarity": 0.47155197219802014,
+        "adjacency_observed_steps": 57
+      },
+      {
+        "training_seed": 101,
+        "evaluation_seed": 10101,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "random",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 125,
+        "donations": 378,
+        "births": 30,
+        "genetic_weight_before": 0.16649280041456221,
+        "genetic_weight_after": 0.18404859751462938,
+        "adjacent_similarity": 0.5041301135382465,
+        "random_pair_similarity": 0.4934455265970464,
+        "adjacency_observed_steps": 90
+      },
+      {
+        "training_seed": 202,
+        "evaluation_seed": 10202,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "random",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 119,
+        "donations": 338,
+        "births": 30,
+        "genetic_weight_before": 0.18353670984506607,
+        "genetic_weight_after": 0.20033043175935744,
+        "adjacent_similarity": 0.5391684397319719,
+        "random_pair_similarity": 0.4962668628164444,
+        "adjacency_observed_steps": 92
+      },
+      {
+        "training_seed": 303,
+        "evaluation_seed": 10303,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "random",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 124,
+        "donations": 303,
+        "births": 30,
+        "genetic_weight_before": 0.22483249604701996,
+        "genetic_weight_after": 0.24526282101869584,
+        "adjacent_similarity": 0.5272836133181056,
+        "random_pair_similarity": 0.5004874658186151,
+        "adjacency_observed_steps": 90
+      },
+      {
+        "training_seed": 404,
+        "evaluation_seed": 10404,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "random",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 86,
+        "donations": 108,
+        "births": 30,
+        "genetic_weight_before": 0.32086445242166517,
+        "genetic_weight_after": 0.3440765649080276,
+        "adjacent_similarity": 0.5005683076870638,
+        "random_pair_similarity": 0.5001507550116262,
+        "adjacency_observed_steps": 56
+      }
+    ],
+    "placement_adjacent_0.1": [
+      {
+        "training_seed": 42,
+        "evaluation_seed": 10042,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "adjacent",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 93,
+        "donations": 181,
+        "births": 30,
+        "genetic_weight_before": 0.41077432632446287,
+        "genetic_weight_after": 0.40749924182891845,
+        "adjacent_similarity": 0.5962245945525817,
+        "random_pair_similarity": 0.5196556686083694,
+        "adjacency_observed_steps": 65
+      },
+      {
+        "training_seed": 101,
+        "evaluation_seed": 10101,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "adjacent",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 130,
+        "donations": 388,
+        "births": 30,
+        "genetic_weight_before": 0.16347588896751403,
+        "genetic_weight_after": 0.18348947763442994,
+        "adjacent_similarity": 0.5342055903678331,
+        "random_pair_similarity": 0.4981466281352402,
+        "adjacency_observed_steps": 85
+      },
+      {
+        "training_seed": 202,
+        "evaluation_seed": 10202,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "adjacent",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 137,
+        "donations": 350,
+        "births": 30,
+        "genetic_weight_before": 0.18094650655984879,
+        "genetic_weight_after": 0.1977566733956337,
+        "adjacent_similarity": 0.557370144285016,
+        "random_pair_similarity": 0.505956034366629,
+        "adjacency_observed_steps": 86
+      },
+      {
+        "training_seed": 303,
+        "evaluation_seed": 10303,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "adjacent",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 140,
+        "donations": 303,
+        "births": 30,
+        "genetic_weight_before": 0.22245302200317382,
+        "genetic_weight_after": 0.24385458827018738,
+        "adjacent_similarity": 0.5024484247544758,
+        "random_pair_similarity": 0.507660043070497,
+        "adjacency_observed_steps": 76
+      },
+      {
+        "training_seed": 404,
+        "evaluation_seed": 10404,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "adjacent",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 87,
+        "donations": 133,
+        "births": 30,
+        "genetic_weight_before": 0.32266910225152967,
+        "genetic_weight_after": 0.34479680359363557,
+        "adjacent_similarity": 0.5638471340692985,
+        "random_pair_similarity": 0.5029470302297003,
+        "adjacency_observed_steps": 53
+      }
+    ],
+    "placement_random_0.1": [
+      {
+        "training_seed": 42,
+        "evaluation_seed": 10042,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "random",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 108,
+        "donations": 166,
+        "births": 30,
+        "genetic_weight_before": 0.4134372711181641,
+        "genetic_weight_after": 0.41103461384773254,
+        "adjacent_similarity": 0.5004896301514956,
+        "random_pair_similarity": 0.5145252015365259,
+        "adjacency_observed_steps": 64
+      },
+      {
+        "training_seed": 101,
+        "evaluation_seed": 10101,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "random",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 136,
+        "donations": 405,
+        "births": 30,
+        "genetic_weight_before": 0.16624883860349654,
+        "genetic_weight_after": 0.18369614332914352,
+        "adjacent_similarity": 0.5599421274729561,
+        "random_pair_similarity": 0.4982252734775037,
+        "adjacency_observed_steps": 98
+      },
+      {
+        "training_seed": 202,
+        "evaluation_seed": 10202,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "random",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 134,
+        "donations": 313,
+        "births": 30,
+        "genetic_weight_before": 0.18379897028207778,
+        "genetic_weight_after": 0.20089655816555024,
+        "adjacent_similarity": 0.4807819179696703,
+        "random_pair_similarity": 0.4752870646070464,
+        "adjacency_observed_steps": 95
+      },
+      {
+        "training_seed": 303,
+        "evaluation_seed": 10303,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "random",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 120,
+        "donations": 299,
+        "births": 30,
+        "genetic_weight_before": 0.22474029660224915,
+        "genetic_weight_after": 0.2455524832010269,
+        "adjacent_similarity": 0.5089346427555737,
+        "random_pair_similarity": 0.504477950227202,
+        "adjacency_observed_steps": 80
+      },
+      {
+        "training_seed": 404,
+        "evaluation_seed": 10404,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "random",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 107,
+        "donations": 117,
+        "births": 30,
+        "genetic_weight_before": 0.3208801820874214,
+        "genetic_weight_after": 0.3441315144300461,
+        "adjacent_similarity": 0.496654014221291,
+        "random_pair_similarity": 0.4813122099159741,
+        "adjacency_observed_steps": 67
+      }
+    ],
+    "placement_adjacent_0.2": [
+      {
+        "training_seed": 42,
+        "evaluation_seed": 10042,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "adjacent",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 90,
+        "donations": 180,
+        "births": 30,
+        "genetic_weight_before": 0.41111421287059785,
+        "genetic_weight_after": 0.4080997884273529,
+        "adjacent_similarity": 0.5368677121742069,
+        "random_pair_similarity": 0.490382709981257,
+        "adjacency_observed_steps": 57
+      },
+      {
+        "training_seed": 101,
+        "evaluation_seed": 10101,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "adjacent",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 152,
+        "donations": 377,
+        "births": 30,
+        "genetic_weight_before": 0.16447337418794633,
+        "genetic_weight_after": 0.1835841253399849,
+        "adjacent_similarity": 0.4893832639278552,
+        "random_pair_similarity": 0.5018348406123174,
+        "adjacency_observed_steps": 95
+      },
+      {
+        "training_seed": 202,
+        "evaluation_seed": 10202,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "adjacent",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 136,
+        "donations": 340,
+        "births": 30,
+        "genetic_weight_before": 0.18183098882436752,
+        "genetic_weight_after": 0.19816423207521439,
+        "adjacent_similarity": 0.5357895553262423,
+        "random_pair_similarity": 0.4961243000324891,
+        "adjacency_observed_steps": 89
+      },
+      {
+        "training_seed": 303,
+        "evaluation_seed": 10303,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "adjacent",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 119,
+        "donations": 309,
+        "births": 30,
+        "genetic_weight_before": 0.22334859073162078,
+        "genetic_weight_after": 0.24485301822423935,
+        "adjacent_similarity": 0.5417490259623137,
+        "random_pair_similarity": 0.5016231198929398,
+        "adjacency_observed_steps": 81
+      },
+      {
+        "training_seed": 404,
+        "evaluation_seed": 10404,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "adjacent",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 87,
+        "donations": 135,
+        "births": 30,
+        "genetic_weight_before": 0.3228569194674492,
+        "genetic_weight_after": 0.34513425529003144,
+        "adjacent_similarity": 0.5305894621356859,
+        "random_pair_similarity": 0.4986029214401806,
+        "adjacency_observed_steps": 56
+      }
+    ],
+    "placement_random_0.2": [
+      {
+        "training_seed": 42,
+        "evaluation_seed": 10042,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "random",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 89,
+        "donations": 149,
+        "births": 30,
+        "genetic_weight_before": 0.41336239576339723,
+        "genetic_weight_after": 0.41054091453552244,
+        "adjacent_similarity": 0.5368328569366687,
+        "random_pair_similarity": 0.5086931321375877,
+        "adjacency_observed_steps": 59
+      },
+      {
+        "training_seed": 101,
+        "evaluation_seed": 10101,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "random",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 125,
+        "donations": 416,
+        "births": 30,
+        "genetic_weight_before": 0.16601583659648894,
+        "genetic_weight_after": 0.18308624476194382,
+        "adjacent_similarity": 0.5451517592195587,
+        "random_pair_similarity": 0.5013002068180821,
+        "adjacency_observed_steps": 83
+      },
+      {
+        "training_seed": 202,
+        "evaluation_seed": 10202,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "random",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 119,
+        "donations": 362,
+        "births": 30,
+        "genetic_weight_before": 0.18389696329832078,
+        "genetic_weight_after": 0.20075816214084624,
+        "adjacent_similarity": 0.4862293736865746,
+        "random_pair_similarity": 0.4913525203727609,
+        "adjacency_observed_steps": 88
+      },
+      {
+        "training_seed": 303,
+        "evaluation_seed": 10303,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "random",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 123,
+        "donations": 307,
+        "births": 30,
+        "genetic_weight_before": 0.2249906599521637,
+        "genetic_weight_after": 0.2458817258477211,
+        "adjacent_similarity": 0.4874937399824067,
+        "random_pair_similarity": 0.48420733089138057,
+        "adjacency_observed_steps": 78
+      },
+      {
+        "training_seed": 404,
+        "evaluation_seed": 10404,
+        "fixed_gate": false,
+        "invasion": false,
+        "placement": "random",
+        "invasion_time": 10,
+        "injected": 0,
+        "resident_survival": 0,
+        "final_residents": 0,
+        "duration": 105,
+        "donations": 118,
+        "births": 30,
+        "genetic_weight_before": 0.3209810897707939,
+        "genetic_weight_after": 0.344473323225975,
+        "adjacent_similarity": 0.5063725588570973,
+        "random_pair_similarity": 0.4881193789801368,
+        "adjacency_observed_steps": 53
+      }
+    ]
+  },
+  "contrasts": {
+    "fixed_attack_minus_clean": {
+      "resident_survival": {
+        "n": 5,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "method": "Student t interval across independent training-seed units",
+        "difference": "first condition minus second condition",
+        "paired_t_p_value": null
+      },
+      "final_residents": {
+        "n": 5,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "method": "Student t interval across independent training-seed units",
+        "difference": "first condition minus second condition",
+        "paired_t_p_value": null
+      },
+      "duration": {
+        "n": 5,
+        "mean": -6.6,
+        "ci95": [
+          -14.81752708655523,
+          1.6175270865552314
+        ],
+        "method": "Student t interval across independent training-seed units",
+        "difference": "first condition minus second condition",
+        "paired_t_p_value": 0.08961754655460387
+      },
+      "donations": {
+        "n": 5,
+        "mean": -4.2,
+        "ci95": [
+          -21.899701444862444,
+          13.499701444862445
+        ],
+        "method": "Student t interval across independent training-seed units",
+        "difference": "first condition minus second condition",
+        "paired_t_p_value": 0.5460002782050837
+      }
+    },
+    "adaptive_attack_minus_clean": {
+      "resident_survival": {
+        "n": 5,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "method": "Student t interval across independent training-seed units",
+        "difference": "first condition minus second condition",
+        "paired_t_p_value": null
+      },
+      "final_residents": {
+        "n": 5,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "method": "Student t interval across independent training-seed units",
+        "difference": "first condition minus second condition",
+        "paired_t_p_value": null
+      },
+      "duration": {
+        "n": 5,
+        "mean": -6.6,
+        "ci95": [
+          -21.04285287760367,
+          7.84285287760367
+        ],
+        "method": "Student t interval across independent training-seed units",
+        "difference": "first condition minus second condition",
+        "paired_t_p_value": 0.27333405469133154
+      },
+      "donations": {
+        "n": 5,
+        "mean": -1.0,
+        "ci95": [
+          -20.094999949436065,
+          18.094999949436065
+        ],
+        "method": "Student t interval across independent training-seed units",
+        "difference": "first condition minus second condition",
+        "paired_t_p_value": 0.891426405501646
+      }
+    },
+    "adaptive_minus_fixed_clean": {
+      "resident_survival": {
+        "n": 5,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "method": "Student t interval across independent training-seed units",
+        "difference": "first condition minus second condition",
+        "paired_t_p_value": null
+      },
+      "duration": {
+        "n": 5,
+        "mean": 4.8,
+        "ci95": [
+          -22.564539290663305,
+          32.164539290663306
+        ],
+        "method": "Student t interval across independent training-seed units",
+        "difference": "first condition minus second condition",
+        "paired_t_p_value": 0.6517310111667258
+      },
+      "donations": {
+        "n": 5,
+        "mean": 18.4,
+        "ci95": [
+          -40.080924371310736,
+          76.88092437131073
+        ],
+        "method": "Student t interval across independent training-seed units",
+        "difference": "first condition minus second condition",
+        "paired_t_p_value": 0.4316662514561504
+      }
+    },
+    "trust_shift_difference_in_differences": {
+      "n": 5,
+      "mean": -0.008214924335479734,
+      "ci95": [
+        -0.010004843849703678,
+        -0.006425004821255791
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "phase4_attack_minus_clean_Selfish Baseline": {
+      "survival": {
+        "n": 5,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "carrying_capacity": {
+        "n": 5,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "lifespan": {
+        "n": 5,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "phase4_attack_minus_clean_Hardcoded Tag Trust": {
+      "survival": {
+        "n": 5,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "carrying_capacity": {
+        "n": 5,
+        "mean": -2.8,
+        "ci95": [
+          -6.566153376696883,
+          0.9661533766968833
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "lifespan": {
+        "n": 5,
+        "mean": -2.8,
+        "ci95": [
+          -10.574046294553835,
+          4.974046294553836
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "phase4_attack_minus_clean_Fixed Weights (w^g=0.5)": {
+      "survival": {
+        "n": 5,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "carrying_capacity": {
+        "n": 5,
+        "mean": 0.4,
+        "ci95": [
+          -1.015714776982275,
+          1.8157147769822748
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "lifespan": {
+        "n": 5,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "phase4_attack_minus_clean_Reputation Threshold": {
+      "survival": {
+        "n": 5,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "carrying_capacity": {
+        "n": 5,
+        "mean": 0.6,
+        "ci95": [
+          -0.8157147769822749,
+          2.015714776982275
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "lifespan": {
+        "n": 5,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "phase4_attack_minus_clean_Simple MLP (No Attention)": {
+      "survival": {
+        "n": 5,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "carrying_capacity": {
+        "n": 5,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "lifespan": {
+        "n": 5,
+        "mean": 4.6,
+        "ci95": [
+          -8.171647483909874,
+          17.371647483909875
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "phase4_attack_minus_clean_PPO + Adaptive Gating": {
+      "survival": {
+        "n": 5,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "carrying_capacity": {
+        "n": 5,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "lifespan": {
+        "n": 5,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "phase4_attack_minus_clean_Gated-Attention (Ours)": {
+      "survival": {
+        "n": 5,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "carrying_capacity": {
+        "n": 5,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "lifespan": {
+        "n": 5,
+        "mean": 4.6,
+        "ci95": [
+          -8.171647483909874,
+          17.371647483909875
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    }
+  },
+  "spatial_assortment": {
+    "0.01": {
+      "mutation_rate": 0.01,
+      "mean_h_adjacent": 0.545383315345831,
+      "std_h_adjacent": 0.020523187737750217,
+      "mean_h_random": 0.5083371593670983,
+      "std_h_random": 0.009669340807086108,
+      "assortment_gap": 0.037046155978732634,
+      "t_statistic": 2.7910289346189328,
+      "p_value": 0.049260277620193034,
+      "gap_uncertainty": {
+        "n": 5,
+        "mean": 0.037046155978732634,
+        "ci95": [
+          0.00019357549927239565,
+          0.07389873645819287
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "placement_control": {
+        "n": 5,
+        "mean": 0.025580223874519036,
+        "ci95": [
+          0.009091307545408375,
+          0.0420691402036297
+        ],
+        "method": "Student t interval across independent training-seed units",
+        "difference": "first condition minus second condition",
+        "paired_t_p_value": 0.012573207937549563
+      },
+      "adjacent_uncertainty": {
+        "n": 5,
+        "mean": 0.545383315345831,
+        "ci95": [
+          0.5168925632770649,
+          0.573874067414597
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "random_uncertainty": {
+        "n": 5,
+        "mean": 0.5083371593670983,
+        "ci95": [
+          0.49491396238993657,
+          0.5217603563442601
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "0.05": {
+      "mutation_rate": 0.05,
+      "mean_h_adjacent": 0.5640656632862576,
+      "std_h_adjacent": 0.01942941293618229,
+      "mean_h_random": 0.4978480702572165,
+      "std_h_random": 0.01300379907329554,
+      "assortment_gap": 0.06621759302904114,
+      "t_statistic": 8.58248784393166,
+      "p_value": 0.0010124640695394539,
+      "gap_uncertainty": {
+        "n": 5,
+        "mean": 0.06621759302904114,
+        "ci95": [
+          0.04479612231021525,
+          0.08763906374786702
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "placement_control": {
+        "n": 5,
+        "mean": 0.041205897756948474,
+        "ci95": [
+          0.016087373236247617,
+          0.06632442227764933
+        ],
+        "method": "Student t interval across independent training-seed units",
+        "difference": "first condition minus second condition",
+        "paired_t_p_value": 0.010380946024756827
+      },
+      "adjacent_uncertainty": {
+        "n": 5,
+        "mean": 0.5640656632862576,
+        "ci95": [
+          0.5370933140644926,
+          0.5910380125080227
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "random_uncertainty": {
+        "n": 5,
+        "mean": 0.4978480702572165,
+        "ci95": [
+          0.47979590311420295,
+          0.51590023740023
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "0.1": {
+      "mutation_rate": 0.1,
+      "mean_h_adjacent": 0.5508191776058411,
+      "std_h_adjacent": 0.03127310574431495,
+      "mean_h_random": 0.5068730808820872,
+      "std_h_random": 0.007161280388948094,
+      "assortment_gap": 0.04394609672375386,
+      "t_statistic": 3.1526497614792524,
+      "p_value": 0.03442622450463244,
+      "gap_uncertainty": {
+        "n": 5,
+        "mean": 0.04394609672375386,
+        "ci95": [
+          0.005244073228455937,
+          0.08264812021905178
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "placement_control": {
+        "n": 5,
+        "mean": 0.04145871109164369,
+        "ci95": [
+          -0.025568641373840087,
+          0.10848606355712746
+        ],
+        "method": "Student t interval across independent training-seed units",
+        "difference": "first condition minus second condition",
+        "paired_t_p_value": 0.16105327338394204
+      },
+      "adjacent_uncertainty": {
+        "n": 5,
+        "mean": 0.5508191776058411,
+        "ci95": [
+          0.5074051469217729,
+          0.5942332082899093
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "random_uncertainty": {
+        "n": 5,
+        "mean": 0.5068730808820872,
+        "ci95": [
+          0.4969316299406652,
+          0.5168145318235091
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "0.2": {
+      "mutation_rate": 0.2,
+      "mean_h_adjacent": 0.5268758039052608,
+      "std_h_adjacent": 0.019078719773707297,
+      "mean_h_random": 0.49771357839183683,
+      "std_h_random": 0.004226764376048733,
+      "assortment_gap": 0.02916222551342401,
+      "t_statistic": 2.7371334283979523,
+      "p_value": 0.05205893025478512,
+      "gap_uncertainty": {
+        "n": 5,
+        "mean": 0.02916222551342401,
+        "ci95": [
+          -0.00041883818021212077,
+          0.058743289207060144
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "placement_control": {
+        "n": 5,
+        "mean": 0.014459746168799591,
+        "ci95": [
+          -0.04124591134642003,
+          0.07016540368401922
+        ],
+        "method": "Student t interval across independent training-seed units",
+        "difference": "first condition minus second condition",
+        "paired_t_p_value": 0.5109683045573886
+      },
+      "adjacent_uncertainty": {
+        "n": 5,
+        "mean": 0.5268758039052608,
+        "ci95": [
+          0.5003902948406858,
+          0.5533613129698358
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "random_uncertainty": {
+        "n": 5,
+        "mean": 0.49771357839183683,
+        "ci95": [
+          0.49184588876048435,
+          0.5035812680231893
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    }
+  },
+  "design": {
+    "seeds": [
+      42,
+      101,
+      202,
+      303,
+      404
+    ],
+    "maximum_steps": 300,
+    "invasion_boundary": 10,
+    "trust_windows": "10 transitions before and after injection; mean genetic weights over valid neighbors",
+    "assortment": "time-mean strictly adjacent unordered pairs over observed living states; no equilibrium claim",
+    "inference": "paired independent training-seed summaries, exploratory unadjusted tests; five units only",
+    "placement_control": "random global empty-cell placement changes only offspring placement",
+    "placement_initial_energy": 60.0,
+    "placement_mitosis_threshold": 50.0,
+    "placement_design_note": "Matched high reserve exercises reproduction; low-reserve exploratory check had only 0-1 births per seed. This is a diagnostic regime, not a confirmatory test.",
+    "trust_limit": "composition-sensitive population weight change, not within-individual learning"
+  },
+  "incentive_response": {
+    "r_vals": [
+      0.05,
+      0.11428571428571428,
+      0.17857142857142855,
+      0.24285714285714283,
+      0.3071428571428571,
+      0.3714285714285714,
+      0.43571428571428567,
+      0.49999999999999994,
+      0.5642857142857143,
+      0.6285714285714286,
+      0.6928571428571428,
+      0.7571428571428571,
+      0.8214285714285714,
+      0.8857142857142857,
+      0.95
+    ],
+    "bc_vals": [
+      1.5,
+      3.0,
+      4.5
+    ],
+    "P_give_grid": [
+      [
+        0.001761978882132098,
+        0.0017015500226989389,
+        0.0016394769656471909,
+        0.0015864155953750013,
+        0.0015688962070271374,
+        0.0015560466097667813,
+        0.001561920833773911,
+        0.001575893338304013,
+        0.0015912415226921439,
+        0.0016060595051385462,
+        0.001619380118791014,
+        0.0016397911822423339,
+        0.00166943424846977,
+        0.0017004167078994215,
+        0.0017343503772281111
+      ],
+      [
+        0.00947394073009491,
+        0.009307733830064535,
+        0.00914071723818779,
+        0.008967476710677148,
+        0.00878979479894042,
+        0.008616343606263399,
+        0.008438591193407775,
+        0.008267191145569086,
+        0.00810129139572382,
+        0.00794007396325469,
+        0.007787635456770659,
+        0.007645709998905658,
+        0.007513453066349029,
+        0.007381261233240366,
+        0.007245860807597637
+      ],
+      [
+        0.08833040855824947,
+        0.08807626701891422,
+        0.08774795979261399,
+        0.0874180942773819,
+        0.08707463182508945,
+        0.0867083191871643,
+        0.08631305992603303,
+        0.08590894490480423,
+        0.08549932278692722,
+        0.08507418781518936,
+        0.08467780556529761,
+        0.08435166720300913,
+        0.08403000142425299,
+        0.08371616341173649,
+        0.08341466672718525
+      ]
+    ],
+    "raw": {
+      "1.5": [
+        [
+          0.0031187653075903654,
+          0.0029016314074397087,
+          0.0026952933985739946,
+          0.002529765944927931,
+          0.002461165888234973,
+          0.002394590526819229,
+          0.0023299604654312134,
+          0.002304771449416876,
+          0.002287430688738823,
+          0.002269861288368702,
+          0.0022533766459673643,
+          0.0022392794489860535,
+          0.0022259303368628025,
+          0.002212194725871086,
+          0.0021991918329149485
+        ],
+        [
+          0.0009550495888106525,
+          0.0009347849991172552,
+          0.0009070816449820995,
+          0.0008805603720247746,
+          0.000856290920637548,
+          0.00083631876623258,
+          0.0008204090408980846,
+          0.0008055787766352296,
+          0.0007916915928944945,
+          0.0007793454569764435,
+          0.0007711501675657928,
+          0.0007636233349330723,
+          0.000756733410526067,
+          0.0007504888344556093,
+          0.0007449684198945761
+        ],
+        [
+          0.0025120375212281942,
+          0.0025228082668036222,
+          0.00253262254409492,
+          0.0025412223767489195,
+          0.0025483921635895967,
+          0.002578419167548418,
+          0.0027048306073993444,
+          0.0028346602339297533,
+          0.0029680277220904827,
+          0.003095130203291774,
+          0.0031739750411361456,
+          0.0032268024515360594,
+          0.003322394797578454,
+          0.003420880064368248,
+          0.0035203397274017334
+        ],
+        [
+          0.0003879737632814795,
+          0.0004260942805558443,
+          0.00046223512617871165,
+          0.0004928702255710959,
+          0.0005130784120410681,
+          0.0005191059899516404,
+          0.0005180109292268753,
+          0.0005165762850083411,
+          0.0005150103243067861,
+          0.0005167076596990228,
+          0.0005312012508511543,
+          0.0005452526384033263,
+          0.0005597065319307148,
+          0.0005745746311731637,
+          0.0005904231802560389
+        ],
+        [
+          0.0018360682297497988,
+          0.0017224311595782638,
+          0.001600152114406228,
+          0.0014876590576022863,
+          0.0014655536506325006,
+          0.0014517985982820392,
+          0.0014363931259140372,
+          0.0014178799465298653,
+          0.0013940472854301333,
+          0.0013692529173567891,
+          0.0013671974884346128,
+          0.001423998037353158,
+          0.0014824061654508114,
+          0.0015439452836290002,
+          0.0016168287256732583
+        ]
+      ],
+      "3.0": [
+        [
+          0.005276402458548546,
+          0.00522058317437768,
+          0.005165828391909599,
+          0.005109046585857868,
+          0.004995830822736025,
+          0.0048863859847188,
+          0.004780725110322237,
+          0.004678861238062382,
+          0.004570138640701771,
+          0.004448531661182642,
+          0.004331945441663265,
+          0.0042198472656309605,
+          0.004111896734684706,
+          0.004011246841400862,
+          0.0039161695167422295
+        ],
+        [
+          0.008781337179243565,
+          0.008455577306449413,
+          0.008137543685734272,
+          0.007827217690646648,
+          0.00752637442201376,
+          0.007232528645545244,
+          0.006944562308490276,
+          0.00666246609762311,
+          0.0063829440623521805,
+          0.00611004326492548,
+          0.005843873601406813,
+          0.005584037397056818,
+          0.005331642460078001,
+          0.005085816606879234,
+          0.0048328908160328865
+        ],
+        [
+          0.009774591773748398,
+          0.009584556333720684,
+          0.009402849711477757,
+          0.009236934594810009,
+          0.009089259430766106,
+          0.008946032263338566,
+          0.008806899189949036,
+          0.00869776215404272,
+          0.008613847196102142,
+          0.008532379753887653,
+          0.008486607111990452,
+          0.008456213399767876,
+          0.008427439257502556,
+          0.008400151506066322,
+          0.008394480682909489
+        ],
+        [
+          0.009206721559166908,
+          0.009210744872689247,
+          0.009208548814058304,
+          0.009206976741552353,
+          0.009203855879604816,
+          0.009199166670441628,
+          0.009151982143521309,
+          0.009089833125472069,
+          0.009027339518070221,
+          0.008983884006738663,
+          0.008926063776016235,
+          0.008868246339261532,
+          0.008810446597635746,
+          0.008730705827474594,
+          0.008608185686171055
+        ],
+        [
+          0.014330650679767132,
+          0.014067207463085651,
+          0.013788815587759018,
+          0.013457207940518856,
+          0.013133653439581394,
+          0.012817604467272758,
+          0.012508787214756012,
+          0.01220703311264515,
+          0.011912187561392784,
+          0.011625531129539013,
+          0.011349687352776527,
+          0.011100205592811108,
+          0.010885840281844139,
+          0.010678385384380817,
+          0.010477577336132526
+        ]
+      ],
+      "4.5": [
+        [
+          0.23488882184028625,
+          0.2352726310491562,
+          0.23565281927585602,
+          0.23603270947933197,
+          0.23643499612808228,
+          0.23683300614356995,
+          0.23722566664218903,
+          0.23761284351348877,
+          0.23807679116725922,
+          0.23856335878372192,
+          0.23903749883174896,
+          0.23979687690734863,
+          0.2405606508255005,
+          0.24131149053573608,
+          0.2420511245727539
+        ],
+        [
+          0.020735038444399834,
+          0.020382916554808617,
+          0.02004241570830345,
+          0.01971312426030636,
+          0.019395656883716583,
+          0.01908828318119049,
+          0.018790151923894882,
+          0.018499361351132393,
+          0.01821570098400116,
+          0.017956869676709175,
+          0.017705636098980904,
+          0.01746123842895031,
+          0.017223460599780083,
+          0.016992058604955673,
+          0.016766831278800964
+        ],
+        [
+          0.13758477568626404,
+          0.13712811470031738,
+          0.13649675250053406,
+          0.1358656883239746,
+          0.13522836565971375,
+          0.13460591435432434,
+          0.13401590287685394,
+          0.13342255353927612,
+          0.1327240914106369,
+          0.13199184834957123,
+          0.13128013908863068,
+          0.13056620955467224,
+          0.12985093891620636,
+          0.12913739681243896,
+          0.1284334361553192
+        ],
+        [
+          0.022952614352107048,
+          0.02239849418401718,
+          0.021662136539816856,
+          0.020897554233670235,
+          0.02014830894768238,
+          0.01941407471895218,
+          0.01870518922805786,
+          0.017937658354640007,
+          0.0171512458473444,
+          0.0162745900452137,
+          0.015422885306179523,
+          0.014607681892812252,
+          0.013827932067215443,
+          0.013085052371025085,
+          0.012375643476843834
+        ],
+        [
+          0.025490792468190193,
+          0.025199178606271744,
+          0.024885674938559532,
+          0.024581395089626312,
+          0.02416583150625229,
+          0.023600317537784576,
+          0.022828388959169388,
+          0.022072307765483856,
+          0.02132878452539444,
+          0.02058427222073078,
+          0.019942868500947952,
+          0.019326329231262207,
+          0.01868702471256256,
+          0.018054818734526634,
+          0.017446298152208328
+        ]
+      ]
+    },
+    "theoretical_boundary": [
+      0.6666666666666666,
+      0.3333333333333333,
+      0.2222222222222222
+    ],
+    "incentive_response": {
+      "n": 5,
+      "mean": 0.08425524322044416,
+      "ci95": [
+        -0.03675493146486088,
+        0.2052654179057492
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "supra_minus_sub_hamilton_threshold": {
+      "n": 5,
+      "mean": -0.0012957015327669478,
+      "ci95": [
+        -0.002758289161400687,
+        0.00016688609586679106
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "note": "Independent policies trained at each B/C, paired by seed; fixed synthetic inputs; B/C absent from observations. Training-condition response, not instantaneous incentive sensitivity or proof of Hamilton's rule."
+  },
+  "checkpoints_sha256": {
+    "results\\checkpoints\\fixed_attention.pt": "e32b2fa5087f6d7247451ac685b01ca0aa59a21d5c30e9390f710a6b1c8f4273",
+    "results\\checkpoints\\fixed_attention_seed_101.pt": "c1e67bd0374b46440b5fd1fcbdf6288a75c697ecc617a062ff2193e7ed876ca0",
+    "results\\checkpoints\\fixed_attention_seed_202.pt": "123c46821a5bc40176c4adf53357d35f92dceb5bf7b06a5dd052e97112c02f5d",
+    "results\\checkpoints\\fixed_attention_seed_303.pt": "b44857b8cc718343809e24117ae40898b06cb682ede6f9f6e685dbed4dbcff75",
+    "results\\checkpoints\\fixed_attention_seed_404.pt": "c996afda5d6563b9bcf62dac0fe6ca983365658c77e2be1e359f90a3fab80302",
+    "results\\checkpoints\\fixed_attention_seed_42.pt": "e32b2fa5087f6d7247451ac685b01ca0aa59a21d5c30e9390f710a6b1c8f4273",
+    "results\\checkpoints\\gated_attention.pt": "c9d19ad69de410641661daaed03f6d2d2bb144d32807ee264aad6c804a01d598",
+    "results\\checkpoints\\gated_attention_seed_101.pt": "eeee165369351e65010feba0020cfafd11b52ed9138f2160f0e268d10fc4f4c6",
+    "results\\checkpoints\\gated_attention_seed_202.pt": "cce175ffe159ddb3187664fb7bced2cbbecb5e3469ceb5ecdbd2f49fd97acee4",
+    "results\\checkpoints\\gated_attention_seed_303.pt": "2f843f31b78fceb7c99a3b913c2663b4c8b487ac8563eaba172d1d7a146ac039",
+    "results\\checkpoints\\gated_attention_seed_404.pt": "8c317ffb56a0e48009dc2bf6238e14b60c9802c12211271d59d0f4f809abbb04",
+    "results\\checkpoints\\gated_attention_seed_42.pt": "c9d19ad69de410641661daaed03f6d2d2bb144d32807ee264aad6c804a01d598",
+    "results\\checkpoints\\gating_policy.pt": "efd2f6a610b443314a6bbce0bb8eee90f903192085fd08df54884df93abf06b1",
+    "results\\checkpoints\\gating_policy_seed_101.pt": "0190960bf4602090eebd417be0c90f7a1ca55a6d166aa482beee673efee81f14",
+    "results\\checkpoints\\gating_policy_seed_202.pt": "4a77c49d230ad6ff34c411fb7f2b4b8bc52442694f7393338b65ddc10b6b5ffb",
+    "results\\checkpoints\\gating_policy_seed_303.pt": "9e79c858bfe68ebf20870d5b4fcbe8a848d5b59d345eb96ebaaab7a48c769930",
+    "results\\checkpoints\\gating_policy_seed_404.pt": "e2df95bbc21ad6e8317f815a73c4c7c7a0e193af150bfe2785c74c7a307cac94",
+    "results\\checkpoints\\gating_policy_seed_42.pt": "efd2f6a610b443314a6bbce0bb8eee90f903192085fd08df54884df93abf06b1",
+    "results\\checkpoints\\incentive_1.5_seed_101.pt": "3884f2aa6b9b2155ae51b0dea5f04d24393b2bb1bd5ff8e2488c3f9029d6fa7a",
+    "results\\checkpoints\\incentive_1.5_seed_202.pt": "e0dc14b33076a8481d3dd6d13f483f750021388bd0999caef8f5a74d2329c634",
+    "results\\checkpoints\\incentive_1.5_seed_303.pt": "9e838d8933789ff8f8c9fc5e7c669022983254149f1a8029e63e2f83a8db6728",
+    "results\\checkpoints\\incentive_1.5_seed_404.pt": "35e233e983a1005b67e6eeed69d99ce672cdf1714df68e577f61c6a53cabca1a",
+    "results\\checkpoints\\incentive_1.5_seed_42.pt": "d321f31d6c5b84399d2f7aeecef005d46bc04f0b4e08b1506dfecd65c5edb6d8",
+    "results\\checkpoints\\incentive_3.0_seed_101.pt": "58ab4fb6c45684da4f2a1c8d4fefdbafe8056cb18d1bdca680d636aa89cc5b3e",
+    "results\\checkpoints\\incentive_3.0_seed_202.pt": "22c68a30fc1264d1909b4a601fa9f4ae9309f49d76fe0469d8768269c24887b0",
+    "results\\checkpoints\\incentive_3.0_seed_303.pt": "e8eb50e3fa197889c6072cec7e279af72d7c18f0dbf5fae73866431646d7e641",
+    "results\\checkpoints\\incentive_3.0_seed_404.pt": "b879651d2aed84fc723d08ef5765ef5e87300aea8023dd74fb057ddce4046a0b",
+    "results\\checkpoints\\incentive_3.0_seed_42.pt": "82c7fe0d455a0870eebacc55670653ef981901c13446955dd5fd9978e127595d",
+    "results\\checkpoints\\incentive_4.5_seed_101.pt": "48ec7e95afaa136d8a0fc72038714589e2faaae46ca9f1d1238a75cc4473d085",
+    "results\\checkpoints\\incentive_4.5_seed_202.pt": "7a43f9613bbf0276f4d50b0264665276288982fea52bc3b19964637583167552",
+    "results\\checkpoints\\incentive_4.5_seed_303.pt": "12e2f9ac93ef39ce9a59531e37fa6df3b0eeb99334efc6e62f1d443b19cd1548",
+    "results\\checkpoints\\incentive_4.5_seed_404.pt": "ab33f638bd5337d2fa43a040a392db3decbcb832605165fecd2cb375c74943bf",
+    "results\\checkpoints\\incentive_4.5_seed_42.pt": "4b989464021bc89c02e4939feea95415b20c028cf63294b1b278d291db8ad0ca",
+    "results\\checkpoints\\simple_mlp.pt": "bee3d05107df569965cd2d7365e652bc96f16f72e7ebc847ab5fce4e305063bc",
+    "results\\checkpoints\\simple_mlp_seed_101.pt": "faaad6cb79e9f7537db016d34ac2cb20dba74dbef7513e1e00e87791c8dd0e14",
+    "results\\checkpoints\\simple_mlp_seed_202.pt": "11aec2a556c9b95193143994957d7277c2fba15cb9271d184802e881eda77c7c",
+    "results\\checkpoints\\simple_mlp_seed_303.pt": "cd7d2d74bbed61810877a0b92c9183906cd55d1d9eed67170361ceaf084e68de",
+    "results\\checkpoints\\simple_mlp_seed_404.pt": "e219ae6c374f562ed347eed5959ac294feef92269fcd97ab5f4ea2a21390d5f5",
+    "results\\checkpoints\\simple_mlp_seed_42.pt": "bee3d05107df569965cd2d7365e652bc96f16f72e7ebc847ab5fce4e305063bc"
+  }
+}

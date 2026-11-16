@@ -1,0 +1,72 @@
+{
+  "training_seeds": [
+    42,
+    101,
+    202,
+    303,
+    404
+  ],
+  "evaluation_seeds": [
+    10042,
+    10101,
+    10202,
+    10303,
+    10404
+  ],
+  "evaluation_action_seed": "training_seed + 10000, reset after each model load",
+  "maximum_steps": {
+    "phase1": 300,
+    "phase2": 350,
+    "phase3": 250,
+    "phase4": 300
+  },
+  "elapsed_seconds": 102.18067121505737,
+  "checkpoints_sha256": {
+    "results\\checkpoints\\fixed_attention_seed_101.pt": "c1e67bd0374b46440b5fd1fcbdf6288a75c697ecc617a062ff2193e7ed876ca0",
+    "results\\checkpoints\\fixed_attention_seed_202.pt": "123c46821a5bc40176c4adf53357d35f92dceb5bf7b06a5dd052e97112c02f5d",
+    "results\\checkpoints\\fixed_attention_seed_303.pt": "b44857b8cc718343809e24117ae40898b06cb682ede6f9f6e685dbed4dbcff75",
+    "results\\checkpoints\\fixed_attention_seed_404.pt": "c996afda5d6563b9bcf62dac0fe6ca983365658c77e2be1e359f90a3fab80302",
+    "results\\checkpoints\\fixed_attention_seed_42.pt": "e32b2fa5087f6d7247451ac685b01ca0aa59a21d5c30e9390f710a6b1c8f4273",
+    "results\\checkpoints\\gated_attention_seed_101.pt": "eeee165369351e65010feba0020cfafd11b52ed9138f2160f0e268d10fc4f4c6",
+    "results\\checkpoints\\gated_attention_seed_202.pt": "cce175ffe159ddb3187664fb7bced2cbbecb5e3469ceb5ecdbd2f49fd97acee4",
+    "results\\checkpoints\\gated_attention_seed_303.pt": "2f843f31b78fceb7c99a3b913c2663b4c8b487ac8563eaba172d1d7a146ac039",
+    "results\\checkpoints\\gated_attention_seed_404.pt": "8c317ffb56a0e48009dc2bf6238e14b60c9802c12211271d59d0f4f809abbb04",
+    "results\\checkpoints\\gated_attention_seed_42.pt": "c9d19ad69de410641661daaed03f6d2d2bb144d32807ee264aad6c804a01d598",
+    "results\\checkpoints\\gating_policy_seed_101.pt": "0190960bf4602090eebd417be0c90f7a1ca55a6d166aa482beee673efee81f14",
+    "results\\checkpoints\\gating_policy_seed_202.pt": "4a77c49d230ad6ff34c411fb7f2b4b8bc52442694f7393338b65ddc10b6b5ffb",
+    "results\\checkpoints\\gating_policy_seed_303.pt": "9e79c858bfe68ebf20870d5b4fcbe8a848d5b59d345eb96ebaaab7a48c769930",
+    "results\\checkpoints\\gating_policy_seed_404.pt": "e2df95bbc21ad6e8317f815a73c4c7c7a0e193af150bfe2785c74c7a307cac94",
+    "results\\checkpoints\\gating_policy_seed_42.pt": "efd2f6a610b443314a6bbce0bb8eee90f903192085fd08df54884df93abf06b1",
+    "results\\checkpoints\\incentive_1.5_seed_101.pt": "3884f2aa6b9b2155ae51b0dea5f04d24393b2bb1bd5ff8e2488c3f9029d6fa7a",
+    "results\\checkpoints\\incentive_1.5_seed_202.pt": "e0dc14b33076a8481d3dd6d13f483f750021388bd0999caef8f5a74d2329c634",
+    "results\\checkpoints\\incentive_1.5_seed_303.pt": "9e838d8933789ff8f8c9fc5e7c669022983254149f1a8029e63e2f83a8db6728",
+    "results\\checkpoints\\incentive_1.5_seed_404.pt": "35e233e983a1005b67e6eeed69d99ce672cdf1714df68e577f61c6a53cabca1a",
+    "results\\checkpoints\\incentive_1.5_seed_42.pt": "d321f31d6c5b84399d2f7aeecef005d46bc04f0b4e08b1506dfecd65c5edb6d8",
+    "results\\checkpoints\\incentive_3.0_seed_101.pt": "58ab4fb6c45684da4f2a1c8d4fefdbafe8056cb18d1bdca680d636aa89cc5b3e",
+    "results\\checkpoints\\incentive_3.0_seed_202.pt": "22c68a30fc1264d1909b4a601fa9f4ae9309f49d76fe0469d8768269c24887b0",
+    "results\\checkpoints\\incentive_3.0_seed_303.pt": "e8eb50e3fa197889c6072cec7e279af72d7c18f0dbf5fae73866431646d7e641",
+    "results\\checkpoints\\incentive_3.0_seed_404.pt": "b879651d2aed84fc723d08ef5765ef5e87300aea8023dd74fb057ddce4046a0b",
+    "results\\checkpoints\\incentive_3.0_seed_42.pt": "82c7fe0d455a0870eebacc55670653ef981901c13446955dd5fd9978e127595d",
+    "results\\checkpoints\\incentive_4.5_seed_101.pt": "48ec7e95afaa136d8a0fc72038714589e2faaae46ca9f1d1238a75cc4473d085",
+    "results\\checkpoints\\incentive_4.5_seed_202.pt": "7a43f9613bbf0276f4d50b0264665276288982fea52bc3b19964637583167552",
+    "results\\checkpoints\\incentive_4.5_seed_303.pt": "12e2f9ac93ef39ce9a59531e37fa6df3b0eeb99334efc6e62f1d443b19cd1548",
+    "results\\checkpoints\\incentive_4.5_seed_404.pt": "ab33f638bd5337d2fa43a040a392db3decbcb832605165fecd2cb375c74943bf",
+    "results\\checkpoints\\incentive_4.5_seed_42.pt": "4b989464021bc89c02e4939feea95415b20c028cf63294b1b278d291db8ad0ca",
+    "results\\checkpoints\\simple_mlp_seed_101.pt": "faaad6cb79e9f7537db016d34ac2cb20dba74dbef7513e1e00e87791c8dd0e14",
+    "results\\checkpoints\\simple_mlp_seed_202.pt": "11aec2a556c9b95193143994957d7277c2fba15cb9271d184802e881eda77c7c",
+    "results\\checkpoints\\simple_mlp_seed_303.pt": "cd7d2d74bbed61810877a0b92c9183906cd55d1d9eed67170361ceaf084e68de",
+    "results\\checkpoints\\simple_mlp_seed_404.pt": "e219ae6c374f562ed347eed5959ac294feef92269fcd97ab5f4ea2a21390d5f5",
+    "results\\checkpoints\\simple_mlp_seed_42.pt": "bee3d05107df569965cd2d7365e652bc96f16f72e7ebc847ab5fce4e305063bc"
+  },
+  "source_sha256": {
+    "environment\\cues.py": "d1f00f125ff91fdae29b7be47db29033b70bb80b29b27cc9524e49c90a0a5507",
+    "environment\\grid_world.py": "fc24c2f7395b197ec0b4bf97f878174a0c3fe51865bf70638ca5bb1dd37f358e",
+    "models\\attention_policy.py": "bd026c8aa35f2eab353c89139eda5d02761f95ee31865dfacb183a2d44c9750e",
+    "models\\gating_policy.py": "64ff19adbf2c8d9865d4cb0f7d057b7ba6591a74efcd7b333f4a1e12846be4d9",
+    "models\\mlp_policy.py": "48941d42d4aad827f17eee38f49ce13804af6a82a2eda0924bb5eaf7086b99f1",
+    "models\\rule_based.py": "2bbd0a550dff75d7dc70f392325526f786389fbce72b9bdc7b6c99879ab88854",
+    "experiments\\cooperation_feasibility.py": "ebb9a5dbdf878712b9256d6cd7e021b3230ec6843747ed4aecd3f7d7f7ca67fd",
+    "experiments\\research_controls.py": "412f82a97d4789d59e2fd2183f47cd3071810f678e2bb3b383be642ff3f99ce6",
+    "experiments\\run_phases.py": "b7e926bbfd88a4b5665e58317c3e0079605fc6b5d4c9bf97675c471e376b8628"
+  }
+}

@@ -1,34 +1,34 @@
 {
   "Pure Selfish": {
-    "mean_lifespan": 38.506666666666675,
-    "std_lifespan": 0.23036203390894558,
+    "mean_lifespan": 38.35333333333333,
+    "std_lifespan": 0.11850925889754269,
     "mean_donations": 0.0,
-    "mean_final_step": 44.8
+    "mean_final_step": 43.4
   },
   "Pure Kin": {
-    "mean_lifespan": 142.04666666666668,
-    "std_lifespan": 19.502542284419107,
-    "mean_donations": 3025.0,
+    "mean_lifespan": 61.521008228503305,
+    "std_lifespan": 4.008305108833043,
+    "mean_donations": 53572.8,
     "mean_final_step": 400.0
   },
   "Pure Reciprocal": {
-    "mean_lifespan": 228.01999999999998,
-    "std_lifespan": 37.50555277407452,
-    "mean_donations": 6775.2,
+    "mean_lifespan": 39.78957355890914,
+    "std_lifespan": 1.9663323496972054,
+    "mean_donations": 56236.2,
     "mean_final_step": 400.0
   },
   "Pure Fixed-Weight": {
-    "mean_lifespan": 183.32,
-    "std_lifespan": 25.364416019297582,
-    "mean_donations": 5325.6,
+    "mean_lifespan": 63.155266200430944,
+    "std_lifespan": 2.3909792490829282,
+    "mean_donations": 56324.6,
     "mean_final_step": 400.0
   },
   "Mixed (50% Defect / 50% Recip)": {
-    "mean_lifespan": 149.42,
-    "std_lifespan": 11.26040457137802,
-    "mean_donations": 3731.8,
+    "mean_lifespan": 34.28153141310005,
+    "std_lifespan": 0.8403754470217581,
+    "mean_donations": 53214.0,
     "mean_final_step": 400.0,
-    "defector_mean_lifespan": 44.88,
-    "cooperator_mean_lifespan": 253.96
+    "defector_mean_lifespan": 38.21333333333333,
+    "cooperator_mean_lifespan": 191.85333333333332
   }
 }

@@ -1,47 +1,464 @@
 {
   "0.0": {
     "noise": 0.0,
-    "mean_w_g": 0.40398845685388496,
-    "std_w_g": 0.0003600160999167716,
-    "mean_w_b": 0.5960115534410019,
-    "std_w_b": 0.00036001740868828164,
+    "mean_w_g": 0.2872787543457052,
+    "std_w_g": 0.07741201317107846,
+    "mean_w_b": 0.7127212455935308,
+    "std_w_b": 0.07741201165062038,
     "mean_population": 0.0,
-    "mean_donations": 117.8
+    "mean_donations": 86.8,
+    "uncertainty": {
+      "w_g": {
+        "n": 5,
+        "mean": 0.2872787543457052,
+        "ci95": [
+          0.17981365181953107,
+          0.39474385687187935
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "w_b": {
+        "n": 5,
+        "mean": 0.7127212455935308,
+        "ci95": [
+          0.6052561451780908,
+          0.8201863460089708
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "population": {
+        "n": 5,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "donations": {
+        "n": 5,
+        "mean": 86.8,
+        "ci95": [
+          40.312988713695,
+          133.287011286305
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "raw": {
+      "w_g": [
+        0.4037481222082587,
+        0.20627614943420186,
+        0.2129870893395677,
+        0.26447968287010715,
+        0.3489027278763907
+      ],
+      "w_b": [
+        0.596251880421358,
+        0.7937238555328519,
+        0.7870129060988523,
+        0.7355203105978769,
+        0.6510972753167152
+      ],
+      "population": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "donations": [
+        60,
+        116,
+        127,
+        93,
+        38
+      ]
+    }
+  },
+  "0.1": {
+    "noise": 0.1,
+    "mean_w_g": 0.28721114928216807,
+    "std_w_g": 0.07795715223887026,
+    "mean_w_b": 0.7127888524090473,
+    "std_w_b": 0.07795714790801214,
+    "mean_population": 0.0,
+    "mean_donations": 85.4,
+    "uncertainty": {
+      "w_g": {
+        "n": 5,
+        "mean": 0.28721114928216807,
+        "ci95": [
+          0.17898927240778256,
+          0.39543302615655357
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "w_b": {
+        "n": 5,
+        "mean": 0.7127888524090473,
+        "ci95": [
+          0.6045669815468567,
+          0.8210107232712379
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "population": {
+        "n": 5,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "donations": {
+        "n": 5,
+        "mean": 85.4,
+        "ci95": [
+          48.081851020040354,
+          122.71814897995966
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "raw": {
+      "w_g": [
+        0.4047886541911534,
+        0.20578232717204403,
+        0.21158891148639447,
+        0.2655132699471254,
+        0.34838258361412305
+      ],
+      "w_b": [
+        0.5952113500663212,
+        0.7942176716668266,
+        0.7884110808372498,
+        0.7344867334916041,
+        0.651617425983235
+      ],
+      "population": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "donations": [
+        67,
+        107,
+        116,
+        94,
+        43
+      ]
+    }
   },
   "0.2": {
     "noise": 0.2,
-    "mean_w_g": 0.4042656479955916,
-    "std_w_g": 0.00014869551854111175,
-    "mean_w_b": 0.5957343677494216,
-    "std_w_b": 0.00014869498148027005,
+    "mean_w_g": 0.2869187472477132,
+    "std_w_g": 0.07861156284116655,
+    "mean_w_b": 0.7130812514995619,
+    "std_w_b": 0.07861156252848313,
     "mean_population": 0.0,
-    "mean_donations": 109.2
+    "mean_donations": 88.6,
+    "uncertainty": {
+      "w_g": {
+        "n": 5,
+        "mean": 0.2869187472477132,
+        "ci95": [
+          0.17778840281656022,
+          0.3960490916788662
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "w_b": {
+        "n": 5,
+        "mean": 0.7130812514995619,
+        "ci95": [
+          0.603950907502483,
+          0.8222115954966408
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "population": {
+        "n": 5,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "donations": {
+        "n": 5,
+        "mean": 88.6,
+        "ci95": [
+          44.77436147972769,
+          132.4256385202723
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "raw": {
+      "w_g": [
+        0.405735668581976,
+        0.2054194804901878,
+        0.2101579894942622,
+        0.2649917414823136,
+        0.3482888561898264
+      ],
+      "w_b": [
+        0.5942643326772771,
+        0.79458052230378,
+        0.7898420101852828,
+        0.7350082490351293,
+        0.6517111432963404
+      ],
+      "population": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "donations": [
+        63,
+        122,
+        120,
+        96,
+        42
+      ]
+    }
+  },
+  "0.3": {
+    "noise": 0.3,
+    "mean_w_g": 0.28644506796120106,
+    "std_w_g": 0.07795724806531977,
+    "mean_w_b": 0.7135549276236249,
+    "std_w_b": 0.07795724815613837,
+    "mean_population": 0.0,
+    "mean_donations": 88.4,
+    "uncertainty": {
+      "w_g": {
+        "n": 5,
+        "mean": 0.28644506796120106,
+        "ci95": [
+          0.17822305805837724,
+          0.3946670778640249
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "w_b": {
+        "n": 5,
+        "mean": 0.7135549276236249,
+        "ci95": [
+          0.6053329175947247,
+          0.8217769376525251
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "population": {
+        "n": 5,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "donations": {
+        "n": 5,
+        "mean": 88.4,
+        "ci95": [
+          45.18545471144518,
+          131.61454528855484
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "raw": {
+      "w_g": [
+        0.40441144742662943,
+        0.20584123426427445,
+        0.20984915629029274,
+        0.26521413314800996,
+        0.34690936867679867
+      ],
+      "w_b": [
+        0.5955885431123158,
+        0.7941587598373493,
+        0.7901508384943008,
+        0.7347858632222201,
+        0.6530906334519386
+      ],
+      "population": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "donations": [
+        66,
+        122,
+        119,
+        94,
+        41
+      ]
+    }
   },
   "0.4": {
     "noise": 0.4,
-    "mean_w_g": 0.40414095052309157,
-    "std_w_g": 0.0001285549961099,
-    "mean_w_b": 0.5958590638917327,
-    "std_w_b": 0.00012855669006316277,
+    "mean_w_g": 0.28691646064861087,
+    "std_w_g": 0.07843504434978493,
+    "mean_w_b": 0.7130835395750877,
+    "std_w_b": 0.07843504384626304,
     "mean_population": 0.0,
-    "mean_donations": 114.4
+    "mean_donations": 83.0,
+    "uncertainty": {
+      "w_g": {
+        "n": 5,
+        "mean": 0.28691646064861087,
+        "ci95": [
+          0.17803116316814457,
+          0.39580175812907714
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "w_b": {
+        "n": 5,
+        "mean": 0.7130835395750877,
+        "ci95": [
+          0.6041982427936219,
+          0.8219688363565536
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "population": {
+        "n": 5,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "donations": {
+        "n": 5,
+        "mean": 83.0,
+        "ci95": [
+          40.15809351557404,
+          125.84190648442596
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "raw": {
+      "w_g": [
+        0.4054814461204741,
+        0.20604971372945743,
+        0.20973118786344824,
+        0.2652714823683103,
+        0.34804847316136434
+      ],
+      "w_b": [
+        0.5945185538795259,
+        0.7939502908424898,
+        0.7902688089105272,
+        0.7347285136198386,
+        0.6519515306230576
+      ],
+      "population": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "donations": [
+        55,
+        119,
+        108,
+        94,
+        39
+      ]
+    }
   },
-  "0.6": {
-    "noise": 0.6,
-    "mean_w_g": 0.40414167111730653,
-    "std_w_g": 0.0003086686066482462,
-    "mean_w_b": 0.5958583382549695,
-    "std_w_b": 0.00030866528579963907,
+  "0.5": {
+    "noise": 0.5,
+    "mean_w_g": 0.28728630480280143,
+    "std_w_g": 0.07815702547439318,
+    "mean_w_b": 0.7127136941174962,
+    "std_w_b": 0.07815702377679062,
     "mean_population": 0.0,
-    "mean_donations": 108.8
-  },
-  "0.8": {
-    "noise": 0.8,
-    "mean_w_g": 0.404185054922553,
-    "std_w_g": 0.00017320597701739592,
-    "mean_w_b": 0.5958149595610679,
-    "std_w_b": 0.00017320581530659403,
-    "mean_population": 0.0,
-    "mean_donations": 127.6
+    "mean_donations": 89.6,
+    "uncertainty": {
+      "w_g": {
+        "n": 5,
+        "mean": 0.28728630480280143,
+        "ci95": [
+          0.17878695939520212,
+          0.39578565021040074
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "w_b": {
+        "n": 5,
+        "mean": 0.7127136941174962,
+        "ci95": [
+          0.6042143510665471,
+          0.8212130371684453
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "population": {
+        "n": 5,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "donations": {
+        "n": 5,
+        "mean": 89.6,
+        "ci95": [
+          42.387369395503406,
+          136.81263060449658
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "raw": {
+      "w_g": [
+        0.40599902279866046,
+        0.20746820308696265,
+        0.21070816697644407,
+        0.2642668108854975,
+        0.34798932026644225
+      ],
+      "w_b": [
+        0.5940009768192585,
+        0.792531795885371,
+        0.7892918283822107,
+        0.735733186347144,
+        0.6520106831534964
+      ],
+      "population": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "donations": [
+        67,
+        113,
+        136,
+        93,
+        39
+      ]
+    }
   }
 }

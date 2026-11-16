@@ -1,0 +1,22 @@
+{
+  "results/checkpoints/gated_attention.pt": {
+    "changed_tensors": 28,
+    "previous_tensor_count": 28,
+    "new_tensor_count": 28
+  },
+  "results/checkpoints/gating_policy.pt": {
+    "changed_tensors": 12,
+    "previous_tensor_count": 12,
+    "new_tensor_count": 12
+  },
+  "results/checkpoints/simple_mlp.pt": {
+    "changed_tensors": 8,
+    "previous_tensor_count": 8,
+    "new_tensor_count": 8
+  },
+  "results/checkpoints/simple_mlp_seed_42.pt": {
+    "changed_tensors": 8,
+    "previous_tensor_count": 8,
+    "new_tensor_count": 8
+  }
+}

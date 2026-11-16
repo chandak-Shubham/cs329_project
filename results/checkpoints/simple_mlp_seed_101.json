@@ -1,0 +1,191 @@
+{
+  "model_type": "mlp",
+  "seed": 101,
+  "bc_ratio": 2.5,
+  "nominal_agent_budget_requested": 24576,
+  "environment_steps": 1024,
+  "active_agent_transitions": 31305,
+  "rollout_length": 64,
+  "num_epochs": 3,
+  "batch_size": 64,
+  "lr": 0.0003,
+  "gamma": 0.99,
+  "gae_lambda": 0.95,
+  "clip_eps": 0.2,
+  "vf_coef": 0.5,
+  "ent_coef": 0.01,
+  "environment": {
+    "grid_size": 18,
+    "max_capacity": 45,
+    "initial_population": 24,
+    "initial_energy": 30,
+    "e_mitosis": 60,
+    "mutation_rate": 0.05,
+    "c_base": 0.6,
+    "c_density": 0.08,
+    "donation_cost": 2,
+    "donation_benefit": 5.0,
+    "max_steps": 1000
+  },
+  "torch_version": "2.5.1+cu121",
+  "numpy_version": "2.3.2",
+  "source_sha256": {
+    "environment\\cues.py": "d1f00f125ff91fdae29b7be47db29033b70bb80b29b27cc9524e49c90a0a5507",
+    "environment\\grid_world.py": "fc24c2f7395b197ec0b4bf97f878174a0c3fe51865bf70638ca5bb1dd37f358e",
+    "models\\attention_policy.py": "bd026c8aa35f2eab353c89139eda5d02761f95ee31865dfacb183a2d44c9750e",
+    "models\\gating_policy.py": "64ff19adbf2c8d9865d4cb0f7d057b7ba6591a74efcd7b333f4a1e12846be4d9",
+    "models\\mlp_policy.py": "48941d42d4aad827f17eee38f49ce13804af6a82a2eda0924bb5eaf7086b99f1",
+    "models\\rule_based.py": "e82e7fd80bf27794fbfde4b4c1117ebe3b938947ead4edd612deaec893f0c5f9",
+    "training\\rollout_buffer.py": "49d536261dc7c4e06057eef538de619d91d9ca087d8e26a3d911e222571c10a8",
+    "training\\train_all_models.py": "e352b88cd0763878fd8d53035c3486ea08c7663550cf54ba1a1b9fed36583c84",
+    "training\\train_simple_ppo.py": "8a17c256ca1386c5ab2677c6ea1b373b67be32b4e33f1bee26f898198fb4d101"
+  },
+  "elapsed_seconds": 17.325575828552246,
+  "checkpoint_sha256": "faaad6cb79e9f7537db016d34ac2cb20dba74dbef7513e1e00e87791c8dd0e14",
+  "learning_curve": [
+    {
+      "iteration": 1,
+      "environment_steps": 64,
+      "active_agent_transitions": 1889,
+      "mean_population": 29.796875,
+      "donations_per_step": 13.625,
+      "policy_loss": -0.0031768027279112073,
+      "value_loss": 56.917307705349394
+    },
+    {
+      "iteration": 2,
+      "environment_steps": 128,
+      "active_agent_transitions": 4756,
+      "mean_population": 44.84375,
+      "donations_per_step": 24.8125,
+      "policy_loss": 0.00436411735912164,
+      "value_loss": 66.51341103447808
+    },
+    {
+      "iteration": 3,
+      "environment_steps": 192,
+      "active_agent_transitions": 7636,
+      "mean_population": 45.0,
+      "donations_per_step": 20.859375,
+      "policy_loss": -0.00835287760667227,
+      "value_loss": 49.93684634455928
+    },
+    {
+      "iteration": 4,
+      "environment_steps": 256,
+      "active_agent_transitions": 10516,
+      "mean_population": 45.0,
+      "donations_per_step": 18.5625,
+      "policy_loss": -0.006138356381820308,
+      "value_loss": 48.06113255818685
+    },
+    {
+      "iteration": 5,
+      "environment_steps": 320,
+      "active_agent_transitions": 13396,
+      "mean_population": 45.0,
+      "donations_per_step": 16.671875,
+      "policy_loss": -0.010059891006460896,
+      "value_loss": 40.59237316272877
+    },
+    {
+      "iteration": 6,
+      "environment_steps": 384,
+      "active_agent_transitions": 16276,
+      "mean_population": 45.0,
+      "donations_per_step": 15.140625,
+      "policy_loss": -0.002542495872411463,
+      "value_loss": 36.74562377929688
+    },
+    {
+      "iteration": 7,
+      "environment_steps": 448,
+      "active_agent_transitions": 19156,
+      "mean_population": 45.0,
+      "donations_per_step": 13.625,
+      "policy_loss": 0.002352235348964179,
+      "value_loss": 31.558282809787325
+    },
+    {
+      "iteration": 8,
+      "environment_steps": 512,
+      "active_agent_transitions": 22036,
+      "mean_population": 45.0,
+      "donations_per_step": 13.25,
+      "policy_loss": -0.0034125247487315426,
+      "value_loss": 39.121393090707286
+    },
+    {
+      "iteration": 9,
+      "environment_steps": 576,
+      "active_agent_transitions": 24865,
+      "mean_population": 44.140625,
+      "donations_per_step": 13.359375,
+      "policy_loss": -0.011285605398869072,
+      "value_loss": 25.919781981574165
+    },
+    {
+      "iteration": 10,
+      "environment_steps": 640,
+      "active_agent_transitions": 26882,
+      "mean_population": 31.21875,
+      "donations_per_step": 6.671875,
+      "policy_loss": -0.007594829017762095,
+      "value_loss": 18.99624381462733
+    },
+    {
+      "iteration": 11,
+      "environment_steps": 704,
+      "active_agent_transitions": 27737,
+      "mean_population": 13.125,
+      "donations_per_step": 1.703125,
+      "policy_loss": 0.002394592533597634,
+      "value_loss": 21.591119312104723
+    },
+    {
+      "iteration": 12,
+      "environment_steps": 768,
+      "active_agent_transitions": 28007,
+      "mean_population": 4.15625,
+      "donations_per_step": 0.078125,
+      "policy_loss": -0.003775984048843384,
+      "value_loss": 17.96544157663981
+    },
+    {
+      "iteration": 13,
+      "environment_steps": 832,
+      "active_agent_transitions": 29080,
+      "mean_population": 16.5625,
+      "donations_per_step": 2.125,
+      "policy_loss": -0.007913160210877073,
+      "value_loss": 15.11571283901439
+    },
+    {
+      "iteration": 14,
+      "environment_steps": 896,
+      "active_agent_transitions": 29504,
+      "mean_population": 6.421875,
+      "donations_per_step": 0.46875,
+      "policy_loss": -0.0013353478695665086,
+      "value_loss": 7.725458077022007
+    },
+    {
+      "iteration": 15,
+      "environment_steps": 960,
+      "active_agent_transitions": 30528,
+      "mean_population": 15.875,
+      "donations_per_step": 1.5625,
+      "policy_loss": -0.009291260270401835,
+      "value_loss": 11.383633236090342
+    },
+    {
+      "iteration": 16,
+      "environment_steps": 1024,
+      "active_agent_transitions": 31305,
+      "mean_population": 11.875,
+      "donations_per_step": 0.859375,
+      "policy_loss": 0.014278894361968223,
+      "value_loss": 10.020358990400265
+    }
+  ]
+}

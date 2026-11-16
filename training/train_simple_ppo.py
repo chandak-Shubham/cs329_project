@@ -11,6 +11,10 @@ Implements:
 import os
 import sys
 import time
+import math
+import json
+import hashlib
+from pathlib import Path
 from typing import Dict, Any, Optional
 
 # Ensure project root is in sys.path
@@ -50,6 +54,7 @@ def train_simple_ppo(
     Returns dictionary of training histories.
     """
     # Set seeds
+    torch.set_num_threads(1)
     torch.manual_seed(seed)
     np.random.seed(seed)
     dev = torch.device(device)
@@ -102,8 +107,9 @@ def train_simple_ppo(
 
     obs = env.reset(seed=seed)
     global_step = 0
-    num_iterations = total_timesteps // (rollout_length * initial_population)
-    num_iterations = max(num_iterations, 10)  # Minimum 10 iterations
+    num_iterations = math.ceil(total_timesteps / (rollout_length * initial_population))
+    if num_iterations < 1:
+        raise ValueError("Training budget must be positive")
 
     print("=" * 80)
     print(f"STARTING PPO TRAINING: Simple MLP Baseline (Ablation 1, Seed={seed})")
@@ -151,8 +157,8 @@ def train_simple_ppo(
 
             obs = next_obs
 
-            # Reset environment if all agents went extinct
-            if np.sum(obs["active_mask"]) == 0:
+            # Reset environment if all agents went extinct or horizon reached
+            if np.sum(obs["active_mask"]) == 0 or np.all(dones):
                 obs = env.reset()
 
         # Compute next state values for GAE
@@ -232,7 +238,14 @@ def train_simple_ppo(
     
     # Save trained checkpoint and history
     os.makedirs("results/checkpoints", exist_ok=True)
-    torch.save(policy.state_dict(), f"results/checkpoints/simple_mlp_seed_{seed}.pt")
+    # Isolate the legacy hidden_dim=128 model from the unified hidden_dim=64 suite.
+    path = Path(f"results/checkpoints/legacy/simple_mlp_seed_{seed}.pt")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    torch.save(policy.state_dict(), path)
+    path.with_suffix('.json').write_text(json.dumps({"seed": seed, "hidden_dim": 128,
+        "environment_steps": num_iterations * rollout_length,
+        "requested_nominal_agent_budget": total_timesteps, "learning_curve": history,
+        "checkpoint_sha256": hashlib.sha256(path.read_bytes()).hexdigest()}, indent=2))
     
     return history
 

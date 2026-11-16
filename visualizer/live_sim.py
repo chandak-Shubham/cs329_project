@@ -7,6 +7,9 @@ Can either run interactively or render a high-quality GIF/MP4 replay for present
 
 import os
 import sys
+import json
+import hashlib
+from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
@@ -45,6 +48,8 @@ def generate_simulation_replay(
     print(f"Parasite Mimics Injected at Step {inject_mimics_at}")
     print("=" * 80)
 
+    torch.set_num_threads(1)
+    torch.manual_seed(seed + 10000)
     env = GridWorld(
         grid_size=grid_size,
         max_capacity=max_capacity,
@@ -56,35 +61,38 @@ def generate_simulation_replay(
         c_density=0.05,
         donation_cost=2.0,
         donation_benefit=6.0,
-        seed=seed,
+        seed=seed + 10000,
     )
-    obs = env.reset(seed=seed)
+    obs = env.reset(seed=seed + 10000)
 
     policy = GatedAttentionPolicy(max_neighbors=8, d_model=32, num_heads=2, action_dim=13)
     ckpt_path = os.path.join("results", "checkpoints", "gated_attention.pt")
-    if os.path.exists(ckpt_path):
-        state_dict = torch.load(ckpt_path, map_location="cpu", weights_only=True)
-        policy.load_state_dict(state_dict)
-        print(f"Loaded trained checkpoint: {ckpt_path}")
+    from experiments.run_phases import load_checkpoint
+    policy = load_checkpoint(policy, "gated_attention.pt", seed)
     policy.eval()
 
     # Pre-collect simulation trajectory frames
     frames_data = []
+    injected_count = 0
 
     for step in range(1, total_steps + 1):
-        if step == inject_mimics_at:
-            env.inject_mimics(count=5)
+        if step - 1 == inject_mimics_at:
+            injected_count = env.inject_mimics(count=5)
+            obs = env._get_observations()  # Refresh observations immediately after invasion
 
         self_state, n_feats, n_mask, act_masks = policy.extract_tensors(obs)
         with torch.no_grad():
             dist, values, weights = policy.forward(self_state, n_feats, n_mask, act_masks)
             actions = dist.sample()
 
-        # Telemetry
+        # Telemetry: evaluate trust ONLY over actual active neighbors (not padded slots)
         active_indices = np.where(env.mask)[0]
-        active_with_n = obs["active_mask"] & n_mask.any(dim=-1).numpy()
-        w_g = float(weights[active_with_n, :, 0].mean()) if active_with_n.any() else 0.5
-        w_b = float(weights[active_with_n, :, 1].mean()) if active_with_n.any() else 0.5
+        valid_neighbor_mask = obs["active_mask"][:, None] & n_mask.numpy()
+        if valid_neighbor_mask.any():
+            w_g = float(weights[:, :, 0].numpy()[valid_neighbor_mask].mean())
+            w_b = float(weights[:, :, 1].numpy()[valid_neighbor_mask].mean())
+        else:
+            w_g, w_b = 0.5, 0.5
 
         # Record donations for visualization
         active_donations = []
@@ -133,6 +141,7 @@ def generate_simulation_replay(
     ax_grid.set_facecolor("#1a1a1a")
 
     time_steps = []
+    actual_injection = injected_count > 0
     pop_history = []
     wg_history = []
     wb_history = []
@@ -145,7 +154,7 @@ def generate_simulation_replay(
         ax_grid.set_ylim(-0.5, grid_size - 0.5)
         ax_grid.set_xticks([])
         ax_grid.set_yticks([])
-        ax_grid.set_title(f"Spatial Grid ($24\\times 24$) — Step {data['step']}", fontsize=11, fontweight="bold")
+        ax_grid.set_title(f"Spatial Grid ({grid_size} x {grid_size}) — Step {data['step']}", fontsize=11, fontweight="bold")
 
         # Grid mesh lines
         for x in range(grid_size):
@@ -174,15 +183,15 @@ def generate_simulation_replay(
                 ax_grid.scatter(pos[0], pos[1], s=size, color=color, edgecolors="white", linewidth=0.8, zorder=4)
 
         # Update telemetry histories
-        time_steps.append(data["step"])
-        pop_history.append(data["pop_count"])
-        wg_history.append(data["w_g"])
-        wb_history.append(data["w_b"])
+        time_steps[:] = [row["step"] for row in frames_data[:frame_idx+1]]
+        pop_history[:] = [row["pop_count"] for row in frames_data[:frame_idx+1]]
+        wg_history[:] = [row["w_g"] for row in frames_data[:frame_idx+1]]
+        wb_history[:] = [row["w_b"] for row in frames_data[:frame_idx+1]]
 
         # Top Right: Population Plot
         ax_pop.clear()
         ax_pop.plot(time_steps, pop_history, color="#00e676", linewidth=2.0, label="Population ($N_t$)")
-        if data["step"] >= inject_mimics_at:
+        if actual_injection and data["step"] > inject_mimics_at:
             ax_pop.axvline(x=inject_mimics_at, color="#ff1744", linestyle="--", alpha=0.7, label="Parasites Injected")
         ax_pop.set_xlim(0, total_steps)
         ax_pop.set_ylim(0, max_capacity + 5)
@@ -215,6 +224,13 @@ def generate_simulation_replay(
         fig.savefig("results/figures/ecosystem_snapshot.png", dpi=200)
 
     plt.close(fig)
+    Path(output_gif).with_suffix('.json').write_text(json.dumps({
+        "training_seed": seed, "evaluation_seed": seed+10000,
+        "requested_steps": total_steps, "frames": len(frames_data),
+        "invasion_boundary": inject_mimics_at, "mimics_injected": injected_count,
+        "checkpoint_sha256": hashlib.sha256(Path(f"results/checkpoints/gated_attention_seed_{seed}.pt").read_bytes()).hexdigest(),
+        "description": "Illustrative single-run replay, not a statistical survival estimate"
+    }, indent=2))
 
 
 if __name__ == "__main__":

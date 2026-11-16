@@ -1,0 +1,191 @@
+{
+  "model_type": "gating",
+  "seed": 42,
+  "bc_ratio": 2.5,
+  "nominal_agent_budget_requested": 24576,
+  "environment_steps": 1024,
+  "active_agent_transitions": 29550,
+  "rollout_length": 64,
+  "num_epochs": 3,
+  "batch_size": 64,
+  "lr": 0.0003,
+  "gamma": 0.99,
+  "gae_lambda": 0.95,
+  "clip_eps": 0.2,
+  "vf_coef": 0.5,
+  "ent_coef": 0.01,
+  "environment": {
+    "grid_size": 18,
+    "max_capacity": 45,
+    "initial_population": 24,
+    "initial_energy": 30,
+    "e_mitosis": 60,
+    "mutation_rate": 0.05,
+    "c_base": 0.6,
+    "c_density": 0.08,
+    "donation_cost": 2,
+    "donation_benefit": 5.0,
+    "max_steps": 1000
+  },
+  "torch_version": "2.5.1+cu121",
+  "numpy_version": "2.3.2",
+  "source_sha256": {
+    "environment\\cues.py": "d1f00f125ff91fdae29b7be47db29033b70bb80b29b27cc9524e49c90a0a5507",
+    "environment\\grid_world.py": "fc24c2f7395b197ec0b4bf97f878174a0c3fe51865bf70638ca5bb1dd37f358e",
+    "models\\attention_policy.py": "bd026c8aa35f2eab353c89139eda5d02761f95ee31865dfacb183a2d44c9750e",
+    "models\\gating_policy.py": "64ff19adbf2c8d9865d4cb0f7d057b7ba6591a74efcd7b333f4a1e12846be4d9",
+    "models\\mlp_policy.py": "48941d42d4aad827f17eee38f49ce13804af6a82a2eda0924bb5eaf7086b99f1",
+    "models\\rule_based.py": "e82e7fd80bf27794fbfde4b4c1117ebe3b938947ead4edd612deaec893f0c5f9",
+    "training\\rollout_buffer.py": "49d536261dc7c4e06057eef538de619d91d9ca087d8e26a3d911e222571c10a8",
+    "training\\train_all_models.py": "e352b88cd0763878fd8d53035c3486ea08c7663550cf54ba1a1b9fed36583c84",
+    "training\\train_simple_ppo.py": "8a17c256ca1386c5ab2677c6ea1b373b67be32b4e33f1bee26f898198fb4d101"
+  },
+  "elapsed_seconds": 12.659116983413696,
+  "checkpoint_sha256": "efd2f6a610b443314a6bbce0bb8eee90f903192085fd08df54884df93abf06b1",
+  "learning_curve": [
+    {
+      "iteration": 1,
+      "environment_steps": 64,
+      "active_agent_transitions": 1928,
+      "mean_population": 30.34375,
+      "donations_per_step": 14.015625,
+      "policy_loss": -0.0057957225769598,
+      "value_loss": 76.77297198387885
+    },
+    {
+      "iteration": 2,
+      "environment_steps": 128,
+      "active_agent_transitions": 4764,
+      "mean_population": 44.421875,
+      "donations_per_step": 22.140625,
+      "policy_loss": -0.0007024593927242138,
+      "value_loss": 55.282124554669416
+    },
+    {
+      "iteration": 3,
+      "environment_steps": 192,
+      "active_agent_transitions": 7644,
+      "mean_population": 45.0,
+      "donations_per_step": 21.296875,
+      "policy_loss": -0.007152133897222855,
+      "value_loss": 59.478035326357244
+    },
+    {
+      "iteration": 4,
+      "environment_steps": 256,
+      "active_agent_transitions": 10524,
+      "mean_population": 45.0,
+      "donations_per_step": 17.78125,
+      "policy_loss": -0.007362993896283485,
+      "value_loss": 43.3139478330259
+    },
+    {
+      "iteration": 5,
+      "environment_steps": 320,
+      "active_agent_transitions": 13404,
+      "mean_population": 45.0,
+      "donations_per_step": 16.78125,
+      "policy_loss": -0.0018111919777260886,
+      "value_loss": 47.539267970897534
+    },
+    {
+      "iteration": 6,
+      "environment_steps": 384,
+      "active_agent_transitions": 16284,
+      "mean_population": 45.0,
+      "donations_per_step": 16.078125,
+      "policy_loss": -0.006921847737221806,
+      "value_loss": 37.47241397433811
+    },
+    {
+      "iteration": 7,
+      "environment_steps": 448,
+      "active_agent_transitions": 19164,
+      "mean_population": 45.0,
+      "donations_per_step": 14.3125,
+      "policy_loss": -0.0014565163809392187,
+      "value_loss": 32.952313599763094
+    },
+    {
+      "iteration": 8,
+      "environment_steps": 512,
+      "active_agent_transitions": 22027,
+      "mean_population": 44.71875,
+      "donations_per_step": 13.09375,
+      "policy_loss": -0.006699909180126808,
+      "value_loss": 30.453785175747342
+    },
+    {
+      "iteration": 9,
+      "environment_steps": 576,
+      "active_agent_transitions": 24213,
+      "mean_population": 33.890625,
+      "donations_per_step": 8.5,
+      "policy_loss": -0.007715877220921573,
+      "value_loss": 18.771202596028647
+    },
+    {
+      "iteration": 10,
+      "environment_steps": 640,
+      "active_agent_transitions": 25337,
+      "mean_population": 17.265625,
+      "donations_per_step": 2.328125,
+      "policy_loss": -0.0005517582995472131,
+      "value_loss": 15.189873041930023
+    },
+    {
+      "iteration": 11,
+      "environment_steps": 704,
+      "active_agent_transitions": 25631,
+      "mean_population": 4.5,
+      "donations_per_step": 0.15625,
+      "policy_loss": 0.0029000232617060343,
+      "value_loss": 15.444827206929524
+    },
+    {
+      "iteration": 12,
+      "environment_steps": 768,
+      "active_agent_transitions": 26776,
+      "mean_population": 17.734375,
+      "donations_per_step": 2.3125,
+      "policy_loss": -0.006079423172330415,
+      "value_loss": 13.527630823629874
+    },
+    {
+      "iteration": 13,
+      "environment_steps": 832,
+      "active_agent_transitions": 27158,
+      "mean_population": 5.75,
+      "donations_per_step": 0.171875,
+      "policy_loss": 0.0006756403793891271,
+      "value_loss": 12.074998378753662
+    },
+    {
+      "iteration": 14,
+      "environment_steps": 896,
+      "active_agent_transitions": 28300,
+      "mean_population": 17.515625,
+      "donations_per_step": 1.6875,
+      "policy_loss": -0.0024806642559943378,
+      "value_loss": 12.153009370521263
+    },
+    {
+      "iteration": 15,
+      "environment_steps": 960,
+      "active_agent_transitions": 28416,
+      "mean_population": 1.75,
+      "donations_per_step": 0.0,
+      "policy_loss": 0.0024065164228280387,
+      "value_loss": 13.88414223988851
+    },
+    {
+      "iteration": 16,
+      "environment_steps": 1024,
+      "active_agent_transitions": 29550,
+      "mean_population": 17.421875,
+      "donations_per_step": 1.390625,
+      "policy_loss": 0.0006629432793016787,
+      "value_loss": 10.21572874210499
+    }
+  ]
+}

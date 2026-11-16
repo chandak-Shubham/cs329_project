@@ -1,0 +1,191 @@
+{
+  "model_type": "attention",
+  "seed": 42,
+  "bc_ratio": 3.0,
+  "nominal_agent_budget_requested": 24576,
+  "environment_steps": 1024,
+  "active_agent_transitions": 34334,
+  "rollout_length": 64,
+  "num_epochs": 3,
+  "batch_size": 64,
+  "lr": 0.0003,
+  "gamma": 0.99,
+  "gae_lambda": 0.95,
+  "clip_eps": 0.2,
+  "vf_coef": 0.5,
+  "ent_coef": 0.01,
+  "environment": {
+    "grid_size": 18,
+    "max_capacity": 45,
+    "initial_population": 24,
+    "initial_energy": 30,
+    "e_mitosis": 60,
+    "mutation_rate": 0.05,
+    "c_base": 0.6,
+    "c_density": 0.08,
+    "donation_cost": 2,
+    "donation_benefit": 6.0,
+    "max_steps": 1000
+  },
+  "torch_version": "2.5.1+cu121",
+  "numpy_version": "2.3.2",
+  "source_sha256": {
+    "environment\\cues.py": "d1f00f125ff91fdae29b7be47db29033b70bb80b29b27cc9524e49c90a0a5507",
+    "environment\\grid_world.py": "fc24c2f7395b197ec0b4bf97f878174a0c3fe51865bf70638ca5bb1dd37f358e",
+    "models\\attention_policy.py": "bd026c8aa35f2eab353c89139eda5d02761f95ee31865dfacb183a2d44c9750e",
+    "models\\gating_policy.py": "64ff19adbf2c8d9865d4cb0f7d057b7ba6591a74efcd7b333f4a1e12846be4d9",
+    "models\\mlp_policy.py": "48941d42d4aad827f17eee38f49ce13804af6a82a2eda0924bb5eaf7086b99f1",
+    "models\\rule_based.py": "e82e7fd80bf27794fbfde4b4c1117ebe3b938947ead4edd612deaec893f0c5f9",
+    "training\\rollout_buffer.py": "49d536261dc7c4e06057eef538de619d91d9ca087d8e26a3d911e222571c10a8",
+    "training\\train_all_models.py": "e352b88cd0763878fd8d53035c3486ea08c7663550cf54ba1a1b9fed36583c84",
+    "training\\train_simple_ppo.py": "8a17c256ca1386c5ab2677c6ea1b373b67be32b4e33f1bee26f898198fb4d101"
+  },
+  "elapsed_seconds": 72.07103610038757,
+  "checkpoint_sha256": "82c7fe0d455a0870eebacc55670653ef981901c13446955dd5fd9978e127595d",
+  "learning_curve": [
+    {
+      "iteration": 1,
+      "environment_steps": 64,
+      "active_agent_transitions": 2294,
+      "mean_population": 36.171875,
+      "donations_per_step": 17.609375,
+      "policy_loss": -5.773804150521755e-05,
+      "value_loss": 151.06268437703451
+    },
+    {
+      "iteration": 2,
+      "environment_steps": 128,
+      "active_agent_transitions": 5174,
+      "mean_population": 45.0,
+      "donations_per_step": 20.6875,
+      "policy_loss": -0.0016754351245860258,
+      "value_loss": 81.77425794248228
+    },
+    {
+      "iteration": 3,
+      "environment_steps": 192,
+      "active_agent_transitions": 8054,
+      "mean_population": 45.0,
+      "donations_per_step": 18.859375,
+      "policy_loss": -0.004711027974607768,
+      "value_loss": 69.21709419533059
+    },
+    {
+      "iteration": 4,
+      "environment_steps": 256,
+      "active_agent_transitions": 10934,
+      "mean_population": 45.0,
+      "donations_per_step": 13.8125,
+      "policy_loss": -0.008603217611434283,
+      "value_loss": 57.98994903564453
+    },
+    {
+      "iteration": 5,
+      "environment_steps": 320,
+      "active_agent_transitions": 13814,
+      "mean_population": 45.0,
+      "donations_per_step": 13.734375,
+      "policy_loss": -0.01409244090663614,
+      "value_loss": 36.66753179762099
+    },
+    {
+      "iteration": 6,
+      "environment_steps": 384,
+      "active_agent_transitions": 16694,
+      "mean_population": 45.0,
+      "donations_per_step": 10.796875,
+      "policy_loss": -0.007612550393160847,
+      "value_loss": 38.06610364560728
+    },
+    {
+      "iteration": 7,
+      "environment_steps": 448,
+      "active_agent_transitions": 19574,
+      "mean_population": 45.0,
+      "donations_per_step": 9.953125,
+      "policy_loss": -0.001258591003715992,
+      "value_loss": 33.311964402375395
+    },
+    {
+      "iteration": 8,
+      "environment_steps": 512,
+      "active_agent_transitions": 22454,
+      "mean_population": 45.0,
+      "donations_per_step": 8.5,
+      "policy_loss": 0.011877808154181197,
+      "value_loss": 27.861642526697228
+    },
+    {
+      "iteration": 9,
+      "environment_steps": 576,
+      "active_agent_transitions": 25334,
+      "mean_population": 45.0,
+      "donations_per_step": 7.453125,
+      "policy_loss": 0.0016330286584518574,
+      "value_loss": 26.256728596157497
+    },
+    {
+      "iteration": 10,
+      "environment_steps": 640,
+      "active_agent_transitions": 28214,
+      "mean_population": 44.984375,
+      "donations_per_step": 4.6875,
+      "policy_loss": -0.002105931744531349,
+      "value_loss": 25.615070116961444
+    },
+    {
+      "iteration": 11,
+      "environment_steps": 704,
+      "active_agent_transitions": 29904,
+      "mean_population": 25.859375,
+      "donations_per_step": 2.1875,
+      "policy_loss": 0.00040296063884908773,
+      "value_loss": 16.44698741112226
+    },
+    {
+      "iteration": 12,
+      "environment_steps": 768,
+      "active_agent_transitions": 30139,
+      "mean_population": 3.546875,
+      "donations_per_step": 0.046875,
+      "policy_loss": 0.011880185299863419,
+      "value_loss": 15.765708446502686
+    },
+    {
+      "iteration": 13,
+      "environment_steps": 832,
+      "active_agent_transitions": 31203,
+      "mean_population": 16.28125,
+      "donations_per_step": 0.71875,
+      "policy_loss": -0.0012885160817235125,
+      "value_loss": 12.975189208984375
+    },
+    {
+      "iteration": 14,
+      "environment_steps": 896,
+      "active_agent_transitions": 32227,
+      "mean_population": 15.609375,
+      "donations_per_step": 0.5625,
+      "policy_loss": -0.0007730874543388685,
+      "value_loss": 12.593745271364847
+    },
+    {
+      "iteration": 15,
+      "environment_steps": 960,
+      "active_agent_transitions": 33269,
+      "mean_population": 16.0,
+      "donations_per_step": 0.640625,
+      "policy_loss": -0.005961800067155969,
+      "value_loss": 10.671709247663909
+    },
+    {
+      "iteration": 16,
+      "environment_steps": 1024,
+      "active_agent_transitions": 34334,
+      "mean_population": 16.28125,
+      "donations_per_step": 0.703125,
+      "policy_loss": -0.0011609941675309458,
+      "value_loss": 10.966546441994462
+    }
+  ]
+}

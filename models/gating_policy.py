@@ -88,13 +88,17 @@ class GatingPolicy(nn.Module):
         neighbor_features = torch.as_tensor(obs["neighbor_features"], dtype=torch.float32, device=device)
         neighbor_mask = torch.as_tensor(obs["neighbor_mask"], dtype=torch.bool, device=device)
 
-        N = self_state.shape[0]
-        action_masks = torch.zeros((N, self.action_dim), dtype=torch.bool, device=device)
-        action_masks[:, :5] = True
-
-        can_afford = self_state[:, 0] > (2.0 / 60.0)
-        for k in range(self.max_neighbors):
-            action_masks[:, 5 + k] = neighbor_mask[:, k] & can_afford
+        if "action_mask" in obs:
+            action_masks = torch.as_tensor(obs["action_mask"], dtype=torch.bool, device=device).clone()
+            for k in range(self.max_neighbors):
+                action_masks[:, 5 + k] &= neighbor_mask[:, k]
+        else:
+            N = self_state.shape[0]
+            action_masks = torch.zeros((N, self.action_dim), dtype=torch.bool, device=device)
+            action_masks[:, :5] = True
+            can_afford = self_state[:, 0] > (2.0 / 60.0)
+            for k in range(self.max_neighbors):
+                action_masks[:, 5 + k] = neighbor_mask[:, k] & can_afford
 
         return self_state, neighbor_features, neighbor_mask, action_masks
 
@@ -177,11 +181,14 @@ class GatingPolicy(nn.Module):
         flat_obs = torch.cat([self_state, flat_neighbors, neighbor_counts], dim=-1)
 
         # Action masks
-        action_masks = torch.zeros((N, self.action_dim), dtype=torch.bool)
-        action_masks[:, :5] = True  # Movement and Stay always valid
-        can_afford = self_state[:, 0] > (2.0 / 60.0)
-        for k in range(self.max_neighbors):
-            action_masks[:, 5 + k] = neighbor_mask[:, k] & can_afford
+        if "action_mask" in obs:
+            action_masks = torch.as_tensor(obs["action_mask"], dtype=torch.bool)
+        else:
+            action_masks = torch.zeros((N, self.action_dim), dtype=torch.bool)
+            action_masks[:, :5] = True  # Movement and Stay always valid
+            can_afford = self_state[:, 0] > (2.0 / 60.0)
+            for k in range(self.max_neighbors):
+                action_masks[:, 5 + k] = neighbor_mask[:, k] & can_afford
 
         return flat_obs, action_masks, weights
 

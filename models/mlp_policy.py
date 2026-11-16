@@ -61,15 +61,16 @@ class SimpleMLPPolicy(nn.Module):
         flat_obs = torch.cat([self_state, flat_neighbors, neighbor_counts], dim=-1)  # (N, input_dim)
 
         # Build Action Masks:
-        # Actions 0..4 (Stay, N, S, E, W) are always valid for active agents
-        action_masks = torch.zeros((N, self.action_dim), dtype=torch.bool)
-        action_masks[:, :5] = True
-
-        # Action 5 + k is valid if neighbor k exists AND agent energy > C (normalized > C / 60.0)
-        # self_state[:, 0] is E / 60.0
-        can_afford_donation = self_state[:, 0] > (2.0 / 60.0)
-        for k in range(self.max_neighbors):
-            action_masks[:, 5 + k] = neighbor_mask[:, k] & can_afford_donation
+        if "action_mask" in obs:
+            action_masks = torch.as_tensor(obs["action_mask"], dtype=torch.bool).clone()
+            for k in range(self.max_neighbors):
+                action_masks[:, 5 + k] &= neighbor_mask[:, k]
+        else:
+            action_masks = torch.zeros((N, self.action_dim), dtype=torch.bool)
+            action_masks[:, :5] = True
+            can_afford_donation = self_state[:, 0] > (2.0 / 60.0)
+            for k in range(self.max_neighbors):
+                action_masks[:, 5 + k] = neighbor_mask[:, k] & can_afford_donation
 
         return flat_obs, action_masks
 

@@ -1,0 +1,191 @@
+{
+  "model_type": "attention",
+  "seed": 303,
+  "bc_ratio": 4.5,
+  "nominal_agent_budget_requested": 24576,
+  "environment_steps": 1024,
+  "active_agent_transitions": 45326,
+  "rollout_length": 64,
+  "num_epochs": 3,
+  "batch_size": 64,
+  "lr": 0.0003,
+  "gamma": 0.99,
+  "gae_lambda": 0.95,
+  "clip_eps": 0.2,
+  "vf_coef": 0.5,
+  "ent_coef": 0.01,
+  "environment": {
+    "grid_size": 18,
+    "max_capacity": 45,
+    "initial_population": 24,
+    "initial_energy": 30,
+    "e_mitosis": 60,
+    "mutation_rate": 0.05,
+    "c_base": 0.6,
+    "c_density": 0.08,
+    "donation_cost": 2,
+    "donation_benefit": 9.0,
+    "max_steps": 1000
+  },
+  "torch_version": "2.5.1+cu121",
+  "numpy_version": "2.3.2",
+  "source_sha256": {
+    "environment\\cues.py": "d1f00f125ff91fdae29b7be47db29033b70bb80b29b27cc9524e49c90a0a5507",
+    "environment\\grid_world.py": "fc24c2f7395b197ec0b4bf97f878174a0c3fe51865bf70638ca5bb1dd37f358e",
+    "models\\attention_policy.py": "bd026c8aa35f2eab353c89139eda5d02761f95ee31865dfacb183a2d44c9750e",
+    "models\\gating_policy.py": "64ff19adbf2c8d9865d4cb0f7d057b7ba6591a74efcd7b333f4a1e12846be4d9",
+    "models\\mlp_policy.py": "48941d42d4aad827f17eee38f49ce13804af6a82a2eda0924bb5eaf7086b99f1",
+    "models\\rule_based.py": "e82e7fd80bf27794fbfde4b4c1117ebe3b938947ead4edd612deaec893f0c5f9",
+    "training\\rollout_buffer.py": "49d536261dc7c4e06057eef538de619d91d9ca087d8e26a3d911e222571c10a8",
+    "training\\train_all_models.py": "e552da4034bd1163c910afeb5cdf9df1d5b7d09d77ae799d3ec57a3e2ef3cfa6",
+    "training\\train_simple_ppo.py": "665e8673c285cfb8a13aebcc0cce4f9c58aef4f9412b7cc9c20be0f4850fc538"
+  },
+  "elapsed_seconds": 191.3797845840454,
+  "checkpoint_sha256": "12e2f9ac93ef39ce9a59531e37fa6df3b0eeb99334efc6e62f1d443b19cd1548",
+  "learning_curve": [
+    {
+      "iteration": 1,
+      "environment_steps": 64,
+      "active_agent_transitions": 2630,
+      "mean_population": 41.421875,
+      "donations_per_step": 20.046875,
+      "policy_loss": 0.003553125142518963,
+      "value_loss": 620.1503695533389
+    },
+    {
+      "iteration": 2,
+      "environment_steps": 128,
+      "active_agent_transitions": 5510,
+      "mean_population": 45.0,
+      "donations_per_step": 17.078125,
+      "policy_loss": 0.004299302102514991,
+      "value_loss": 210.07246455439815
+    },
+    {
+      "iteration": 3,
+      "environment_steps": 192,
+      "active_agent_transitions": 8390,
+      "mean_population": 45.0,
+      "donations_per_step": 12.234375,
+      "policy_loss": 0.00034513432808496336,
+      "value_loss": 106.09873120343244
+    },
+    {
+      "iteration": 4,
+      "environment_steps": 256,
+      "active_agent_transitions": 11270,
+      "mean_population": 45.0,
+      "donations_per_step": 9.109375,
+      "policy_loss": 0.0031146504950744134,
+      "value_loss": 78.04859144422743
+    },
+    {
+      "iteration": 5,
+      "environment_steps": 320,
+      "active_agent_transitions": 14150,
+      "mean_population": 45.0,
+      "donations_per_step": 5.6875,
+      "policy_loss": 0.004535639465407089,
+      "value_loss": 43.721753975197124
+    },
+    {
+      "iteration": 6,
+      "environment_steps": 384,
+      "active_agent_transitions": 17030,
+      "mean_population": 45.0,
+      "donations_per_step": 6.625,
+      "policy_loss": -0.0015080158150306455,
+      "value_loss": 51.954529218320495
+    },
+    {
+      "iteration": 7,
+      "environment_steps": 448,
+      "active_agent_transitions": 19910,
+      "mean_population": 45.0,
+      "donations_per_step": 5.75,
+      "policy_loss": -0.002039380475050873,
+      "value_loss": 49.36434458979854
+    },
+    {
+      "iteration": 8,
+      "environment_steps": 512,
+      "active_agent_transitions": 22790,
+      "mean_population": 45.0,
+      "donations_per_step": 4.8125,
+      "policy_loss": 0.00010914975708281553,
+      "value_loss": 38.29366658528646
+    },
+    {
+      "iteration": 9,
+      "environment_steps": 576,
+      "active_agent_transitions": 25670,
+      "mean_population": 45.0,
+      "donations_per_step": 4.84375,
+      "policy_loss": -0.0006734081992396602,
+      "value_loss": 33.20832730046025
+    },
+    {
+      "iteration": 10,
+      "environment_steps": 640,
+      "active_agent_transitions": 28550,
+      "mean_population": 45.0,
+      "donations_per_step": 3.734375,
+      "policy_loss": 0.0010522568805350198,
+      "value_loss": 33.64552702727141
+    },
+    {
+      "iteration": 11,
+      "environment_steps": 704,
+      "active_agent_transitions": 31430,
+      "mean_population": 45.0,
+      "donations_per_step": 4.4375,
+      "policy_loss": -0.0013093054156612467,
+      "value_loss": 31.76311491507071
+    },
+    {
+      "iteration": 12,
+      "environment_steps": 768,
+      "active_agent_transitions": 34310,
+      "mean_population": 45.0,
+      "donations_per_step": 4.3125,
+      "policy_loss": -0.004024023431594725,
+      "value_loss": 31.6766421424018
+    },
+    {
+      "iteration": 13,
+      "environment_steps": 832,
+      "active_agent_transitions": 37190,
+      "mean_population": 45.0,
+      "donations_per_step": 4.671875,
+      "policy_loss": -0.004895794108785965,
+      "value_loss": 31.517260318332248
+    },
+    {
+      "iteration": 14,
+      "environment_steps": 896,
+      "active_agent_transitions": 40070,
+      "mean_population": 45.0,
+      "donations_per_step": 4.671875,
+      "policy_loss": -0.0036454389216723265,
+      "value_loss": 25.62440822036178
+    },
+    {
+      "iteration": 15,
+      "environment_steps": 960,
+      "active_agent_transitions": 42950,
+      "mean_population": 45.0,
+      "donations_per_step": 5.3125,
+      "policy_loss": -0.003768439456406567,
+      "value_loss": 31.91234510916251
+    },
+    {
+      "iteration": 16,
+      "environment_steps": 1024,
+      "active_agent_transitions": 45326,
+      "mean_population": 37.125,
+      "donations_per_step": 3.828125,
+      "policy_loss": -0.0010584049547712009,
+      "value_loss": 29.22935424771225
+    }
+  ]
+}

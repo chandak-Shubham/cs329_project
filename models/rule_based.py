@@ -3,7 +3,7 @@ Rule-Based Baseline Strategies (Task 5).
 Implements classical game-theoretic baseline agents:
 1. AlwaysDefectPolicy (Selfish baseline): Never donates (stays or wanders)
 2. KinOnlyPolicy (Naive Greenbeard): Donates if relatedness r_tilde_ij > tau_kin
-3. ReciprocalPolicy (Tit-for-Tat): Donates if neighbor cooperation history b_j > tau_recip
+3. ReciprocalPolicy (Reputation Threshold): Donates if neighbor cooperation history b_j > tau_recip
 4. FixedWeightPolicy: Donates if 0.5*r_tilde + 0.5*b_j > tau_combined
 5. RandomCooperatePolicy: Donates with probability p to a random neighbor
 """
@@ -87,7 +87,7 @@ class KinOnlyPolicy(BasePolicy):
 
 class ReciprocalPolicy(BasePolicy):
     """
-    Tit-for-Tat / Direct Reciprocity Strategy.
+    Reputation-threshold strategy using the recipient's public donation history.
     Rely solely on neighbor behavioral history b_j.
     Donates to the neighbor with highest b_j if b_j >= threshold.
     """

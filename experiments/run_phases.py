@@ -12,6 +12,8 @@ import os
 import sys
 import json
 import time
+import hashlib
+from pathlib import Path
 from typing import Dict, List, Any
 import numpy as np
 import torch
@@ -29,19 +31,26 @@ from models.rule_based import (
     ReciprocalPolicy,
     FixedWeightPolicy,
 )
+from evaluation.uncertainty import mean_ci, proportion_ci
 
 SEEDS = [42, 101, 202, 303, 404]
 RESULTS_DIR = "results"
 
 
-def load_checkpoint(policy, filename: str):
+def load_checkpoint(policy, filename: str, training_seed=42):
+    filename = filename.replace(".pt", f"_seed_{training_seed}.pt")
     ckpt_path = os.path.join(RESULTS_DIR, "checkpoints", filename)
     if os.path.exists(ckpt_path):
+        metadata_path = Path(ckpt_path).with_suffix('.json')
+        metadata = json.loads(metadata_path.read_text())
+        if metadata["checkpoint_sha256"] != hashlib.sha256(Path(ckpt_path).read_bytes()).hexdigest():
+            raise ValueError(f"Checkpoint hash differs from its training record: {ckpt_path}")
         state_dict = torch.load(ckpt_path, map_location="cpu", weights_only=True)
         policy.load_state_dict(state_dict)
         print(f"  [Model Checkpoint] Loaded: {filename}")
     else:
-        print(f"  [Model Checkpoint] Warning: {filename} not found, using initialized weights.")
+        raise FileNotFoundError(f"Required trained checkpoint missing: {ckpt_path}")
+    torch.manual_seed(training_seed + 10000)
     policy.eval()
     return policy
 
@@ -51,7 +60,7 @@ def load_checkpoint(policy, filename: str):
 # ==============================================================================
 def run_phase1_selfish(seeds: List[int] = SEEDS, steps: int = 300) -> Dict[str, Any]:
     print("\n" + "=" * 80)
-    print("RUNNING PHASE 1: SELFISH BASELINE (5 Seeds)")
+    print(f"RUNNING PHASE 1: SELFISH BASELINE ({len(seeds)} Seeds)")
     print("=" * 80)
 
     phase1_results = {"seeds": seeds, "trajectories": {}, "summary": {}}
@@ -66,10 +75,10 @@ def run_phase1_selfish(seeds: List[int] = SEEDS, steps: int = 300) -> Dict[str, 
             initial_energy=25.0,
             c_base=0.5,
             c_density=0.05,
-            seed=s,
+            seed=s + 10000,
         )
-        obs = env.reset(seed=s)
-        policy = AlwaysDefectPolicy(allow_movement=True, rng=np.random.default_rng(s))
+        obs = env.reset(seed=s + 10000)
+        policy = AlwaysDefectPolicy(allow_movement=True, rng=np.random.default_rng(s + 10000))
 
         pop_traj = []
         energy_traj = []
@@ -89,6 +98,7 @@ def run_phase1_selfish(seeds: List[int] = SEEDS, steps: int = 300) -> Dict[str, 
         mean_lifespans.append(float(np.mean([t + 1 if p == 0 else steps for p in pop_traj])))
 
         phase1_results["trajectories"][s] = {
+            "evaluation_seed": s + 10000,
             "population": pop_traj,
             "energy": energy_traj,
             "extinction_step": extinction_step,
@@ -98,7 +108,8 @@ def run_phase1_selfish(seeds: List[int] = SEEDS, steps: int = 300) -> Dict[str, 
     phase1_results["summary"] = {
         "mean_extinction_step": float(np.mean(extinction_steps)),
         "std_extinction_step": float(np.std(extinction_steps)),
-        "survival_rate": 0.0,
+        "survival_rate": float(np.mean([v["population"][-1] > 0 for v in phase1_results["trajectories"].values()])),
+        "extinction_step_uncertainty": mean_ci(extinction_steps),
     }
     print(f"Phase 1 Summary: Extinction at {np.mean(extinction_steps):.1f} ± {np.std(extinction_steps):.1f} steps")
     return phase1_results
@@ -109,7 +120,7 @@ def run_phase1_selfish(seeds: List[int] = SEEDS, steps: int = 300) -> Dict[str, 
 # ==============================================================================
 def run_phase2_altruist(seeds: List[int] = SEEDS, steps: int = 350) -> Dict[str, Any]:
     print("\n" + "=" * 80)
-    print("RUNNING PHASE 2: ADAPTIVE SOCIAL AFFINITY (Clean World, 5 Seeds)")
+    print(f"RUNNING PHASE 2: ADAPTIVE SOCIAL AFFINITY (Clean World, {len(seeds)} Seeds)")
     print("=" * 80)
 
     phase2_results = {"seeds": seeds, "trajectories": {}, "summary": {}}
@@ -131,11 +142,11 @@ def run_phase2_altruist(seeds: List[int] = SEEDS, steps: int = 350) -> Dict[str,
             c_density=0.05,
             donation_cost=2.0,
             donation_benefit=6.0,
-            seed=s,
+            seed=s + 10000,
         )
-        obs = env.reset(seed=s)
+        obs = env.reset(seed=s + 10000)
         policy = GatedAttentionPolicy(max_neighbors=8, d_model=32, num_heads=2, action_dim=13)
-        policy = load_checkpoint(policy, "gated_attention.pt")
+        policy = load_checkpoint(policy, "gated_attention.pt", s)
 
         pop_traj = []
         donations_traj = []
@@ -148,11 +159,11 @@ def run_phase2_altruist(seeds: List[int] = SEEDS, steps: int = 350) -> Dict[str,
                 dist, values, weights = policy.forward(self_state, n_feats, n_mask, act_masks)
                 actions = dist.sample()
 
-            # Record gating weights for active agents with neighbors
-            active_with_n = obs["active_mask"] & n_mask.any(dim=-1).numpy()
-            if active_with_n.any():
-                w_g_step = float(weights[active_with_n, :, 0].mean())
-                w_b_step = float(weights[active_with_n, :, 1].mean())
+            # Record gating weights ONLY for actual active neighbors (not padded slots)
+            valid_neighbor_mask = obs["active_mask"][:, None] & n_mask.numpy()
+            if valid_neighbor_mask.any():
+                w_g_step = float(weights[:, :, 0].numpy()[valid_neighbor_mask].mean())
+                w_b_step = float(weights[:, :, 1].numpy()[valid_neighbor_mask].mean())
             else:
                 w_g_step, w_b_step = 0.5, 0.5
 
@@ -188,6 +199,8 @@ def run_phase2_altruist(seeds: List[int] = SEEDS, steps: int = 350) -> Dict[str,
         mean_wb_list.append(float(np.mean(wb_traj)))
 
         phase2_results["trajectories"][s] = {
+            "training_seed": s,
+            "evaluation_seed": s + 10000,
             "population": pop_traj,
             "donations": donations_traj,
             "w_g": wg_traj,
@@ -201,6 +214,8 @@ def run_phase2_altruist(seeds: List[int] = SEEDS, steps: int = 350) -> Dict[str,
         "mean_total_donations": float(np.mean(total_donations)),
         "mean_w_g": float(np.mean(mean_wg_list)),
         "mean_w_b": float(np.mean(mean_wb_list)),
+        "uncertainty": {"final_population": mean_ci(final_pops), "donations": mean_ci(total_donations),
+                        "w_g": mean_ci(mean_wg_list), "w_b": mean_ci(mean_wb_list)},
     }
     phase2_results["decision_records"] = decision_records[:3000]
     return phase2_results
@@ -210,12 +225,12 @@ def run_phase2_altruist(seeds: List[int] = SEEDS, steps: int = 350) -> Dict[str,
 # PHASE 3: CUE-RELIABILITY (Genetic Noise Sweep)
 # ==============================================================================
 def run_phase3_cue_reliability(
-    noise_levels: List[float] = [0.0, 0.2, 0.4, 0.6, 0.8],
+    noise_levels: List[float] = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5],
     seeds: List[int] = SEEDS,
     steps: int = 250,
 ) -> Dict[str, Any]:
     print("\n" + "=" * 80)
-    print("RUNNING PHASE 3: CUE-RELIABILITY SWEEP (Noise p in [0.0..0.8], 5 Seeds)")
+    print(f"RUNNING PHASE 3: CUE-RELIABILITY SWEEP ({noise_levels}, {len(seeds)} Seeds)")
     print("=" * 80)
 
     sweep_results = {}
@@ -232,11 +247,11 @@ def run_phase3_cue_reliability(
                 max_capacity=60,
                 initial_population=30,
                 cue_noise=noise,
-                seed=s,
+                seed=s + 10000,
             )
-            obs = env.reset(seed=s)
+            obs = env.reset(seed=s + 10000)
             policy = GatedAttentionPolicy(max_neighbors=8, d_model=32, num_heads=2, action_dim=13)
-            policy = load_checkpoint(policy, "gated_attention.pt")
+            policy = load_checkpoint(policy, "gated_attention.pt", s)
 
             wg_traj = []
             wb_traj = []
@@ -248,13 +263,11 @@ def run_phase3_cue_reliability(
                     dist, values, weights = policy.forward(self_state, n_feats, n_mask, act_masks)
                     actions = dist.sample()
 
-                active_with_n = obs["active_mask"] & n_mask.any(dim=-1).numpy()
-                if active_with_n.any():
-                    # Average over active agents with neighbors
-                    # Higher noise -> network shifts trust towards b
-                    # Gating input is [r_tilde, b, E]
-                    wg_traj.append(float(weights[active_with_n, :, 0].mean()))
-                    wb_traj.append(float(weights[active_with_n, :, 1].mean()))
+                # Average gating weights ONLY over actual active neighbors (not padded slots)
+                valid_neighbor_mask = obs["active_mask"][:, None] & n_mask.numpy()
+                if valid_neighbor_mask.any():
+                    wg_traj.append(float(weights[:, :, 0].numpy()[valid_neighbor_mask].mean()))
+                    wb_traj.append(float(weights[:, :, 1].numpy()[valid_neighbor_mask].mean()))
 
                 obs, rewards, dones, info = env.step(actions.numpy())
                 donations += info["donations_count"]
@@ -274,6 +287,9 @@ def run_phase3_cue_reliability(
             "std_w_b": float(np.std(wb_seeds)),
             "mean_population": float(np.mean(pop_seeds)),
             "mean_donations": float(np.mean(donations_seeds)),
+            "uncertainty": {"w_g": mean_ci(wg_seeds), "w_b": mean_ci(wb_seeds),
+                            "population": mean_ci(pop_seeds), "donations": mean_ci(donations_seeds)},
+            "raw": {"w_g": wg_seeds, "w_b": wb_seeds, "population": pop_seeds, "donations": donations_seeds},
         }
         print(f"  Noise p={noise:<4} -> Mean w^g = {np.mean(wg_seeds):.3f} ± {np.std(wg_seeds):.3f} | Mean w^b = {np.mean(wb_seeds):.3f} ± {np.std(wb_seeds):.3f}")
 
@@ -283,22 +299,35 @@ def run_phase3_cue_reliability(
 # ==============================================================================
 # PHASE 4: GENETIC MIMICRY & BENCHMARKS
 # ==============================================================================
-def run_phase4_mimicry_and_benchmarks(seeds: List[int] = SEEDS, steps: int = 300) -> Dict[str, Any]:
+def run_phase4_mimicry_and_benchmarks(seeds: List[int] = SEEDS, steps: int = 300, invade: bool = True) -> Dict[str, Any]:
     print("\n" + "=" * 80)
-    print("RUNNING PHASE 4: GENETIC MIMICRY DEFENSE & BENCHMARKS (5 Seeds)")
+    print(f"RUNNING PHASE 4: GENETIC MIMICRY DEFENSE & BENCHMARKS ({len(seeds)} Seeds)")
     print("=" * 80)
 
     models_to_test = [
         "Selfish Baseline",
         "Hardcoded Tag Trust",
         "Fixed Weights (w^g=0.5)",
-        "Tit-for-Tat",
+        "Reputation Threshold",
         "Simple MLP (No Attention)",
         "PPO + Adaptive Gating",
         "Gated-Attention (Ours)",
     ]
 
-    benchmark_results = {m: {"carrying_capacity": [], "survival": [], "lifespan": [], "mimic_defense": []} for m in models_to_test}
+    benchmark_results = {
+        m: {
+            "carrying_capacity": [],
+            "survival": [],
+            "lifespan": [],
+            "faced_invasion": [],
+            "mimics_injected": [],
+            "residents_survived": [],
+            "parasites_eliminated": [],
+            "mimic_defense": [],
+            "successful_defense": [],
+        }
+        for m in models_to_test
+    }
     telemetry_phase4 = {}
 
     for s in seeds:
@@ -313,40 +342,44 @@ def run_phase4_mimicry_and_benchmarks(seeds: List[int] = SEEDS, steps: int = 300
                 donation_benefit=3.0,
                 c_base=0.8,
                 c_density=0.10,
-                seed=s,
+                seed=s + 10000,
             )
-            obs = env.reset(seed=s)
+            obs = env.reset(seed=s + 10000)
 
             # Initialize model with trained checkpoints
             if model_name == "Selfish Baseline":
-                policy = AlwaysDefectPolicy(allow_movement=True, rng=np.random.default_rng(s))
+                policy = AlwaysDefectPolicy(allow_movement=True, rng=np.random.default_rng(s + 10000))
             elif model_name == "Hardcoded Tag Trust":
                 policy = KinOnlyPolicy(threshold=0.3)
             elif model_name == "Fixed Weights (w^g=0.5)":
                 policy = FixedWeightPolicy(w_g=0.5, w_b=0.5, threshold=0.35)
-            elif model_name == "Tit-for-Tat":
+            elif model_name == "Reputation Threshold":
                 policy = ReciprocalPolicy(threshold=0.5)
             elif model_name == "Simple MLP (No Attention)":
                 policy = SimpleMLPPolicy(max_neighbors=8, hidden_dim=64, action_dim=13)
-                policy = load_checkpoint(policy, "simple_mlp.pt")
+                policy = load_checkpoint(policy, "simple_mlp.pt", s)
             elif model_name == "PPO + Adaptive Gating":
                 policy = GatingPolicy(max_neighbors=8, hidden_dim=64, action_dim=13)
-                policy = load_checkpoint(policy, "gating_policy.pt")
+                policy = load_checkpoint(policy, "gating_policy.pt", s)
             else:  # Gated-Attention (Ours)
                 policy = GatedAttentionPolicy(max_neighbors=8, d_model=32, num_heads=2, action_dim=13)
-                policy = load_checkpoint(policy, "gated_attention.pt")
+                policy = load_checkpoint(policy, "gated_attention.pt", s)
 
             pop_over_time = []
             mimic_energy_traj = []
             coop_energy_traj = []
+            faced_invasion = False
+            mimics_injected = 0
 
             # Step simulation
             for t in range(steps):
                 # Severe infiltration: Inject 12 genetic mimics at step 40 (~40% parasite invasion)
-                if t == 40:
-                    env.inject_mimics(count=12)
+                if invade and t == 40:
+                    mimics_injected = env.inject_mimics(count=12)
+                    faced_invasion = (mimics_injected > 0)
+                    obs = env._get_observations()  # Refresh observations immediately after invasion!
 
-                if model_name in ["Selfish Baseline", "Hardcoded Tag Trust", "Fixed Weights (w^g=0.5)", "Tit-for-Tat"]:
+                if model_name in ["Selfish Baseline", "Hardcoded Tag Trust", "Fixed Weights (w^g=0.5)", "Reputation Threshold"]:
                     actions = policy.act(obs)
                 elif model_name == "Simple MLP (No Attention)":
                     flat_obs, act_masks = policy.extract_flat_obs(obs)
@@ -379,29 +412,57 @@ def run_phase4_mimicry_and_benchmarks(seeds: List[int] = SEEDS, steps: int = 300
                     break
 
             # Metrics
-            survived = bool(info["active_population"] > 0)
+            residents_alive = int(np.sum((~env.is_parasite) & env.mask))
+            parasites_alive = int(np.sum(env.is_parasite & env.mask))
+            residents_survived = bool(residents_alive > 0)
             final_cap = info["active_population"]
             lifespan = t + 1
-            # Mimic defense: percentage of mimics eliminated / starved out
-            parasites_alive = int(np.sum(env.is_parasite & env.mask))
-            mimic_defense_rate = max(0.0, 1.0 - (parasites_alive / 12.0)) * 100.0
+
+            if faced_invasion and mimics_injected > 0:
+                parasites_eliminated = bool(parasites_alive == 0)
+                parasites_killed = mimics_injected - parasites_alive
+                elimination_rate = max(0.0, float(parasites_killed) / float(mimics_injected)) * 100.0
+                # Colony must have surviving residents to be credited with successful defense:
+                successful_defense = bool(residents_survived and parasites_eliminated)
+                defense_rate = elimination_rate if residents_survived else 0.0
+            else:
+                parasites_eliminated = None
+                successful_defense = None
+                defense_rate = None  # Colony went extinct before invasion could occur (not evaluated)
 
             benchmark_results[model_name]["carrying_capacity"].append(final_cap)
-            benchmark_results[model_name]["survival"].append(1.0 if survived else 0.0)
+            benchmark_results[model_name]["survival"].append(1.0 if residents_survived else 0.0)
             benchmark_results[model_name]["lifespan"].append(lifespan)
-            benchmark_results[model_name]["mimic_defense"].append(mimic_defense_rate)
+            benchmark_results[model_name]["faced_invasion"].append(faced_invasion)
+            benchmark_results[model_name]["mimics_injected"].append(mimics_injected)
+            benchmark_results[model_name]["residents_survived"].append(residents_survived)
+            benchmark_results[model_name]["parasites_eliminated"].append(parasites_eliminated)
+            benchmark_results[model_name]["mimic_defense"].append(defense_rate)
+            benchmark_results[model_name]["successful_defense"].append(successful_defense)
 
-            # Save detailed time series for Gated-Attention on Seed 42 for Plot 3
+            # Save detailed time series for actual invasion defense analysis
+            run_telemetry = {
+                "model_name": model_name,
+                "training_seed": s,
+                "evaluation_seed": s + 10000,
+                "coop_energy": coop_energy_traj,
+                "mimic_energy": mimic_energy_traj,
+                "population": pop_over_time,
+                "faced_invasion": faced_invasion,
+                "mimics_injected": mimics_injected,
+                "invasion_step": 40,
+                "step_indexing": "state-time boundary: after 40 transitions, before transition 41",
+            }
+            if model_name == "Reputation Threshold" and s == 42:
+                telemetry_phase4["tit_for_tat"] = run_telemetry
             if model_name == "Gated-Attention (Ours)" and s == 42:
-                telemetry_phase4["coop_energy"] = coop_energy_traj
-                telemetry_phase4["mimic_energy"] = mimic_energy_traj
-                telemetry_phase4["population"] = pop_over_time
+                telemetry_phase4["gated_attention"] = run_telemetry
 
     # Compute summary tables
     summary_table = {}
-    print("\n--- MASTER BENCHMARK TABLE (PHASE 4 UNDER MIMIC ATTACK, 5 SEEDS) ---")
-    print(f"{'Model':<30} | {'Carrying Cap':<14} | {'Survival Rate':<14} | {'Mean Lifespan':<14} | {'Mimic Defense':<14}")
-    print("-" * 94)
+    print(f"\n--- MASTER BENCHMARK TABLE (PHASE 4 UNDER MIMIC ATTACK, {len(seeds)} SEEDS) ---")
+    print(f"{'Model':<30} | {'Final Pop':<14} | {'Resident Survival':<18} | {'Episode Duration':<18} | {'Mimic Defense':<18}")
+    print("-" * 98)
 
     for m in models_to_test:
         c_mean = np.mean(benchmark_results[m]["carrying_capacity"])
@@ -409,7 +470,19 @@ def run_phase4_mimicry_and_benchmarks(seeds: List[int] = SEEDS, steps: int = 300
         s_rate = np.mean(benchmark_results[m]["survival"]) * 100.0
         l_mean = np.mean(benchmark_results[m]["lifespan"])
         l_std = np.std(benchmark_results[m]["lifespan"])
-        d_mean = np.mean(benchmark_results[m]["mimic_defense"])
+
+        # Compute mimic defense only over runs that actually experienced invasion
+        inv_eval_runs = [d for d in benchmark_results[m]["mimic_defense"] if d is not None]
+        inv_count = sum(1 for f in benchmark_results[m]["faced_invasion"] if f)
+
+        if inv_eval_runs:
+            d_mean = float(np.mean(inv_eval_runs))
+            d_succ_rate = float(np.mean([1.0 if s else 0.0 for s in benchmark_results[m]["successful_defense"] if s is not None])) * 100.0
+            d_str = f"{d_mean:>5.1f}% ({len(inv_eval_runs)}/{len(seeds)} inv)"
+        else:
+            d_mean = None
+            d_succ_rate = None
+            d_str = f"N/A (0/{len(seeds)} invaded)"
 
         summary_table[m] = {
             "carrying_capacity_mean": float(c_mean),
@@ -417,14 +490,25 @@ def run_phase4_mimicry_and_benchmarks(seeds: List[int] = SEEDS, steps: int = 300
             "survival_rate": float(s_rate),
             "lifespan_mean": float(l_mean),
             "lifespan_std": float(l_std),
-            "mimic_defense_rate": float(d_mean),
+            "faced_invasion_count": inv_count,
+            "mimic_defense_rate": d_mean,
+            "successful_defense_rate": d_succ_rate,
+            "uncertainty": {"final_population": mean_ci(benchmark_results[m]["carrying_capacity"]),
+                            "survival": proportion_ci(benchmark_results[m]["survival"]),
+                            "duration": mean_ci(benchmark_results[m]["lifespan"]),
+                            "successful_defense": proportion_ci(benchmark_results[m]["successful_defense"])},
         }
-        print(f"{m:<30} | {c_mean:>5.1f} ± {c_std:<4.1f} | {s_rate:>6.1f}%       | {l_mean:>5.1f} ± {l_std:<4.1f} | {d_mean:>5.1f}%")
+        print(f"{m:<30} | {c_mean:>5.1f} ± {c_std:<4.1f} | {s_rate:>6.1f}%       | {l_mean:>5.1f} ± {l_std:<4.1f} | {d_str}")
 
+    chosen_telemetry = telemetry_phase4.get("tit_for_tat", telemetry_phase4.get("gated_attention", {}))
     return {
         "benchmarks": summary_table,
         "raw": benchmark_results,
-        "telemetry_phase4_seed42": telemetry_phase4,
+        "telemetry_phase4_seed42": chosen_telemetry,
+        "telemetry_all": telemetry_phase4,
+        "invasion_enabled": invade,
+        "training_seeds": list(seeds),
+        "evaluation_seeds": [s+10000 for s in seeds],
     }
 
 
@@ -432,6 +516,7 @@ def run_phase4_mimicry_and_benchmarks(seeds: List[int] = SEEDS, steps: int = 300
 # MAIN RUNNER: EXECUTES ALL 4 PHASES
 # ==============================================================================
 def run_all_experiments():
+    torch.set_num_threads(1)
     start_time = time.time()
     os.makedirs(RESULTS_DIR, exist_ok=True)
 
@@ -454,8 +539,21 @@ def run_all_experiments():
     p4 = run_phase4_mimicry_and_benchmarks()
     with open(os.path.join(RESULTS_DIR, "phase4_benchmarks.json"), "w") as f:
         json.dump(p4, f, indent=2)
+    p4_clean = run_phase4_mimicry_and_benchmarks(invade=False)
+    with open(os.path.join(RESULTS_DIR, "phase4_no_invasion.json"), "w") as f:
+        json.dump(p4_clean, f, indent=2)
 
     elapsed = time.time() - start_time
+    provenance = {"training_seeds": SEEDS, "evaluation_seeds": [s+10000 for s in SEEDS],
+                  "evaluation_action_seed": "training_seed + 10000, reset after each model load",
+                  "maximum_steps": {"phase1": 300, "phase2": 350, "phase3": 250, "phase4": 300},
+                  "elapsed_seconds": elapsed,
+                  "checkpoints_sha256": {str(p): hashlib.sha256(p.read_bytes()).hexdigest()
+                                          for p in Path(RESULTS_DIR, "checkpoints").glob("*_seed_*.pt")},
+                  "source_sha256": {str(p): hashlib.sha256(p.read_bytes()).hexdigest()
+                                    for folder in ("environment", "models", "experiments")
+                                    for p in Path(folder).glob("*.py")}}
+    Path(RESULTS_DIR, "evaluation_provenance.json").write_text(json.dumps(provenance, indent=2))
     print("\n" + "=" * 80)
     print(f"ALL 4 EXPERIMENTAL PHASES COMPLETED IN {elapsed:.1f} SECONDS.")
     print(f"Raw data files saved to {RESULTS_DIR}/ for statistical & plot generation.")
