@@ -10,7 +10,7 @@ const {SimulationEngine:Engine, NeuralActor, SeededRandom} = globalThis.Kinship;
 const data = JSON.parse(html.match(/<script id="research-data" type="application\/json">([\s\S]*?)<\/script>/)[1]);
 const actor = new NeuralActor(data.neural);
 // Original donation-game fixtures explicitly use observation-only mode, matching Python.
-function empty(options={}) {return new Engine({initialPop:0,L:10,maxCapacity:10,cBase:0,cDensity:0,mutationRate:0,enforceHamilton:false,...options});}
+function empty(options={}) {return new Engine({initialPop:0,L:10,maxCapacity:10,cBase:0,cDensity:0,B:6,mutationRate:0,enforceHamilton:false,...options});}
 function place(world,x,y,options={}) {return world.spawn(world.cell(x,y),options.genome??123,options);}
 function occupancy(world) {
   const agents = world.agents;
@@ -19,6 +19,28 @@ function occupancy(world) {
   for(const a of agents) {assert.equal(world.grid[world.cell(a.x,a.y)],a.slot);assert.ok(Number.isFinite(a.energy));assert.ok(a.energy>0);}
   assert.equal(new Set(agents.map(a=>a.id)).size,agents.length);
 }
+
+test('default observes Hamilton consistency without forcing it',()=>{
+  const w=new Engine();assert.equal(w.enforceHamilton,false);
+  assert.deepEqual([w.L,w.initialPop,w.maxCapacity,w.B,w.C,w.cBase,w.cDensity],[18,24,45,5,2,0.6,0.08]);
+  const e=empty();place(e,1,1,{genome:0});place(e,2,1,{genome:255});e.updateCues();e.step([5,0]);
+  assert.equal(e.lastDonations,1);assert.equal(e.hamiltonBelow,1);assert.equal(e.hamiltonBlocked,0);
+  e.enforceHamilton=true;e.capture();
+  assert.equal(JSON.parse(e.history.at(-1).checks)[0].enforceHamilton,false,'decision-time mode survives later toggle');
+});
+
+test('mimic exploitation counts actual recipient transfers and denominator',()=>{
+  const w=empty({maxCapacity:3});place(w,4,4,{genome:0});place(w,4,5,{genome:0});
+  assert.equal(w.injectMimics(1),1);
+  const mimic=w.agents.find(a=>a.mimic);w.grid[w.cell(mimic.x,mimic.y)]=-1;
+  mimic.x=4;mimic.y=6;w.grid[w.cell(4,6)]=mimic.slot;w.updateCues();
+  const target=w.neighbors(w.slots[0]).findIndex(a=>a.mimic);
+  w.step([5+target,5,0]);
+  assert.equal(w.mimicDonations,1);assert.equal(w.mimicEnergy,6);assert.equal(w.postInvasionDonations,2);
+  assert.equal(w.history.at(-1).mimicDonationShare,.5);
+  assert.match(w.toCSV(),/mimicDonationShare/);
+  w.reset();assert.equal(w.mimicDonations,0);
+});
 
 test('Hamilton enforcement blocks failures and equality without energy transfers',()=>{
   const w=empty({enforceHamilton:true,B:4,C:2});
@@ -59,7 +81,7 @@ test('no attempts is distinct from a pass, and zero benefit never transfers ener
 
 test('all live policies enforce actual rB > C across seeds and benefit/cost settings',()=>{
   for(const strategy of Object.keys(Kinship.STRATEGIES))for(const seed of [0,42,101])for(const [B,C] of [[0,2],[2,2],[6,2],[10,0.5]]){
-    const w=new Engine({strategy,seed,B,C,neuralActor:actor,maxSteps:100});
+    const w=new Engine({strategy,seed,B,C,neuralActor:actor,maxSteps:100,enforceHamilton:true});
     while(!w.finished){
       w.step();occupancy(w);
       for(const d of w.donations)assert.ok(d.relatedness*d.benefit>d.cost);

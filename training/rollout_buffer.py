@@ -118,7 +118,10 @@ class MaskedRolloutBuffer:
 
         # Normalize advantages over active sample population
         adv_mean = flat_advantages.mean()
-        adv_std = flat_advantages.std() + 1e-8
+        # A demographic rollout can contain exactly one resident sample while
+        # scripted mimics remain alive. Sample SD is undefined for n=1; after
+        # centering its policy advantage is zero, while the critic still learns.
+        adv_std = flat_advantages.std() + 1e-8 if len(flat_advantages) > 1 else 1.0
         flat_advantages = (flat_advantages - adv_mean) / adv_std
 
         total_samples = len(valid_indices)

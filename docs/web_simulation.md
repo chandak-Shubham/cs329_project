@@ -4,9 +4,9 @@ Implemented on 16 November 2026; simplified on 17 November after reviewing the p
 
 ## Open and use
 
-**Current behaviour, updated 17 November:** the user explicitly requested blocking donations when rB ≤ C. The browser therefore enforces Hamilton's condition, in addition to energy and mimic restrictions. This changes trajectories relative to the observation-only Python study. It is not evidence that a learned policy independently obeys the rule; earlier audit/sweep outcomes describe the previous browser version.
+**Current behaviour, review response of 17 November:** Hamilton enforcement is **off by default**. Donation choices remain subject to affordability and the non-mimic donor restriction. The visible checkbox enables an explicitly forced Hamilton filter; counts in that mode are not evidence of learning. Below-threshold donations are permitted and counted in observation mode.
 
-Every proposed donation to an existing neighbour must satisfy rB > C, donor energy > C, and a non-mimic donor. Equality fails. A failed attempt transfers no donation energy and counts as a non-donation in behavioural history. Metabolic and crowding costs still apply. “Donation checks: last step” lists actual pair values and all failure reasons. No attempted donation is reported as “no attempt,” never an invented pass. B ≤ C immediately reports that every pair fails with the current settings.
+The last-step checks retain decision-time values. Turning enforcement on blocks rB <= C (including equality), without a donation transfer. CSV records the enforcement setting, donations and energy delivered to mimics, and their share of post-invasion donations. The share is null without an invasion or post-invasion donations. Mimic extinction alone is not evidence of defense.
 
 Play/Step/Reset are at the top. Mobile collapses secondary settings initially. Behaviour/energy edits mark the experiment “Custom settings.” Automatic injection reports its outcome. Animation progress is clamped to [0,1] using a consistent clock; an unexpected step/drawing error stops playback visibly and Reset starts a fresh run without losing the frame loop.
 
@@ -22,35 +22,35 @@ python -m http.server 8000 --bind 127.0.0.1
 - **Step:** pause and execute exactly one transition.
 - **Reset:** restart with the entered seed and current strategy, environmental parameters, and scenario configuration. It clears interventions, history, and agent selection. An invalid seed prevents reset.
 - **Sliders and strategy:** apply immediately to the current run without replacing the population. Changing a strategy retains agents' existing donation histories.
-- **Inject 12 mimics:** copy the most frequent living resident genome, breaking ties by genome number, and occupy up to 12 free slots. Mimics start with neutral reputation and the scenario's initial energy. They never donate. Full capacity means zero injections; residents are never overwritten.
+- **Inject 12 mimics:** copy the most frequent living resident genome, breaking ties by genome number, and occupy up to 12 uniformly sampled empty cells in free slots. Mimics start with neutral reputation and the scenario's initial energy. They never donate. Full capacity means zero injections; residents are never overwritten.
 - **Scarcity shock:** double the current base drain for exactly 30 transitions. Changing the drain during a shock changes its doubled value. Pausing also pauses shock duration; repeated shocks cannot stack.
 - **Inspect:** click an agent or use the agent selector to see its persistent identity, parent, energy, generation, genome, and recent donation ratio.
 - **Export CSV:** download the entire trajectory and intervention log. The charts also expose their latest values to assistive technologies.
 
-Space toggles playback and the right arrow steps when focus is outside a form control or link. The canvas can receive keyboard focus. Reduced-motion preferences suppress birth ripples and pulsing animations. Runs stop at extinction or 1,000 transitions.
+Space toggles playback and the right arrow steps when focus is outside a form control or link. The canvas can receive keyboard focus. Reduced-motion preferences suppress birth ripples and pulsing animations. Runs stop at extinction or 300 transitions.
 
 ## Fresh scenarios
 
-All scenarios start paused with 30 founders, capacity 60, cost C = 2, mitosis threshold 60, mutation probability 0.05 per bit, observation radius 3, and the entered seed (initially 42).
+All scenarios start paused with 24 founders, capacity 45, cost C = 2, mitosis threshold 60, mutation probability 0.05 per bit, observation radius 3, and the entered seed (initially 42).
 
 | Scenario | Grid | Initial energy | Benefit B | Base drain | Crowding cost | Automatic invasion |
 | --- | --- | --- | --- | --- | --- | --- |
-| Cooperation | 24 × 24 | 30 | 6 | 0.5 | 0.05 | No |
-| Selfish baseline | 24 × 24 | 30 | 6 | 0.5 | 0.05 | No |
-| Genetic matching | 24 × 24 | 30 | 6 | 0.5 | 0.05 | No |
-| Mimics at step 40 | 24 × 24 | 25 | 3 | 0.8 | 0.10 | After 40 transitions |
-| Mimics in a smaller grid | 20 × 20 | 25 | 3 | 0.8 | 0.10 | After 40 transitions |
+| Cooperation | 18 × 18 | 30 | 5 | 0.6 | 0.08 | No |
+| Selfish baseline | 18 × 18 | 30 | 5 | 0.6 | 0.08 | No |
+| Genetic matching | 18 × 18 | 30 | 5 | 0.6 | 0.08 | No |
+| Mimics at step 40 | 18 × 18 | 25 | 3 | 0.8 | 0.10 | After 40 transitions |
+| Mimics in stress ecology | 20 × 20 | 25 | 3 | 0.8 | 0.10 | After 40 transitions |
 
-The selfish scenario selects Never donate; Genetic matching selects Help genetic relatives; the others select Help recent donors. The Experiment selector replaces the current run and restores parameter defaults. The invasion scenarios use a lower benefit and higher drain because the benign default fills the pool quickly. An attack remains conditional on resident survival and free slots. The automatic attack occurs at state 40, immediately before transition 41; it is logged at step 40. The smaller-grid scenario is an invasion experiment, not cue corruption. The browser does not implement the proposal's cue-corruption sweep or gated-attention training.
+The selfish scenario selects Never donate; Genetic matching selects Help genetic relatives; the others select Help recent donors. The Experiment selector replaces the current run and restores parameter defaults. The invasion scenarios use a lower benefit and higher drain as an explicit out-of-distribution stress test. An attack remains conditional on resident survival and free slots. The automatic attack occurs at state 40, immediately before transition 41; it is logged at step 40. The stress-ecology scenario is an invasion experiment, not cue corruption. The browser does not implement the proposal's cue-corruption sweep or gated-attention training.
 
-The smaller-grid invasion preset uses the recorded Phase 4 experiment's ecological parameters, but retains the browser's 1,000-step observation limit. It is not a replay of the 300-step Python evaluation.
+The stress-ecology invasion preset uses the historical Phase 4 benefit and drain settings, with 24 founders and capacity 45. It is a distribution-shift demonstration, not a replay of the historical Python evaluation.
 
 ## Scientific fidelity
 
 The JavaScript engine ports `environment/grid_world.py`, `environment/cues.py`, and the configured Phase 4 rule policies:
 
 1. All policy decisions use one pre-step state. Neighbors are ordered by toroidal Chebyshev distance, then slot number; policies observe the nearest eight.
-2. Donations require donor energy strictly greater than C. A donation costs C and gives B, and mimics cannot donate. A moving recipient retains its identity. The browser adds a strict rB > C transfer check; the Python research environment does not enforce that additional condition.
+2. Donations require donor energy strictly greater than C. A donation costs C and gives B, and mimics cannot donate. A moving recipient retains its identity. The optional browser Hamilton filter adds a strict rB > C check; it defaults off, matching the Python environment.
 3. Simultaneous movement allows swaps, cycles, and chains into vacated cells. Destination conflicts randomly select one winner; stationary blockers cancel dependent movement.
 4. Metabolism counts all neighbors within radius 3 after movement, not just the eight observed by a policy.
 5. Starvation precedes mitosis. Mitosis places a child in a free orthogonally adjacent toroidal cell and halves the parent's energy without creating energy. Newborns do not reproduce again in the same transition.
@@ -59,11 +59,11 @@ The JavaScript engine ports `environment/grid_world.py`, `environment/cues.py`, 
 
 Reputation Threshold selects the best recipient with b ≥ 0.5. Fixed-Weight Tag Trust selects the highest 0.5r + 0.5b, requiring a score strictly greater than 0.35. Pure Kin requires r > 0.3. These thresholds match the current Phase 4 configuration, including strict comparisons. Non-donating rule-based residents stay; the selfish policy randomly moves or stays. Mimics cannot donate, but can move under the selfish and neural policies, as in Python; under the stationary rule-based policies they stay.
 
-Relatedness is baseline-corrected Hamming similarity over distinct living pairs, calculated from the population rather than manually assigned. It is not an independently estimated pedigree coefficient. The reference r* = C/B updates with sliders, including B = 0. Policies propose actions; the execution check blocks proposals failing rB > C. B/C is not directly observed by these policies. Compliance after filtering is not proof of learned Hamilton behaviour. Rule-based comparison policies retain the documented rules above, but their outcomes are not precomputed or scripted.
+Relatedness is baseline-corrected Hamming similarity over distinct living pairs, calculated from the population rather than manually assigned. It is not an independently estimated pedigree coefficient. The reference r* = C/B updates with sliders, including B = 0. Policies propose actions; only the optional Hamilton filter blocks proposals failing rB > C. B/C is not directly observed by these policies. Compliance after filtering is not proof of learned Hamilton behaviour. Rule-based outcomes are not precomputed or scripted.
 
 The neural option evaluates the actual `simple_mlp_seed_42.pt` actor (43 → 64 → 32 → 13, ReLU, action masking, softmax sampling). The actor is frozen and was trained for 1,024 environment transitions. The checkpoint's SHA256 is verified before export and embedded with its metadata. The browser does not load PyTorch, fake neural behavior with a defection heuristic, or train online.
 
-Browser runs use a seeded Mulberry32 generator and JavaScript numbers; Python uses NumPy/PyTorch RNGs and some float32 tensors. Same-seed browser resets reproduce browser trajectories when the intervention schedule is identical. They do not reproduce Python seed trajectories. As requested by the blueprint, injections copy the dominant resident genome; Python's default injection copies its first living agent's genome. Both place injections in the first available x-major empty cells.
+Browser runs use a seeded Mulberry32 generator and JavaScript numbers; Python uses NumPy/PyTorch RNGs and some float32 tensors. Same-seed browser resets reproduce browser trajectories when the intervention schedule is identical. They do not reproduce Python seed trajectories. Both implementations copy the modal resident genome (smallest genome breaks ties), and sample empty cells randomly without replacement.
 
 The Hamilton panel counts actual donations plus proposals blocked by rB ≤ C. Actual donations at/below the threshold must stay zero in enforced mode. Relatedness is captured before movement, starvation, reproduction, or baseline updates. Cumulative counts and detailed checks retain decision-time values even if sliders change later. Mean donor-recipient relatedness is shown for the latest step, or a dash if none occurred. Saved multi-seed research results remain in `results/`; the compact interface does not display the benchmark table.
 
@@ -87,7 +87,7 @@ python visualizer/export_web_data.py --check
 
 The Node suite covers deterministic replay, toroidal neighbors, swaps/cycles/chains, collision resolution, donation timing and affordability, mitosis, mutation, slot recycling, reputation, relatedness, interventions, extinction, export, and all five strategies across several seeds. Four Python tests compare observations, rule actions, multi-step energy/history/movement, neural logits, and embedded research data against Python sources.
 
-The Python parity fixtures explicitly disable browser enforcement (`enforceHamilton:false`) to compare original research mechanics. The UI always enables enforcement; separate Node tests verify allowed/blocked transfers across all five behaviours, three seeds, and four benefit/cost settings. Run `python visualizer/check_web_robustness.py` for decision CSV, equality failures, input validation, 6× CPU-slowed playback with births, visible controls, mobile settings, and recovery from a deliberately injected rendering error in Chrome and Edge.
+The Python parity fixtures explicitly set ecology and disable enforcement (`enforceHamilton:false`). The UI defaults to this observation mode; separate Node tests explicitly enable enforcement to verify allowed/blocked transfers. Run `python visualizer/check_web_robustness.py` for decision CSV, equality failures, input validation, 6× CPU-slowed playback with births, visible controls, mobile settings, and recovery from a deliberately injected rendering error in Chrome and Edge.
 
 After regenerating the MLP checkpoint or Phase 4 results, refresh the embedded data:
 

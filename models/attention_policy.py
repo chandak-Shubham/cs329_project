@@ -31,6 +31,7 @@ class GatedAttentionPolicy(nn.Module):
         num_heads: int = 4,
         action_dim: int = 13,  # 5 movement/stay + 8 targeted donation slots
         fixed_gate: Optional[float] = None,
+        contextual_gate: bool = False,
     ):
         super().__init__()
         self.max_neighbors = max_neighbors
@@ -38,9 +39,13 @@ class GatedAttentionPolicy(nn.Module):
         self.num_heads = num_heads
         self.action_dim = action_dim
         self.fixed_gate = fixed_gate
+        self.contextual_gate = contextual_gate
 
         # 1. Gating Network (Equation 3)
         self.gating = GatingNetwork(hidden_dim=32)
+        if contextual_gate:
+            # Local cues plus masked neighbourhood means and standard deviations.
+            self.context_gate = nn.Sequential(nn.Linear(9, 32), nn.ReLU(), nn.Linear(32, 2))
 
         # 2. Self and Neighbor Encoders
         # Self input: [E_i / 60.0, age_i / 1000.0] -> 2 dims
@@ -112,6 +117,15 @@ class GatedAttentionPolicy(nn.Module):
         cue_inputs = torch.cat([r_tilde, b_score, e_norm], dim=-1)  # (N, K, 3)
 
         weights, q = self.gating(cue_inputs)  # weights: (N, K, 2), q: (N, K)
+        if self.contextual_gate:
+            present = neighbor_mask.unsqueeze(-1)
+            safe_cues = torch.where(present, cue_inputs, torch.zeros_like(cue_inputs))
+            count = present.sum(dim=1, keepdim=True).clamp(min=1)
+            mean = safe_cues.sum(dim=1, keepdim=True) / count
+            variance = torch.where(present, (safe_cues - mean).square(), 0).sum(dim=1, keepdim=True) / count
+            context = torch.cat([mean, (variance + 1e-8).sqrt()], dim=-1).expand(-1, K, -1)
+            weights = torch.softmax(self.context_gate(torch.cat([safe_cues, context], dim=-1)), dim=-1)
+            q = weights[..., 0] * r_tilde.squeeze(-1) + weights[..., 1] * b_score.squeeze(-1)
         if self.fixed_gate is not None:
             weights = torch.zeros_like(weights)
             weights[..., 0] = self.fixed_gate

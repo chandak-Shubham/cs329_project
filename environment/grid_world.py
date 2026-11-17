@@ -61,7 +61,15 @@ class GridWorld:
         history_window_k: int = 10,
         max_steps: int = 1000,
         seed: Optional[int] = None,
+        reward_mode: str = "energy",
+        survival_reward: float = 1.0,
+        reproduction_reward: float = 5.0,
     ):
+        if reward_mode not in ("energy", "demographic"):
+            raise ValueError("reward_mode must be energy or demographic")
+        self.reward_mode = reward_mode
+        self.survival_reward = survival_reward
+        self.reproduction_reward = reproduction_reward
         if num_agents is not None and initial_population is None:
             initial_population = num_agents
             max_capacity = max(max_capacity, num_agents)
@@ -200,14 +208,17 @@ class GridWorld:
         Mimics carry chromosomes matching the target cooperative lineage,
         but are flagged with is_parasite = True.
         """
-        active_indices = np.where(self.mask)[0]
+        active_indices = np.where(self.mask & ~self.is_parasite)[0]
         if target_chrom is None and len(active_indices) > 0:
-            target_chrom = self.chromosomes[active_indices[0]].copy()
+            # Modal resident genome; lexicographic tie break matches the browser.
+            genomes, counts = np.unique(self.chromosomes[active_indices], axis=0, return_counts=True)
+            target_chrom = genomes[np.argmax(counts)].copy()
         elif target_chrom is None:
-            target_chrom = self.rng.integers(0, 2, size=CHROMOSOME_LENGTH, dtype=np.int8)
+            return 0
 
         spawned = 0
         all_empty = [(x, y) for x in range(self.L) for y in range(self.L) if self.grid[x, y] == -1]
+        self.rng.shuffle(all_empty)
         free_slots = np.where(~self.mask)[0]
 
         for s_idx in range(min(count, len(all_empty), len(free_slots))):
@@ -260,22 +271,14 @@ class GridWorld:
         if not self.mask[agent_idx]:
             return []
 
-        pos = self.positions[agent_idx]
-        neighbors_with_dist = []
-
-        for dx in range(-self.rho, self.rho + 1):
-            for dy in range(-self.rho, self.rho + 1):
-                if dx == 0 and dy == 0:
-                    continue
-                nx = (pos[0] + dx) % self.L
-                ny = (pos[1] + dy) % self.L
-                occupant = self.grid[nx, ny]
-                if occupant != -1 and self.mask[occupant] and occupant != agent_idx:
-                    d = max(abs(dx), abs(dy))
-                    neighbors_with_dist.append((d, occupant))
-
-        neighbors_with_dist.sort(key=lambda item: (item[0], item[1]))
-        return [item[1] for item in neighbors_with_dist]
+        # Vectorized distances avoid scanning 49 grid cells for every agent at
+        # every observation, action and metabolic update. Stable sorting retains
+        # distance-then-slot ordering; each neighbour appears exactly once.
+        active = np.flatnonzero(self.mask)
+        delta = (self.positions[active] - self.positions[agent_idx] + self.L // 2) % self.L - self.L // 2
+        distances = np.abs(delta).max(axis=1)
+        keep = (active != agent_idx) & (distances <= self.rho)
+        return active[keep][np.argsort(distances[keep], kind="stable")].tolist()
 
     def _resolve_movements(self, move_intents: Dict[int, Tuple[int, int]]):
         """
@@ -500,7 +503,19 @@ class GridWorld:
             rewards[i] = delta
 
         # 4. Demographics (Starvation & Mitosis - Algorithm 1)
+        donation_records = [dict(donor_uid=int(self.agent_unique_ids[i]),
+                                 recipient_uid=int(self.agent_unique_ids[j]),
+                                 recipient_is_mimic=bool(self.is_parasite[j]),
+                                 benefit=float(self.B), cost=float(self.C)) for i, j in donations]
         deaths, births, died_mask, death_records, birth_records = self._step_demographics()
+        if self.reward_mode == "demographic":
+            # Individual survival and reproduction only: no kin coefficient,
+            # recipient benefit, donation bonus, or Hamilton threshold in reward.
+            rewards.fill(0)
+            survivors = active_indices[~died_mask[active_indices]]
+            rewards[survivors] = self.survival_reward
+            for birth in birth_records:
+                rewards[birth["parent_slot"]] += self.reproduction_reward
 
         # 5. Cue update
         self._update_cues()
@@ -515,6 +530,9 @@ class GridWorld:
         info = {
             "active_population": self.active_count,
             "donations_count": len(donations),
+            "donation_records": donation_records,
+            "donations_to_mimics": sum(d["recipient_is_mimic"] for d in donation_records),
+            "energy_to_mimics": sum(d["benefit"] for d in donation_records if d["recipient_is_mimic"]),
             "deaths_this_step": deaths,
             "births_this_step": births,
             "died_mask": died_mask,

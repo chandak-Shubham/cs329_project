@@ -3,7 +3,7 @@ Comprehensive Experiment Runner for the 4 Experimental Phases (Task 11).
 Executes all 4 phases from Section 4.2 of the submitted paper across 5 random seeds:
 - Phase 1: Selfish Baseline (Extinction validation)
 - Phase 2: Adaptive Social Affinity (Altruist convergence & carrying capacity)
-- Phase 3: Cue-Reliability Sweep (Noise p in [0.0, 0.2, 0.4, 0.6, 0.8] -> trust shift)
+- Phase 3: Historical frozen-policy robustness sweep (noise p from 0.0 to 0.5)
 - Phase 4: Genetic Mimicry (Parasite defense & comparative benchmarks)
 Saves all raw empirical data to results/ for formal statistical and plot generation.
 """
@@ -181,7 +181,7 @@ def run_phase2_altruist(seeds: List[int] = SEEDS, steps: int = 350) -> Dict[str,
                         decision_records.append({
                             "r_tilde": r_val,
                             "b_score": b_val,
-                            "bc_ratio": 3.0,
+                            "bc_ratio": env.B / env.C,
                             "gave": gave,
                             "phase": "phase2_clean",
                         })
@@ -307,7 +307,7 @@ def run_phase4_mimicry_and_benchmarks(seeds: List[int] = SEEDS, steps: int = 300
     models_to_test = [
         "Selfish Baseline",
         "Hardcoded Tag Trust",
-        "Fixed Weights (w^g=0.5)",
+        "Fixed cue threshold (rule-based)",
         "Reputation Threshold",
         "Simple MLP (No Attention)",
         "PPO + Adaptive Gating",
@@ -325,6 +325,10 @@ def run_phase4_mimicry_and_benchmarks(seeds: List[int] = SEEDS, steps: int = 300
             "parasites_eliminated": [],
             "mimic_defense": [],
             "successful_defense": [],
+            "donations_to_mimics": [],
+            "post_invasion_donations": [],
+            "mimic_donation_share": [],
+            "energy_to_mimics": [],
         }
         for m in models_to_test
     }
@@ -351,7 +355,7 @@ def run_phase4_mimicry_and_benchmarks(seeds: List[int] = SEEDS, steps: int = 300
                 policy = AlwaysDefectPolicy(allow_movement=True, rng=np.random.default_rng(s + 10000))
             elif model_name == "Hardcoded Tag Trust":
                 policy = KinOnlyPolicy(threshold=0.3)
-            elif model_name == "Fixed Weights (w^g=0.5)":
+            elif model_name == "Fixed cue threshold (rule-based)":
                 policy = FixedWeightPolicy(w_g=0.5, w_b=0.5, threshold=0.35)
             elif model_name == "Reputation Threshold":
                 policy = ReciprocalPolicy(threshold=0.5)
@@ -370,6 +374,8 @@ def run_phase4_mimicry_and_benchmarks(seeds: List[int] = SEEDS, steps: int = 300
             coop_energy_traj = []
             faced_invasion = False
             mimics_injected = 0
+            mimic_donations = post_invasion_donations = 0
+            mimic_energy = 0.0
 
             # Step simulation
             for t in range(steps):
@@ -379,7 +385,7 @@ def run_phase4_mimicry_and_benchmarks(seeds: List[int] = SEEDS, steps: int = 300
                     faced_invasion = (mimics_injected > 0)
                     obs = env._get_observations()  # Refresh observations immediately after invasion!
 
-                if model_name in ["Selfish Baseline", "Hardcoded Tag Trust", "Fixed Weights (w^g=0.5)", "Reputation Threshold"]:
+                if model_name in ["Selfish Baseline", "Hardcoded Tag Trust", "Fixed cue threshold (rule-based)", "Reputation Threshold"]:
                     actions = policy.act(obs)
                 elif model_name == "Simple MLP (No Attention)":
                     flat_obs, act_masks = policy.extract_flat_obs(obs)
@@ -398,6 +404,10 @@ def run_phase4_mimicry_and_benchmarks(seeds: List[int] = SEEDS, steps: int = 300
                         actions = dist.sample().numpy()
 
                 obs, rewards, dones, info = env.step(actions)
+                if faced_invasion:
+                    post_invasion_donations += info["donations_count"]
+                    mimic_donations += info["donations_to_mimics"]
+                    mimic_energy += info["energy_to_mimics"]
                 pop_over_time.append(info["active_population"])
 
                 # Track energies of cooperators vs parasites
@@ -439,6 +449,11 @@ def run_phase4_mimicry_and_benchmarks(seeds: List[int] = SEEDS, steps: int = 300
             benchmark_results[model_name]["parasites_eliminated"].append(parasites_eliminated)
             benchmark_results[model_name]["mimic_defense"].append(defense_rate)
             benchmark_results[model_name]["successful_defense"].append(successful_defense)
+            benchmark_results[model_name]["donations_to_mimics"].append(mimic_donations)
+            benchmark_results[model_name]["post_invasion_donations"].append(post_invasion_donations)
+            benchmark_results[model_name]["energy_to_mimics"].append(mimic_energy)
+            benchmark_results[model_name]["mimic_donation_share"].append(
+                mimic_donations / post_invasion_donations if faced_invasion and post_invasion_donations else None)
 
             # Save detailed time series for actual invasion defense analysis
             run_telemetry = {
@@ -493,6 +508,8 @@ def run_phase4_mimicry_and_benchmarks(seeds: List[int] = SEEDS, steps: int = 300
             "faced_invasion_count": inv_count,
             "mimic_defense_rate": d_mean,
             "successful_defense_rate": d_succ_rate,
+            "mimic_donation_share": mean_ci(benchmark_results[m]["mimic_donation_share"]),
+            "energy_to_mimics": mean_ci(benchmark_results[m]["energy_to_mimics"]),
             "uncertainty": {"final_population": mean_ci(benchmark_results[m]["carrying_capacity"]),
                             "survival": proportion_ci(benchmark_results[m]["survival"]),
                             "duration": mean_ci(benchmark_results[m]["lifespan"]),
@@ -509,6 +526,7 @@ def run_phase4_mimicry_and_benchmarks(seeds: List[int] = SEEDS, steps: int = 300
         "invasion_enabled": invade,
         "training_seeds": list(seeds),
         "evaluation_seeds": [s+10000 for s in seeds],
+        "interpretation": "Historical stress test (out of training distribution). Mimic extinction with resident survival is a secondary outcome, not proof of discrimination; use donation share and energy to mimics.",
     }
 
 

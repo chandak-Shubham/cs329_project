@@ -1,55 +1,50 @@
-https://chandak-shubham.github.io/cs329_project/
+# Emergent Kin Selection in Multi-Agent Reinforcement Learning
 
-## Interactive browser simulation
+CS329 | Group 21 | IIT Gandhinagar
 
-Open [`index.html`](index.html) directly in Chrome, Firefox, or Edge. The white interface puts controls in a left sidebar, with the grid and results on the right. It works offline with no installation, server, or build step. Four labelled rule-based behaviours and the actual seed-42 MLP checkpoint propose actions. Every attempted donation must pass **rB > C**, donor energy **> C**, and the non-mimic restriction. Failed attempts transfer no donation energy and display their actual values and reasons. Charts, results, agent inspection, and CSV derive from the simulated state.
+## Results and scientific status
 
-Choose **Mimics at step 40** to schedule an invasion, conditional on residents surviving and space remaining. Enforcement can cause extinction before the invasion; survival and attack success are not forced. Hamilton's rule is an **enforced browser constraint**, not evidence of learned Hamilton-consistent behaviour. The Python research environment remains observation-only and its saved results are unchanged. CSV preserves decision-time r, B, C, rB, donor energy, and failure reasons.
+**The kin-selection hypothesis is not yet supported.** In the historical five-seed, 1,024-step study, every learned Phase 2 population became extinct. The historical regression estimated a negative relatedness coefficient (-0.556) and pseudo-R-squared around 0.002. Those observations do not demonstrate learned kin preference or adaptive cue reliability.
 
-See [the web demo manual](docs/web_simulation.md) for controls, scientific scope, verification, and GitHub Pages setup. Check the standalone JavaScript engine with `node --test tests/web_simulation.test.cjs`; refresh embedded research artifacts with `python visualizer/export_web_data.py` after changing results or the MLP checkpoint.
+The 17 November review response adds a separate, reproducible study with an individual survival/reproduction objective, contextual gating, independently trained noise conditions, matched ecological settings, mimic donation-share measurements, a fixed neural gate, and the demographic fallback. Changing the reward changes the research question. A shared policy still does not implement competing, inherited lineage policies.
 
-## Reproduce
+See [the review response and protocol](docs/review_response_2026-11-17.md), [executed revised results](results/revised_study/results.md), and [raw revised results](results/revised_study/analysis.json). Historical results remain separate; their tables and figures must not be presented as outputs of the revised training.
 
-Run from the repository root using Python 3.12:
+## Run the revised study
+
+Use Python 3.12 from the repository root:
 
 ```powershell
 python -m pip install -r requirements.txt
 python -m pytest -q
-python training/train_all_models.py --environment-steps 1024 --workers 4
-python experiments/run_phases.py
-python experiments/research_controls.py
-python evaluation/analysis.py
-python evaluation/generate_figures.py
-python experiments/cooperation_feasibility.py
-python visualizer/live_sim.py
-python evaluation/build_run_report.py
+node --test tests/web_simulation.test.cjs
+python experiments/revised_study.py --environment-steps 8192 --workers 3
+python evaluation/revised_report.py
 ```
 
-Training must finish before evaluation. A missing checkpoint raises an error. Reduce `--workers` to 1 on memory-constrained machines. All computation uses CPU; no external accounts or paid services are required. This is a short-budget replicated study, not a convergence claim. Increase the training budget and repeat the complete evaluation sequence for stronger evidence.
+This trains seven conditions with five independent training seeds (35 checkpoints), then evaluates clean and attacked worlds and mutation controls. The budget is eight times the historical 1,024 steps; it is **not a convergence guarantee**. The budget must be a positive multiple of the 64-step rollout length. Each checkpoint records its exact configuration, training curve, actual environment and resident-agent transitions, source hashes, versions, and SHA256. Verified matching completed runs can be reused. Increase `--environment-steps` for a longer study; reduce `--workers` to 1 to limit concurrent CPU/memory load. Evaluation can be rerun with `--evaluate-only`.
 
-## Training and provenance
+The matched default world is 18 x 18, 24 founders, capacity 45, initial energy 30, mitosis threshold 60, cost 2, benefit 5, basal drain 0.6, crowding cost 0.08, mutation 0.05, and a 300-transition horizon. Only named experimental factors vary. Attack controls add up to six mimics after transition 10, refreshing observations before the next decision. No attack or no post-attack donations yields an undefined (null) donation share, never successful defense.
 
-The default suite trains **35 checkpoints**: MLP, gating MLP, attention, and fixed-gating attention at B/C=2.5, plus attention at B/C=1.5, 3.0 and 4.5; each uses seeds 42, 101, 202, 303 and 404. Every run starts from a fresh network, optimizer and world. The fixed neural gate is 0.5/0.5 throughout training and evaluation; it retains the attention architecture and raw cues. It tests the gate contribution, not removal of genetic or behavioral information.
+## Browser simulation
 
-Each run uses 1,024 environment transitions, 64-step rollouts, 16 PPO updates, three epochs per update, batch size 64, learning rate 0.0003, gamma 0.99, GAE lambda 0.95, clipping 0.2, value coefficient 0.5 and entropy coefficient 0.01. The legacy `total_timesteps` function argument is a nominal initial-population agent budget (24 times the environment budget), rounded up to complete rollouts; actual active-agent transitions differ and are saved. No hidden minimum training iterations apply. Each checkpoint has a JSON sidecar with configuration, source and checkpoint SHA256 hashes, package versions, actual budgets, elapsed time and learning curves. Seed-42 aliases support the single-run visualizer; evaluations load each seed-specific checkpoint.
+Open [index.html](index.html) locally. It runs offline without installation or a server. The repository's previously published page is [GitHub Pages](https://chandak-shubham.github.io/cs329_project/); local changes require a separate deployment to appear there.
 
-Evaluation worlds and action sampling use seed `training_seed + 10000`; random-pair measurement uses a separate RNG. These are five independent joint training/evaluation units, with one evaluation world per trained policy per condition. Intervals therefore include both training and environment variability and do not separate them. More evaluation worlds per checkpoint would improve precision.
+**Hamilton enforcement is off by default.** The checkbox explicitly forces the rule when enabled. Results in that mode cannot establish learned Hamilton behaviour. The four rule strategies and the **historical PPO MLP** propose actions; the browser does not execute the new contextual attention checkpoints. Default ecology matches MLP training; stress presets and manual parameter changes are distribution shifts. Browser and Python use different seeded RNG implementations, so identical numeric seeds do not imply identical trajectories.
 
-## Experiments and interpretation
+Mimics copy the most common resident genome (smallest genome breaks ties), occupy randomly sampled empty cells, and never donate. The interface and CSV report donations to mimics as a share of post-invasion donations. Affordability and mimic restrictions always apply. See [the browser manual](docs/web_simulation.md). Refresh embedded historical artifacts with `python visualizer/export_web_data.py`.
 
-- Phases 1-4 retain selfish, clean neural, noise-sweep and stress-invasion evaluations. Phase 4 injection occurs at the state boundary after 40 transitions, before transition 41. Attacks that cannot occur are null, not successful defense. Defense requires resident survival. Final population and episode duration are not equilibrium carrying capacity or individual lifespan.
-- `research_controls.json` contains paired attack/no-attack and adaptive/fixed neural comparisons. Every Phase 4 strategy also has a matched no-invasion stress run in `phase4_no_invasion.json`. Additional neural controls inject after 10 transitions so short-lived populations can actually face attack. They use the same per-seed initial worlds and action RNG seeds; stochastic paths can diverge after interventions. Report both this early-invasion control and the original Phase 4 stress setting.
-- Before/after genetic-weight changes use ten-transition windows and a matched no-invasion difference in differences. This measures a composition-sensitive population response of a frozen gate, not online learning or individual trust updating.
-- Spatial assortment uses unordered pairs at toroidal Manhattan distance exactly one, measured over living states up to 300 transitions. It compares seed-paired random chromosome pairs and independently simulated random global offspring placement. Both placement arms use initial energy 60 and a mitosis threshold of 50 to exercise reproduction in every seed; the initial low-reserve check had only 0-1 births per seed. This supplementary diagnostic was refined after that exposure check and is exploratory; `results/placement_low_reserve_exploratory.json` retains the initial check. Per-run time averages avoid treating all pair observations as independent. Extinct runs contribute their pre-extinction states; the statistic is not an equilibrium estimate. Missing pairs are null and excluded explicitly.
-- The incentive-response experiment trains separate attention policies at each B/C and probes identical synthetic inputs over relatedness. It reports a paired high-minus-low incentive response and above-minus-below Hamilton threshold contrast across training seeds. B/C is not in the observation, so these are **training-condition effects**, not instantaneous incentive sensitivity. The curve uses baseline-corrected chromosome similarity, not an independently estimated pedigree kin coefficient. This experiment alone cannot prove Hamilton's rule.
-- Regression uses training-seed cluster sandwich covariance and a Student t reference with four degrees of freedom. Five clusters are few: all inference is exploratory. Predictors are unstandardized. Environmental B/C in a rollout regression can reflect state-distribution changes, not direct perception of incentives.
+## Interpretation
 
-Means use 95% Student t intervals across independent runs; binary survival uses Wilson intervals. A zero observed survival rate still has nonzero uncertainty. Paired controls use per-seed differences. P-values are exploratory, two-sided and unadjusted for multiple comparisons. JSON retains raw seed records; generated figures/tables derive annotations from those results.
+- The revised demographic reward is `1 * survived_transition + 5 * own_births`. It contains no relatedness, recipient benefit, donation bonus, or Hamilton threshold. The energy-only control retains the original reward. Survival/reproduction incentives may help reciprocity, but do not guarantee it.
+- The contextual gate sees masked neighbourhood cue means and standard deviations. Encoders retain raw cues, so gate weight is descriptive telemetry. Full-policy cue permutation sensitivity and common-input probes measure action changes, including raw-cue paths; they are exploratory attribution diagnostics, not causal reliability estimates.
+- Noise conditions train independently at bit-flip probabilities 0, 0.25 and 0.5. Noise/mimic training is separate from frozen-policy robustness testing. A frozen policy may respond to changed observations; it does not update its parameters online.
+- Donation adds net energy B-C; only parent/child mitosis conserves energy. Behavioural history is the fraction of the neighbour's recent actions that were donations **given**, not received. Chromosome similarity is a proxy, not a measured pedigree kin coefficient.
+- Confidence intervals use independent training-seed units: Student t for means and Wilson for survival proportions. Paired contrasts use per-seed differences. Five clusters and one evaluation world per checkpoint leave substantial uncertainty; the results are exploratory.
+- The fallback actually trains with starvation and mitosis disabled. Negative energy is allowed there, so its survival metric cannot support ecological claims.
 
-## Environment scope
+## Historical study
 
-Simultaneous movement permits swaps and chains into vacated cells; competing destination intents are cancelled. Donation subtracts C and adds B, so B>C creates net energy B-C. Only mitosis conserves energy by splitting the parent's reserve. Neural residents share one policy per run; this is not competition among evolving lineage-specific neural policies. The rule-based feasibility arena does inherit strategy labels by persistent individual ID. The reputation baseline is called **Reputation Threshold**, not Tit-for-Tat.
+The original 35 checkpoints, phase results, regression, spatial controls, figures and animation are retained under `results/`. Their 1,024-step budgets and differing evaluation ecologies are documented in [the historical completion report](docs/completion_2026-11-16.md). `experiments/run_phases.py`, `experiments/research_controls.py` and `evaluation/analysis.py` reproduce that historical design with current bug fixes; they do not train or analyze the revised study. The historical fixed-weight threshold rule is distinct from the fixed-gating attention ablation.
 
-`offspring_placement="random"` enables the global-empty-cell control. `enable_starvation=False` disables energy-based deaths as an explicit diagnostic only: energy can become negative and these runs cannot validate ecological survival. Standard results keep starvation enabled.
-
-Results, small checkpoints, their provenance, figures and the GIF are research artifacts. Python bytecode and caches are ignored. Historical reviews in `docs/project_review.md` and the dated rechecks describe earlier snapshots; use `docs/completion_2026-11-16.md` for the latest executed evidence and remaining limitations.
+Training data use persistent identities, terminal death transitions even on slot reuse, action masks from the configured environment, and active resident masks. Movement permits swaps and chains with consistent occupancy. The rule-based feasibility arena inherits strategy labels by persistent individual ID; neural residents share one policy per run.

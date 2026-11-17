@@ -10,11 +10,10 @@ venv/
 env/
 .review_tools/
 
-# Checkpoints are s
-
-
-mall reproducible research artifacts and are tracked.
+# Small reproducible checkpoints are tracked.
 *.pth
+results/revised_study/checkpoints/*.log
+results/revised_study/checkpoints/*.lock
 
 # IDE
 .vscode/

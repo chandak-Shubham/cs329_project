@@ -331,10 +331,11 @@ def generate_tables():
     # Table 1: Master Benchmarks
     t1_md = [
         "# Table 1: Master Benchmark Evaluation (Phase 4 under Genetic Mimicry, 5 Training Seeds)",
-        "| Model / Strategy | Final Population | Resident Survival (%) | Episode Duration (Steps) | Mimic Defense Rate (%) |",
+        "| Model / Strategy | Final Population | Resident Survival (%) | Episode Duration (Steps) | Mimic elimination with surviving residents (%) |",
         "| :--- | :---: | :---: | :---: | :---: |",
     ]
     for m, vals in p4["benchmarks"].items():
+        m = m.replace("Fixed Weights (w^g=0.5)", "Fixed cue threshold (rule-based)")
         if vals.get('mimic_defense_rate') is not None:
             def_str = f"${vals['mimic_defense_rate']:.1f}\\%$"
         else:

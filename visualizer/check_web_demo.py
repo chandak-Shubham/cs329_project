@@ -35,7 +35,7 @@ def check_browser(playwright, channel, firefox_executable=None):
     page.on("pageerror", lambda error: errors.append(str(error)))
     page.on("request", lambda request: requests.append(request.url))
     page.goto((ROOT / "index.html").as_uri())
-    expect(page.locator("#population")).to_have_text("30")
+    expect(page.locator("#population")).to_have_text("24")
     sidebar = page.locator(".sidebar").bounding_box()
     results = page.locator(".results").bounding_box()
     assert sidebar["x"] + sidebar["width"] <= results["x"] + 1
@@ -46,8 +46,8 @@ def check_browser(playwright, channel, firefox_executable=None):
     assert int(page.locator("#donations").inner_text()) > 0
     assert page.evaluate("kinshipApp.engine.hamiltonAbove + kinshipApp.engine.hamiltonBelow === kinshipApp.engine.totalDonations")
     expect(page.locator("#run-summary")).to_contain_text("After 1 step,")
-    assert page.evaluate("kinshipApp.engine.enforceHamilton")
-    expect(page.locator("#below-count")).to_have_text("0")
+    assert not page.evaluate("kinshipApp.engine.enforceHamilton")
+    assert page.evaluate("kinshipApp.engine.hamiltonBelow") > 0
     assert page.locator("#check-rows tr").count() > 0
     page.locator("#reset").click()
     assert initial == page.evaluate("JSON.stringify(kinshipApp.engine.agents)")
@@ -75,6 +75,7 @@ def check_browser(playwright, channel, firefox_executable=None):
     assert initial != page.evaluate("JSON.stringify(kinshipApp.engine.agents)")
     page.locator("#seed").fill("42")
     page.locator("#reset").click()
+    page.locator("#enforce-hamilton").check()
     set_range(page, "benefit", 0)
     expect(page.locator("#threshold")).to_have_text("r* = ∞")
     assert "warning" in page.locator("#hamilton").get_attribute("class")
@@ -85,6 +86,7 @@ def check_browser(playwright, channel, firefox_executable=None):
     set_range(page, "drain", 0.75)
     assert page.evaluate("[kinshipApp.engine.B,kinshipApp.engine.C,kinshipApp.engine.cBase]") == [0, 3, 0.75]
     page.locator('#scenario').select_option('cooperation')
+    page.locator('#enforce-hamilton').uncheck()
     click_steps(page, 3)
     page.locator("#inject").click()
     assert page.evaluate("kinshipApp.engine.metrics().mimics") == 12
@@ -93,8 +95,8 @@ def check_browser(playwright, channel, firefox_executable=None):
     expect(page.locator("#agent-details")).to_contain_text("Reputation")
     box = page.locator("#world").bounding_box()
     agent = page.evaluate("kinshipApp.engine.agents[1]")
-    page.mouse.click(box["x"] + (agent["x"] + 0.5) / 24 * box["width"],
-                     box["y"] + (1 - (agent["y"] + 0.5) / 24) * box["height"])
+    page.mouse.click(box["x"] + (agent["x"] + 0.5) / page.evaluate("kinshipApp.engine.L") * box["width"],
+                     box["y"] + (1 - (agent["y"] + 0.5) / page.evaluate("kinshipApp.engine.L")) * box["height"])
     expect(page.locator("#agent-select")).to_have_value(str(agent["id"]))
     page.locator("#shock").click()
     expect(page.locator("#shock")).to_be_disabled()
@@ -133,6 +135,7 @@ def check_browser(playwright, channel, firefox_executable=None):
     expect(page.locator("#play")).to_be_disabled()
     expect(page.locator("#world-overlay")).to_contain_text("extinct")
     page.locator('#scenario').select_option('cooperation')
+    page.locator('#enforce-hamilton').uncheck()
     click_steps(page, 3)
     page.locator("#inject").click()
     click_steps(page, 4)

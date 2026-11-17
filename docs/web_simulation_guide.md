@@ -1,3 +1,5 @@
+> Historical design document. Current behaviour and scientific scope are described in [the browser manual](web_simulation.md) and [review response](review_response_2026-11-17.md).
+
 # Interactive Web Simulation & GitHub Pages Deployment Guide
 
 **Project:** Emergent Kin Selection & Spatial Assortment in Multi-Agent Reinforcement Learning  

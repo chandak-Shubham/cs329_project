@@ -43,8 +43,9 @@ def fit_logistic_regression(
 ) -> Dict[str, Any]:
     """
     Fits logistic regression with mild L2 regularization for numerical stability.
-    Computes exact standard errors via Fisher Information (Hessian inversion),
-    Wald z-statistics, and two-tailed p-values.
+    Uses a training-seed cluster sandwich covariance when groups are supplied,
+    with a Student t reference (clusters minus one degrees of freedom).
+    Without groups, uses model-based asymptotic Wald inference.
     """
     N, D = X.shape
 

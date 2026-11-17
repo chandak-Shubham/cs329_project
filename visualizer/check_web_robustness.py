@@ -33,6 +33,7 @@ def check(p, channel):
     page.locator("#seed").fill("42")
     page.locator("#reset").click()
 
+    page.locator("#enforce-hamilton").check()
     set_range(page, "benefit", 2)
     expect(page.locator("#scenario")).to_have_value("custom")
     expect(page.locator("#condition-status")).to_contain_text("condition failed")

@@ -29,6 +29,7 @@ from models.mlp_policy import SimpleMLPPolicy
 from models.gating_policy import GatingPolicy
 from models.attention_policy import GatedAttentionPolicy
 from training.rollout_buffer import MaskedRolloutBuffer
+from experiments.config import environment_config
 
 CHECKPOINTS_DIR = "results/checkpoints"
 os.makedirs(CHECKPOINTS_DIR, exist_ok=True)
@@ -49,6 +50,12 @@ def train_model(
     seed: int = 42,
     save_path: str = "",
     bc_ratio: float = 2.5,
+    env_config=None,
+    environment_steps=None,
+    contextual_gate: bool = False,
+    fixed_gate=None,
+    invasion_step=None,
+    invasion_count: int = 6,
 ) -> Dict[str, Any]:
     torch.set_num_threads(1)
     torch.manual_seed(seed)
@@ -56,20 +63,9 @@ def train_model(
     device = torch.device("cpu")
 
     # Environment setup
-    env = GridWorld(
-        grid_size=18,
-        max_capacity=45,
-        initial_population=24,
-        initial_energy=30.0,
-        e_mitosis=60.0,
-        enable_mitosis=True,
-        mutation_rate=0.05,
-        c_base=0.6,
-        c_density=0.08,
-        donation_cost=2.0,
-        donation_benefit=2.0 * bc_ratio,
-        seed=seed,
-    )
+    config = environment_config(donation_benefit=2.0 * bc_ratio)
+    config.update(env_config or {})
+    env = GridWorld(**config, seed=seed)
 
     # Initialize model
     if model_type == "mlp":
@@ -80,7 +76,8 @@ def train_model(
         obs_dim = policy.input_dim
     elif model_type in ("attention", "fixed_attention"):
         policy = GatedAttentionPolicy(max_neighbors=8, d_model=32, num_heads=2, action_dim=13,
-                                      fixed_gate=0.5 if model_type == "fixed_attention" else None).to(device)
+                                      fixed_gate=0.5 if model_type == "fixed_attention" else fixed_gate,
+                                      contextual_gate=contextual_gate).to(device)
     else:
         raise ValueError(f"Unknown model_type: {model_type}")
 
@@ -99,7 +96,10 @@ def train_model(
     )
 
     obs = env.reset(seed=seed)
-    num_iterations = math.ceil(total_timesteps / (rollout_length * 24))
+    if environment_steps is not None and (environment_steps <= 0 or environment_steps % rollout_length):
+        raise ValueError("environment_steps must be a positive multiple of rollout_length")
+    num_iterations = (environment_steps // rollout_length if environment_steps is not None
+                      else math.ceil(total_timesteps / (rollout_length * 24)))
     if num_iterations < 1:
         raise ValueError("Training budget must be positive")
     history = []
@@ -115,9 +115,15 @@ def train_model(
         buffer.reset()
         active_counts = []
         donations_counts = []
+        reward_means = []
+        birth_counts = []
+        mimics_injected = 0
 
         # 1. Rollout Collection
         for step in range(rollout_length):
+            if invasion_step is not None and env.step_count == invasion_step:
+                mimics_injected += env.inject_mimics(invasion_count)
+                obs = env._get_observations()
             s_st = torch.as_tensor(obs["self_state"], dtype=torch.float32)
             n_feats = torch.as_tensor(obs["neighbor_features"], dtype=torch.float32)
             n_mask = torch.as_tensor(obs["neighbor_mask"], dtype=torch.bool)
@@ -149,14 +155,17 @@ def train_model(
                     )
 
             # Step environment
+            resident_mask = obs["active_mask"] & ~env.is_parasite
             next_obs, rewards, dones, info = env.step(actions.numpy())
 
             active_counts.append(info["active_population"])
             donations_counts.append(info["donations_count"])
+            reward_means.append(float(np.mean(rewards[resident_mask])) if resident_mask.any() else 0.0)
+            birth_counts.append(info["births_this_step"])
 
             rewards_t = torch.as_tensor(rewards, dtype=torch.float32)
             dones_t = torch.as_tensor(dones, dtype=torch.bool)
-            active_t = torch.as_tensor(obs["active_mask"], dtype=torch.bool)
+            active_t = torch.as_tensor(resident_mask, dtype=torch.bool)
             active_transitions += int(active_t.sum())
 
             buffer.add(
@@ -240,18 +249,22 @@ def train_model(
                 epoch_pi_losses.append(policy_loss.item())
                 epoch_v_losses.append(value_loss.item())
 
+        pi_mean = float(np.mean(epoch_pi_losses)) if epoch_pi_losses else None
+        value_mean = float(np.mean(epoch_v_losses)) if epoch_v_losses else None
         history.append({"iteration": iteration, "environment_steps": iteration * rollout_length,
                         "active_agent_transitions": active_transitions,
                         "mean_population": float(np.mean(active_counts)),
                         "donations_per_step": float(np.mean(donations_counts)),
-                        "policy_loss": float(np.mean(epoch_pi_losses)),
-                        "value_loss": float(np.mean(epoch_v_losses))})
+                        "mean_individual_reward": float(np.mean(reward_means)),
+                        "births": int(sum(birth_counts)), "mimics_injected": mimics_injected,
+                        "policy_loss": pi_mean, "value_loss": value_mean,
+                        "optimizer_minibatches": len(epoch_pi_losses)})
         print(
             f"  Iter {iteration:>2}/{num_iterations} | "
             f"Pop: {np.mean(active_counts):>4.1f} | "
             f"Donations/step: {np.mean(donations_counts):>4.1f} | "
-            f"Pi Loss: {np.mean(epoch_pi_losses):>7.4f} | "
-            f"V Loss: {np.mean(epoch_v_losses):>7.4f}"
+            f"Pi Loss: {format(pi_mean, '.4f') if pi_mean is not None else 'no resident samples'} | "
+            f"V Loss: {format(value_mean, '.4f') if value_mean is not None else 'no update'}"
         )
 
     # Save trained checkpoint
@@ -259,22 +272,24 @@ def train_model(
         Path(save_path).parent.mkdir(parents=True, exist_ok=True)
         torch.save(policy.state_dict(), save_path)
         provenance = {"model_type": model_type, "seed": seed, "bc_ratio": bc_ratio,
-                      "nominal_agent_budget_requested": total_timesteps,
+                      "nominal_agent_budget_requested": total_timesteps if environment_steps is None else None,
+                      "environment_steps_requested": environment_steps,
+                      "budget_mode": "environment_steps" if environment_steps is not None else "legacy_nominal_agent_budget",
                       "environment_steps": num_iterations * rollout_length,
                       "active_agent_transitions": active_transitions,
                       "rollout_length": rollout_length, "num_epochs": num_epochs,
                       "batch_size": batch_size, "lr": lr, "gamma": gamma,
                       "gae_lambda": gae_lambda, "clip_eps": clip_eps,
                       "vf_coef": vf_coef, "ent_coef": ent_coef,
-                      "environment": {"grid_size": 18, "max_capacity": 45, "initial_population": 24,
-                                      "initial_energy": 30, "e_mitosis": 60, "mutation_rate": .05,
-                                      "c_base": .6, "c_density": .08, "donation_cost": 2,
-                                      "donation_benefit": 2 * bc_ratio, "max_steps": env.max_steps},
+                      "environment": config,
+                      "contextual_gate": contextual_gate, "fixed_gate": policy.fixed_gate if hasattr(policy, "fixed_gate") else None,
+                      "invasion_step": invasion_step, "invasion_count": invasion_count,
                       "torch_version": str(torch.__version__), "numpy_version": np.__version__,
                       "source_sha256": source_hashes, "elapsed_seconds": time.time() - started,
                       "checkpoint_sha256": hashlib.sha256(Path(save_path).read_bytes()).hexdigest(),
                       "learning_curve": history}
-        Path(save_path).with_suffix(".json").write_text(json.dumps(provenance, indent=2))
+        provenance["ppo_updates"] = sum(row["policy_loss"] is not None for row in history)
+        Path(save_path).with_suffix(".json").write_text(json.dumps(provenance, indent=2, allow_nan=False))
         print(f"  Saved trained checkpoint to {save_path}")
 
     return {"model_type": model_type, "final_pop": float(np.mean(active_counts))}
