@@ -2,6 +2,14 @@
 
 A CPU PyTorch research project evaluating shared neural donation policies in a dynamic grid world. Negative findings are valid outcomes. Donation, survival, kin preference and Hamilton's rule are separate hypotheses; the code does not assume any of them emerge.
 
+## Interactive browser simulation
+
+Open [`index.html`](index.html) directly in Chrome, Firefox, or Edge. The white interface puts experiment, agent behaviour, energy, playback, and intervention controls in a left sidebar, with the grid and results on the right. It works offline with no installation, server, or build step. Five strategies include actual inference from the seed-42 MLP checkpoint. Results show population, energy, births, deaths, and donation counts above and below the Hamilton threshold, with live charts, agent inspection, and CSV export.
+
+Choose **Mimics at step 40** in the Experiment selector, then **Play**, for a reproducible invasion demonstration. This preset uses scarcity parameters to leave room in the 60-agent pool. The default high-benefit colony can fill that pool before an invasion. Hamilton counts use decision-time relatedness and settings; they describe this run and do not prove the rule or replace the proposal's multi-seed research evaluation.
+
+See [the web demo manual](docs/web_simulation.md) for controls, scientific scope, verification, and GitHub Pages setup. Check the standalone JavaScript engine with `node --test tests/web_simulation.test.cjs`; refresh embedded research artifacts with `python visualizer/export_web_data.py` after changing results or the MLP checkpoint.
+
 ## Reproduce
 
 Run from the repository root using Python 3.12:
