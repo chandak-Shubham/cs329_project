@@ -45,7 +45,10 @@ def check_browser(playwright, channel, firefox_executable=None):
     expect(page.locator("#step-count")).to_have_text("0001")
     assert int(page.locator("#donations").inner_text()) > 0
     assert page.evaluate("kinshipApp.engine.hamiltonAbove + kinshipApp.engine.hamiltonBelow === kinshipApp.engine.totalDonations")
-    expect(page.locator("#run-summary")).to_contain_text("After 1 steps")
+    expect(page.locator("#run-summary")).to_contain_text("After 1 step,")
+    assert page.evaluate("kinshipApp.engine.enforceHamilton")
+    expect(page.locator("#below-count")).to_have_text("0")
+    assert page.locator("#check-rows tr").count() > 0
     page.locator("#reset").click()
     assert initial == page.evaluate("JSON.stringify(kinshipApp.engine.agents)")
     page.locator("#play").click()
@@ -75,6 +78,9 @@ def check_browser(playwright, channel, firefox_executable=None):
     set_range(page, "benefit", 0)
     expect(page.locator("#threshold")).to_have_text("r* = ∞")
     assert "warning" in page.locator("#hamilton").get_attribute("class")
+    expect(page.locator("#condition-status")).to_contain_text("condition failed")
+    page.locator('#step').click()
+    expect(page.locator('#donations')).to_have_text('0')
     set_range(page, "cost", 3)
     set_range(page, "drain", 0.75)
     assert page.evaluate("[kinshipApp.engine.B,kinshipApp.engine.C,kinshipApp.engine.cBase]") == [0, 3, 0.75]
@@ -110,8 +116,13 @@ def check_browser(playwright, channel, firefox_executable=None):
     click_steps(page, 40)
     assert page.evaluate("kinshipApp.engine.totalInjected") == 0
     click_steps(page, 1)
-    assert page.evaluate("kinshipApp.engine.totalInjected") > 0
-    assert page.evaluate("kinshipApp.engine.events.find(e=>e.type==='injection').step") == 40
+    if page.evaluate("kinshipApp.engine.stepCount") == 41:
+        assert page.evaluate("kinshipApp.engine.events.find(e=>e.type==='injection').step") == 40
+        expect(page.locator('#intervention-status')).to_contain_text('mimics')
+    else:
+        # Enforcement can cause extinction before the scheduled attack. Do not fabricate it.
+        assert page.evaluate("kinshipApp.engine.finished && kinshipApp.engine.agents.length === 0")
+        assert page.evaluate("kinshipApp.engine.totalInjected") == 0
     page.locator('#scenario').select_option('stress')
     assert page.evaluate("[kinshipApp.engine.L,kinshipApp.engine.B,kinshipApp.engine.C,kinshipApp.engine.cBase,kinshipApp.engine.cDensity]") == [20, 3, 2, 0.8, 0.1]
     page.locator('#scenario').select_option('kin')

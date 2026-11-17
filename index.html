@@ -55,6 +55,14 @@
     @media(max-width:1150px) { .workspace { grid-template-columns:1fr; } .side-results { display:grid; grid-template-columns:1fr 1fr; gap:16px; } .arena-wrap { max-width:550px; margin:auto; } }
     @media(max-width:800px) { .app-layout { grid-template-columns:260px minmax(0,1fr); } .sidebar { padding:16px; } .results { padding:20px 16px; } .stats-deck { grid-template-columns:1fr 1fr; } .stat-card:nth-child(2) { border-right:0; } .stat-card:nth-child(-n+2) { border-bottom:1px solid var(--line); } .side-results,.charts-grid { grid-template-columns:1fr; } }
     @media(max-width:620px) { .topbar { padding:16px; } .topbar>span { display:none; } .app-layout { grid-template-columns:1fr; } .sidebar { border-right:0; border-bottom:1px solid var(--line); } .results { padding:20px 12px; } .panel-body { padding:12px; } }
+    summary { cursor:pointer; font-size:12px; font-weight:600; padding:10px 0; }
+    .condition-status { margin:10px 0; padding:9px; background:#f5f7fa; border:1px solid var(--line); border-radius:4px; font-size:12px; }
+    .condition-status.failed { background:#fff5f5; color:#9b2424; border-color:#edb9b9; }
+    .condition-status.passed { background:#f0f9f4; color:#166534; border-color:#b5dbc5; }
+    .check-scroll { max-height:210px; overflow:auto; } table { border-collapse:collapse; width:100%; font-size:11px; } th,td { padding:6px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; } td:last-child { min-width:110px; }
+    .sidebar { padding:16px 20px; } .sidebar-section { padding:13px 0; } .field { margin-top:10px; }
+    .results { padding-top:16px; } .stats-deck { margin-bottom:14px; } .panel-body { padding:12px; }
+    @media(min-width:1151px) { .arena-wrap { max-width:min(100%,max(260px,calc(100vh - 340px))); margin:auto; } }
   </style>
 </head>
 <body>
@@ -66,13 +74,15 @@
   <main class="app-layout">
     <aside class="sidebar" aria-label="Simulation controls">
       <h2>Controls</h2>
+        <div class="transport-row"><button type="button" class="primary" id="play">Play</button><button type="button" id="step">Step</button><button type="button" id="reset">Reset</button></div>
+      <details id="settings-panel" open><summary>Experiment settings</summary>
       <section class="sidebar-section">
         <div class="field"><label for="scenario">Experiment</label>
-          <select id="scenario"><option value="cooperation">Cooperation baseline</option><option value="selfish">Selfish baseline</option><option value="kin">Genetic matching</option><option value="invasion">Mimics at step 40</option><option value="stress">Mimics in a smaller grid</option></select>
+          <select id="scenario"><option value="custom" disabled>Custom settings</option><option value="cooperation" selected>Cooperation baseline</option><option value="selfish">Selfish baseline</option><option value="kin">Genetic matching</option><option value="invasion">Mimics at step 40</option><option value="stress">Mimics in a smaller grid</option></select>
         </div>
         <p class="fineprint" id="scenario-note">24 × 24 grid · 30 founders. Choosing an experiment starts a fresh run.</p>
         <div class="field"><label for="strategy">Agent behaviour</label>
-          <select id="strategy"><option value="reputation">Help recent donors</option><option value="kin">Help genetic relatives</option><option value="fixed">Use both cues equally</option><option value="selfish">Never donate</option><option value="neural">Trained PPO model (MLP)</option></select>
+          <select id="strategy"><option value="reputation">Recent donors (rule-based)</option><option value="kin">Genetic relatives (rule-based)</option><option value="fixed">Both cues equally (rule-based)</option><option value="selfish">Never donate (rule-based)</option><option value="neural">Trained PPO model (MLP)</option></select>
         </div>
         <p class="fineprint" id="strategy-note"></p>
       </section>
@@ -80,14 +90,14 @@
         <h3>Energy settings</h3>
         <div class="field"><div class="slider-head"><label for="benefit">Benefit to recipient (B)</label><output id="benefit-value" for="benefit">6.0</output></div><input id="benefit" type="range" min="0" max="10" step="0.1" value="6"></div>
         <div class="field"><div class="slider-head"><label for="cost">Cost to donor (C)</label><output id="cost-value" for="cost">2.0</output></div><input id="cost" type="range" min="0.5" max="5" step="0.1" value="2"></div>
-        <div class="field"><div class="slider-head"><label for="drain">Energy used each step</label><output id="drain-value" for="drain">0.50</output></div><input id="drain" type="range" min="0" max="2" step="0.05" value="0.5"></div>
-        <p class="fineprint">Behaviour and energy changes apply immediately. Reset to compare from the same starting population.</p>
+        <div class="field"><div class="slider-head"><label for="drain">Base energy used each step</label><output id="drain-value" for="drain">0.50</output></div><input id="drain" type="range" min="0" max="2" step="0.05" value="0.5"></div>
+        <p class="fineprint">Crowding adds an extra energy cost. Behaviour and energy changes apply immediately. Reset to compare from the same starting population.</p>
       </section>
       <section class="sidebar-section">
-        <h3>Run simulation</h3>
+        <h3>Speed & seed</h3>
         <div class="slider-head"><label for="speed">Speed</label><output id="speed-value" for="speed">8 steps/s</output></div><input id="speed" type="range" min="1" max="30" value="8">
         <div class="field"><label for="seed">Random seed</label><input id="seed" type="number" min="0" max="4294967295" value="42" step="1" required></div>
-        <div class="transport-row"><button type="button" class="primary" id="play">Play</button><button type="button" id="step">Step</button><button type="button" id="reset">Reset</button></div>
+
         <p class="fineprint">Same seed + same settings = same starting world.</p>
       </section>
       <section class="sidebar-section">
@@ -96,8 +106,10 @@
         <p class="fineprint">Mimics copy a resident genetic tag but never donate. A shock doubles energy drain for 30 steps.</p>
         <div id="intervention-status" class="status-alert" role="status" aria-live="polite"></div>
       </section>
+      </details>
     </aside>
     <section class="results" aria-label="Simulation and results">
+      <div id="runtime-error" class="condition-status failed" role="alert" hidden></div>
       <div class="results-heading"><h2>Simulation & results</h2><span class="badge-pill" id="run-status">Ready</span></div>
       <div class="stats-deck">
         <div class="stat-card"><div class="stat-header">Living agents / 60</div><div class="stat-num" id="population">30</div><div class="stat-sub" id="population-detail">30 residents · 0 mimics</div></div>
@@ -117,10 +129,13 @@
           <section class="panel"><div class="panel-header"><h3>Hamilton's rule: rB &gt; C</h3></div><div class="panel-body">
             <div class="hamilton-card" id="hamilton"><div><span class="muted">Benefit / cost</span><div class="hamilton-metric-val" id="ratio">3.00</div></div><div><span class="muted">Relatedness threshold</span><div class="hamilton-metric-val" id="threshold">r* = 0.33</div></div></div>
             <p class="fineprint" id="hamilton-note"></p>
+            <p class="condition-status" id="condition-status" role="status" aria-live="polite"></p>
+            <div class="result-line"><span>Blocked: rB ≤ C, this run</span><strong id="blocked-count">0</strong></div>
+            <details id="check-details"><summary>Donation checks: last step</summary><p class="fineprint" id="check-caption"></p><div class="check-scroll"><table><thead><tr><th>Agents</th><th>r</th><th>B</th><th>C</th><th>r × B</th><th>Result</th></tr></thead><tbody id="check-rows"></tbody></table></div></details>
             <div class="result-line"><span>Donations where rB &gt; C</span><strong id="above-count">0</strong></div><div class="result-line"><span>Donations where rB ≤ C</span><strong id="below-count">0</strong></div><div class="result-line"><span>Mean r of donations, last step</span><strong id="donation-relatedness">—</strong></div>
             <p class="fineprint">Counts cover this run, using relatedness and B/C at each donation. r is chromosome similarity corrected for the population baseline, an approximation of genetic relatedness.</p>
           </div></section>
-          <section class="panel"><div class="panel-header"><h3>What happened?</h3></div><div class="panel-body"><p id="run-summary">Press Play or Step to begin.</p><p class="fineprint">Explore whether behaviour is consistent with Hamilton's rule. One run does not prove it. The PPO option uses the saved MLP; it does not retrain here.</p></div></section>
+          <section class="panel"><div class="panel-header"><h3>What happened?</h3></div><div class="panel-body"><p id="run-summary">Press Play or Step to begin.</p><p class="fineprint">Every attempted donation must pass rB > C and the energy checks. This is an enforced constraint, not proof of learned Hamilton behaviour. The PPO option uses the saved MLP without retraining.</p></div></section>
         </div>
       </div>
       <section class="panel"><div class="panel-header"><h3>Changes over time</h3><span class="muted">Horizontal axis: steps</span></div><div class="panel-body charts-grid"><div><div class="chart-label">Population · <span style="color:var(--green)">residents</span> / <span style="color:var(--red)">mimics</span></div><canvas id="population-chart" class="chart-canvas" role="img" aria-label="Population over time"></canvas></div><div><div class="chart-label">Average energy</div><canvas id="energy-chart" class="chart-canvas" role="img" aria-label="Average energy over time"></canvas></div></div></section>
@@ -179,8 +194,12 @@
   }
   class SimulationEngine {
     constructor(options = {}) {
-      Object.assign(this, {L:24, maxCapacity:60, initialPop:30, initialEnergy:30, B:6, C:2, cBase:0.5, cDensity:0.05, eMitosis:60, mutationRate:0.05, radius:3, maxNeighbors:8, maxSteps:1000, strategy:"reputation", seed:42, autoInvasion:false, neuralActor:null}, options);
+      Object.assign(this, {L:24, maxCapacity:60, initialPop:30, initialEnergy:30, B:6, C:2, cBase:0.5, cDensity:0.05, eMitosis:60, mutationRate:0.05, radius:3, maxNeighbors:8, maxSteps:1000, strategy:"reputation", seed:42, autoInvasion:false, enforceHamilton:true, neuralActor:null}, options);
       if (!Number.isInteger(this.L) || this.L < 8 || !Number.isInteger(this.maxCapacity) || this.maxCapacity < 1 || this.maxCapacity > this.L * this.L || !Number.isInteger(this.initialPop) || this.initialPop < 0 || this.initialPop > this.maxCapacity) throw new Error("Invalid world dimensions or population");
+      for (const [key,min,max] of [["B",0,10],["C",0.5,5],["cBase",0,2],["cDensity",0,Infinity],["initialEnergy",Number.MIN_VALUE,Infinity],["eMitosis",Number.MIN_VALUE,Infinity],["mutationRate",0,1]]) {
+        if (!Number.isFinite(this[key]) || this[key] < min || this[key] > max) throw new Error(`Invalid ${key}`);
+      }
+      if (!Number.isInteger(this.seed) || this.seed < 0 || this.seed > 4294967295 || !Number.isInteger(this.maxSteps) || this.maxSteps < 1 || !Object.hasOwn(STRATEGIES,this.strategy) || typeof this.enforceHamilton !== "boolean") throw new Error("Invalid simulation settings");
       this.reset();
     }
     reset() {
@@ -188,7 +207,7 @@
       this.grid = Array(this.L * this.L).fill(-1);
       this.slots = Array(this.maxCapacity).fill(null);
       this.nextId = 0; this.stepCount = 0; this.births = 0; this.deaths = 0; this.totalDonations = 0; this.shockRemaining = 0; this.autoInjected = false;
-      this.hamiltonAbove = 0; this.hamiltonBelow = 0;
+      this.hamiltonAbove = 0; this.hamiltonBelow = 0; this.hamiltonBlocked = 0; this.energyBlocked = 0; this.mimicBlocked = 0; this.attempts = 0; this.lastChecks = [];
       this.donations = []; this.birthEvents = []; this.deathEvents = []; this.events = []; this.history = []; this.lastDonations = 0; this.totalInjected = 0;
       const cells = this.rng.shuffle(Array.from({length:this.L * this.L}, (_, i) => i)).slice(0, this.initialPop);
       for (const cell of cells) this.spawn(cell, Math.floor(this.rng.next() * 256));
@@ -229,6 +248,16 @@
       input.push(neighbors.length / this.maxNeighbors);
       return {input, mask};
     }
+    donationCheck(a,b) {
+      const r = this.relatedness(a,b), weightedBenefit = r*this.B;
+      const hamiltonPass = weightedBenefit > this.C;
+      const energyPass = a.energy > this.C, mimicPass = !a.mimic;
+      const reasons = [];
+      if (this.enforceHamilton && !hamiltonPass) reasons.push("rB <= C");
+      if (!energyPass) reasons.push("donor energy <= C");
+      if (!mimicPass) reasons.push("mimics cannot donate");
+      return {step:this.stepCount,donorId:a.id,recipientId:b.id,r,B:this.B,C:this.C,weightedBenefit,donorEnergy:a.energy,hamiltonPass,energyPass,mimicPass,allowed:reasons.length===0,reasons};
+    }
     chooseAction(a) {
       if (this.strategy === "selfish") return Math.floor(this.rng.next() * 5);
       const neighbors = this.neighbors(a).slice(0,this.maxNeighbors);
@@ -264,15 +293,22 @@
       // An automatic attack is applied at the state boundary after transition 40.
       if (this.autoInvasion && this.stepCount === 40 && !this.autoInjected) { this.injectMimics(12); this.autoInjected = true; }
       const active = this.agents, actions = new Map(active.map(a => [a.slot, actionsOverride ? (actionsOverride[a.slot] ?? 0) : this.chooseAction(a)]));
-      this.stepCount++; this.donations = []; this.birthEvents = []; this.deathEvents = [];
+      this.stepCount++; this.lastChecks = []; this.donations = []; this.birthEvents = []; this.deathEvents = [];
       const intents = new Map(), transfers = [], moves = [[0,0],[0,1],[0,-1],[1,0],[-1,0]];
       for (const a of active) {
         const action = actions.get(a.slot); a.age++;
         let donated = false;
         if (action >= 1 && action <= 4) { const [dx,dy] = moves[action]; intents.set(a.slot,this.cell(a.x+dx,a.y+dy)); }
-        else if (action >= 5 && action < 13 && a.energy > this.C && !a.mimic) {
+        else if (action >= 5 && action < 13) {
           const b = this.neighbors(a)[action-5];
-          if (b) { transfers.push([a,b,this.relatedness(a,b)]); donated = true; }
+          if (b) {
+            const check = this.donationCheck(a,b);
+            this.lastChecks.push(check); this.attempts++;
+            if (this.enforceHamilton && !check.hamiltonPass) this.hamiltonBlocked++;
+            if (!check.energyPass) this.energyBlocked++;
+            if (!check.mimicPass) this.mimicBlocked++;
+            if (check.allowed) { transfers.push([a,b,check.r]); donated = true; }
+          }
         }
         a.history.push(donated ? 1 : 0); if (a.history.length > 10) a.history.shift();
       }
@@ -323,11 +359,11 @@
     recordEvent(type,message) { this.events.push({step:this.stepCount,type,message}); }
     metrics() { const agents = this.agents; return {population:agents.length,residents:agents.filter(a => !a.mimic).length,mimics:agents.filter(a => a.mimic).length,meanEnergy:agents.length ? agents.reduce((s,a) => s+a.energy,0)/agents.length : 0}; }
     capture() {
-      const record = {step:this.stepCount,...this.metrics(),donations:this.lastDonations,totalDonations:this.totalDonations,hamiltonAbove:this.hamiltonAbove,hamiltonBelow:this.hamiltonBelow,births:this.births,deaths:this.deaths,injected:this.totalInjected,B:this.B,C:this.C,cBase:this.cBase,shockRemaining:this.shockRemaining,strategy:this.strategy};
+      const record = {step:this.stepCount,...this.metrics(),donations:this.lastDonations,totalDonations:this.totalDonations,hamiltonAbove:this.hamiltonAbove,hamiltonBelow:this.hamiltonBelow,hamiltonBlocked:this.hamiltonBlocked,energyBlocked:this.energyBlocked,mimicBlocked:this.mimicBlocked,attempts:this.attempts,enforceHamilton:this.enforceHamilton,checks:JSON.stringify(this.lastChecks),births:this.births,deaths:this.deaths,injected:this.totalInjected,B:this.B,C:this.C,cBase:this.cBase,shockRemaining:this.shockRemaining,strategy:this.strategy};
       if (this.history.at(-1)?.step === this.stepCount) this.history[this.history.length-1] = record; else this.history.push(record);
     }
     toCSV() {
-      const keys = ["step","population","residents","mimics","meanEnergy","donations","totalDonations","hamiltonAbove","hamiltonBelow","births","deaths","injected","B","C","cBase","shockRemaining","strategy"];
+      const keys = ["step","population","residents","mimics","meanEnergy","donations","totalDonations","hamiltonAbove","hamiltonBelow","hamiltonBlocked","energyBlocked","mimicBlocked","attempts","enforceHamilton","checks","births","deaths","injected","B","C","cBase","shockRemaining","strategy"];
       const escape = v => `"${String(v).replaceAll('"','""')}"`;
       return [keys.concat(["seed","gridSize","initialEnergy","cDensity","mutationRate","autoInvasion","events"]).join(","),...this.history.map(row => keys.map(k => escape(row[k])).concat([this.seed,this.L,this.initialEnergy,this.cDensity,this.mutationRate,this.autoInvasion,this.events.filter(e=>e.step===row.step).map(e=>e.message).join(" | ")].map(escape)).join(","))].join("\r\n");
     }
@@ -343,7 +379,7 @@
     const data = JSON.parse($("research-data").textContent);
     const actor = new Kinship.NeuralActor(data.neural);
     let sim = new Kinship.SimulationEngine({neuralActor: actor}), running = false, selectedId = null, speed = 8, lastTime = 0, accumulator = 0, visualStart = 0;
-    let currentScenario = "cooperation";
+    let currentScenario = "cooperation", faulted = false;
     let selectorSignature = "", chartsDirty = true, wasVisible = !document.hidden;
     const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
     const ctx = $("world").getContext("2d");
@@ -351,9 +387,24 @@
 
     Object.defineProperty(window, "kinshipApp", {get: () => ({engine: sim, running})});
 
+    if (matchMedia("(max-width:620px)").matches) $("settings-panel").open = false;
+    function markCustom() {
+      currentScenario = "custom"; $("scenario").value = "custom";
+      $("scenario-note").textContent = `Custom settings · ${sim.L} × ${sim.L} · starting energy ${sim.initialEnergy} · crowding cost ${sim.cDensity}.${sim.autoInvasion ? " Automatic mimics after step 40." : ""}`;
+    }
+    function reportFault(error) {
+      faulted = true; running = false; accumulator = 0;
+      $("runtime-error").hidden = false;
+      $("runtime-error").textContent = "Simulation stopped because of an unexpected error. Reset to restart; existing results can still be downloaded.";
+      $("play").textContent = "Play"; $("play").setAttribute("aria-pressed","false");
+      for (const id of ["play","step","inject","shock"]) $(id).disabled = true;
+      $("run-status").textContent = "ERROR · RESET REQUIRED";
+      console.error(error);
+    }
+    function guardedAdvance() { if (faulted) return; try { advance(); } catch(error) { reportFault(error); } }
     function announce(message) { $("announcement").textContent = message; }
     function setRunning(value) {
-      running = value && !sim.finished; accumulator = 0; lastTime = performance.now();
+      running = value && !sim.finished && !faulted; accumulator = 0; lastTime = performance.now();
       $("play").textContent = running ? "Pause" : "Play";
       $("play").setAttribute("aria-pressed", String(running));
       refresh();
@@ -368,8 +419,8 @@
       $("threshold").textContent = sim.B ? `r* = ${(sim.C / sim.B).toFixed(2)}` : "r* = ∞";
       $("hamilton").classList.toggle("warning", sim.B <= sim.C);
       $("hamilton-note").textContent = sim.B <= sim.C
-        ? "With these settings, no r between 0 and 1 can satisfy rB > C."
-        : `The condition is met when relatedness r > ${(sim.C / sim.B).toFixed(2)}. Agent behaviour is determined by the selected policy.`;
+        ? `Condition failed for all pairs: B = ${sim.B}, C = ${sim.C}; no relatedness r between 0 and 1 can satisfy rB > C. Donations will be blocked.`
+        : `Donations require r > ${(sim.C / sim.B).toPrecision(6)} and donor energy > C. r is calculated separately for each pair. Equality fails; checks use full precision.`;
       $("strategy-note").textContent = Kinship.STRATEGIES[sim.strategy];
     }
 
@@ -416,6 +467,26 @@
       updateGenomeBits(a.genome);
     }
 
+    function refreshChecks() {
+      const checks = sim.lastChecks, failed = checks.filter(c => !c.allowed);
+      const status = $("condition-status");
+      status.className = "condition-status" + (sim.B <= sim.C || failed.length ? " failed" : checks.length ? " passed" : "");
+      status.textContent = sim.B <= sim.C
+        ? "Current settings: Hamilton condition failed for all pairs. No donation can pass."
+        : !checks.length ? "No donation attempted in the latest step. No pass or failure has been inferred."
+        : failed.length ? `Condition failed: ${failed.length} of ${checks.length} attempts blocked at step ${sim.stepCount}. See the actual values below.`
+        : `Conditions passed: all ${checks.length} attempted donations at step ${sim.stepCount} were allowed.`;
+      $("blocked-count").textContent = sim.hamiltonBlocked;
+      $("check-caption").textContent = checks.length ? `Step ${sim.stepCount}: values at decision time. Later slider changes affect the next step. Full precision is saved in CSV.` : "No donation attempts to display.";
+      const rows = checks.map(c => {
+        const row = document.createElement("tr");
+        for (const value of [`#${c.donorId} → #${c.recipientId}`,c.r.toPrecision(6),c.B,c.C,c.weightedBenefit.toPrecision(6),c.allowed ? "Passed" : `Failed: ${c.reasons.join("; ")}`]) {
+          const cell = document.createElement("td"); cell.textContent = value; row.append(cell);
+        }
+        return row;
+      });
+      $("check-rows").replaceChildren(...rows);
+    }
     function refresh() {
       const m = sim.metrics();
       $("population").textContent = m.population;
@@ -425,11 +496,11 @@
       $("donation-detail").textContent = `${sim.totalDonations.toLocaleString()} total donations`;
       $("step-count").textContent = String(sim.stepCount).padStart(4, "0");
       $("demographics").textContent = `${sim.births} births · ${sim.deaths} deaths`;
-      $("run-status").textContent = sim.finished ? (m.population ? "■ COMPLETE" : "○ EXTINCT") : running ? "● RUNNING" : sim.stepCount ? "Ⅱ PAUSED" : "● READY";
-      $("play").disabled = sim.finished;
-      $("step").disabled = sim.finished;
-      $("inject").disabled = sim.finished || !m.residents;
-      $("shock").disabled = sim.finished || sim.shockRemaining > 0;
+      $("run-status").textContent = faulted ? "ERROR · RESET REQUIRED" : sim.finished ? (m.population ? "■ COMPLETE" : "○ EXTINCT") : running ? "● RUNNING" : sim.stepCount ? "Ⅱ PAUSED" : "● READY";
+      $("play").disabled = sim.finished || faulted;
+      $("step").disabled = sim.finished || faulted;
+      $("inject").disabled = sim.finished || faulted || !m.residents;
+      $("shock").disabled = sim.finished || faulted || sim.shockRemaining > 0;
       $("shock").textContent = sim.shockRemaining ? `Shock (${sim.shockRemaining} steps left)` : "Scarcity shock";
       
       $("world-overlay").replaceChildren();
@@ -444,17 +515,20 @@
       $("donation-relatedness").textContent = sim.donations.length ? (sim.donations.reduce((sum,d) => sum+d.relatedness,0)/sim.donations.length).toFixed(3) : "—";
       $("run-summary").textContent = sim.stepCount === 0
         ? "Press Play or Step to see how the selected behaviour affects the population."
-        : `After ${sim.stepCount} steps, ${m.residents} residents and ${m.mimics} mimics remain. There have been ${sim.births} births, ${sim.deaths} deaths, and ${sim.totalDonations} donations. ${m.population === 0 ? "The population is extinct." : sim.finished ? "The observation limit has been reached." : "The simulation is still in progress."}`;
+        : `After ${sim.stepCount} ${sim.stepCount === 1 ? "step" : "steps"}, ${m.residents} residents and ${m.mimics} mimics remain. There have been ${sim.births} births, ${sim.deaths} deaths, and ${sim.totalDonations} donations. ${m.population === 0 ? "The population is extinct." : sim.finished ? "The observation limit has been reached." : "The simulation is still in progress."}`;
       $("population-chart").setAttribute("aria-label", `Population at step ${sim.stepCount}: ${m.residents} residents, ${m.mimics} mimics.`);
       $("energy-chart").setAttribute("aria-label", `Mean energy at step ${sim.stepCount}: ${format(m.meanEnergy)}.`);
       refreshParameters();
+      refreshChecks();
       inspector();
       chartsDirty = true;
     }
 
     function advance() {
-      const shockWasActive = sim.shockRemaining > 0;
+      const shockWasActive = sim.shockRemaining > 0, eventStart = sim.events.length;
       if (!sim.step()) return;
+      const injection = sim.events.slice(eventStart).find(e => e.type === "injection" || e.type === "injection-skipped");
+      if (injection) $("intervention-status").textContent = injection.message;
       if (shockWasActive && sim.shockRemaining === 0) $("intervention-status").textContent = "Scarcity shock ended. Baseline drain restored.";
       visualStart = performance.now();
       if (sim.finished) {
@@ -469,7 +543,7 @@
     function reset() {
       const seedInput = $("seed");
       if (!seedInput.checkValidity() || seedInput.value === "") { seedInput.reportValidity(); return; }
-      running = false; accumulator = 0; selectedId = null; selectorSignature = "";
+      running = false; faulted = false; $("runtime-error").hidden = true; accumulator = 0; visualStart = performance.now(); selectedId = null; selectorSignature = "";
       sim = new Kinship.SimulationEngine({
         ...settings,
         seed: Number(seedInput.value),
@@ -490,7 +564,7 @@
     }
 
     $("play").addEventListener("click", () => setRunning(!running));
-    $("step").addEventListener("click", () => { setRunning(false); advance(); });
+    $("step").addEventListener("click", () => { setRunning(false); guardedAdvance(); });
     $("reset").addEventListener("click", reset);
     $("speed").addEventListener("input", e => {
       speed = Number(e.target.value);
@@ -498,7 +572,7 @@
       accumulator = 0;
     });
     $("strategy").addEventListener("change", e => {
-      sim.strategy = e.target.value;
+      sim.strategy = e.target.value; markCustom();
       sim.recordEvent("strategy", `Strategy changed to ${e.target.selectedOptions[0].textContent}.`);
       sim.capture();
       refresh();
@@ -506,7 +580,7 @@
 
     for (const [id, key] of [["benefit", "B"], ["cost", "C"], ["drain", "cBase"]]) {
       $(id).addEventListener("input", e => {
-        sim.setParameter(key, Number(e.target.value));
+        sim.setParameter(key, Number(e.target.value)); markCustom();
         refresh();
       });
     }
@@ -524,6 +598,7 @@
 
     $("scenario").addEventListener("change", e => {
       if (!$("seed").checkValidity()) { $("seed").reportValidity(); e.target.value = currentScenario; return; }
+      if (e.target.value === "custom") return;
       const preset = e.target.value, stress = preset === "stress", invasion = preset === "invasion" || stress;
       currentScenario = preset;
       Object.assign(settings, {L: stress ? 20 : 24, initialEnergy: invasion ? 25 : 30, cDensity: invasion ? 0.10 : 0.05, autoInvasion: invasion});
@@ -559,7 +634,7 @@
     document.addEventListener("keydown", e => {
       if (/^(INPUT|SELECT|TEXTAREA|BUTTON)$/.test(e.target.tagName) || e.ctrlKey || e.altKey || e.metaKey) return;
       if (e.code === "Space") { e.preventDefault(); setRunning(!running); }
-      if (e.code === "ArrowRight") { e.preventDefault(); setRunning(false); advance(); }
+      if (e.code === "ArrowRight") { e.preventDefault(); setRunning(false); guardedAdvance(); }
     });
 
     document.addEventListener("visibilitychange", () => {
@@ -598,11 +673,12 @@
       }
       c.stroke();
 
-      const phase = reducedMotion ? 0.5 : Math.min(1, (time - visualStart) / Math.max(180, 1000 / speed));
+      const phase = reducedMotion ? 0.5 : Math.max(0, Math.min(1, (time - visualStart) / Math.max(180, 1000 / speed)));
       c.save();
       c.beginPath();
       c.rect(0, 0, width, height);
       c.clip();
+      try {
 
       // Donations (amber rays)
       for (const d of sim.donations) {
@@ -683,7 +759,7 @@
         }
       }
 
-      c.restore();
+      } finally { c.restore(); }
     }
 
     function drawChart(id, series, fixedMax) {
@@ -711,6 +787,11 @@
         c.fillText(String(Math.round(v)), left - 4, yy + 3);
       }
 
+      c.fillStyle = "#657080";
+      for (const fraction of [0,0.5,1]) {
+        c.textAlign = fraction === 0 ? "left" : fraction === 1 ? "right" : "center";
+        c.fillText(String(Math.round(end*fraction)),left+pw*fraction,h-3);
+      }
       for (const [key, color] of series) {
         c.strokeStyle = color;
         c.lineWidth = 1.8;
@@ -727,9 +808,10 @@
     new ResizeObserver(() => { chartsDirty = true; }).observe(document.querySelector(".app-layout"));
 
     function frame(time) {
+      try {
       const elapsed = Math.min(250, time - (lastTime || time));
       lastTime = time;
-      if (running && wasVisible) {
+      if (running && wasVisible && !faulted) {
         accumulator += elapsed;
         let ticks = 0;
         while (accumulator >= 1000 / speed && running && ticks < 8) {
@@ -738,15 +820,16 @@
           ticks++;
         }
       }
-      if (wasVisible) {
-        drawWorld(time);
+      if (wasVisible && !faulted) {
+        drawWorld(performance.now());
         if (chartsDirty) {
           drawChart("population-chart", [["residents", "#059669"], ["mimics", "#dc2626"]], 60);
           drawChart("energy-chart", [["meanEnergy", "#2563eb"]]);
           chartsDirty = false;
         }
       }
-      requestAnimationFrame(frame);
+      } catch(error) { reportFault(error); }
+      finally { requestAnimationFrame(frame); }
     }
 
     refresh();

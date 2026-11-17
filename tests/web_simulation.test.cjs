@@ -9,7 +9,8 @@ vm.runInThisContext(html.match(/<script id="simulation-engine">([\s\S]*?)<\/scri
 const {SimulationEngine:Engine, NeuralActor, SeededRandom} = globalThis.Kinship;
 const data = JSON.parse(html.match(/<script id="research-data" type="application\/json">([\s\S]*?)<\/script>/)[1]);
 const actor = new NeuralActor(data.neural);
-function empty(options={}) {return new Engine({initialPop:0,L:10,maxCapacity:10,cBase:0,cDensity:0,mutationRate:0,...options});}
+// Original donation-game fixtures explicitly use observation-only mode, matching Python.
+function empty(options={}) {return new Engine({initialPop:0,L:10,maxCapacity:10,cBase:0,cDensity:0,mutationRate:0,enforceHamilton:false,...options});}
 function place(world,x,y,options={}) {return world.spawn(world.cell(x,y),options.genome??123,options);}
 function occupancy(world) {
   const agents = world.agents;
@@ -18,6 +19,62 @@ function occupancy(world) {
   for(const a of agents) {assert.equal(world.grid[world.cell(a.x,a.y)],a.slot);assert.ok(Number.isFinite(a.energy));assert.ok(a.energy>0);}
   assert.equal(new Set(agents.map(a=>a.id)).size,agents.length);
 }
+
+test('Hamilton enforcement blocks failures and equality without energy transfers',()=>{
+  const w=empty({enforceHamilton:true,B:4,C:2});
+  const a=place(w,1,1,{genome:0}),b=place(w,2,1,{genome:0}),c=place(w,3,1,{genome:255});w.updateCues();
+  w.step([5,0,5]);
+  assert.equal(w.lastDonations,1);assert.equal(w.hamiltonBlocked,1);
+  assert.deepEqual(w.lastChecks.map(x=>[x.r,x.allowed]),[[1,true],[0,false]]);
+  assert.deepEqual([a.energy,b.energy,c.energy],[28,34,30]);
+  assert.equal(w.reputation(c),0);
+  w.setParameter('B',2);w.step([5,0,0]);
+  assert.equal(w.lastDonations,0);assert.equal(w.lastChecks[0].weightedBenefit,2);
+  assert.deepEqual(w.lastChecks[0].reasons,['rB <= C']);
+  assert.equal(w.hamiltonBelow,0);assert.equal(w.hamiltonBlocked,2);
+  assert.deepEqual([a.energy,b.energy,c.energy],[28,34,30]);
+  assert.equal(JSON.parse(w.history.at(-1).checks)[0].B,2);
+  w.setParameter('B',6);
+  assert.equal(w.lastChecks[0].B,2,'past decision values must not change with sliders');
+  w.step([5,0,0]);assert.equal(w.lastDonations,1);
+  w.reset();assert.equal(w.hamiltonBlocked,0);assert.deepEqual(w.lastChecks,[]);
+});
+
+test('energy and mimic constraints are evaluated alongside Hamilton condition',()=>{
+  const w=empty({enforceHamilton:true});
+  place(w,1,1,{genome:0,energy:2});place(w,2,1,{genome:0,mimic:true});place(w,3,1,{genome:255});w.updateCues();
+  w.step([5,5,0]);
+  assert.equal(w.lastDonations,0);assert.equal(w.energyBlocked,1);assert.equal(w.mimicBlocked,1);
+  assert.deepEqual(w.lastChecks[0].reasons,['donor energy <= C']);
+  assert.deepEqual(w.lastChecks[1].reasons,['mimics cannot donate']);
+});
+
+test('no attempts is distinct from a pass, and zero benefit never transfers energy',()=>{
+  const w=empty({enforceHamilton:true,B:0});
+  place(w,1,1,{genome:0});place(w,2,1,{genome:0});place(w,3,1,{genome:255});w.updateCues();
+  w.step([0,0,0]);assert.equal(w.attempts,0);assert.deepEqual(w.lastChecks,[]);
+  w.step([5,0,0]);assert.equal(w.lastDonations,0);assert.equal(w.hamiltonBlocked,1);
+  assert.equal(w.lastChecks[0].weightedBenefit,0);
+});
+
+test('all live policies enforce actual rB > C across seeds and benefit/cost settings',()=>{
+  for(const strategy of Object.keys(Kinship.STRATEGIES))for(const seed of [0,42,101])for(const [B,C] of [[0,2],[2,2],[6,2],[10,0.5]]){
+    const w=new Engine({strategy,seed,B,C,neuralActor:actor,maxSteps:100});
+    while(!w.finished){
+      w.step();occupancy(w);
+      for(const d of w.donations)assert.ok(d.relatedness*d.benefit>d.cost);
+      for(const c of w.lastChecks){
+        assert.equal(c.allowed,c.r*c.B>c.C&&c.donorEnergy>c.C&&c.mimicPass);
+      }
+      assert.equal(w.hamiltonBelow,0);assert.equal(w.hamiltonAbove,w.totalDonations);
+      assert.equal(w.attempts,w.totalDonations+w.history.reduce((n,row)=>n+JSON.parse(row.checks).filter(c=>!c.allowed).length,0));
+    }
+  }
+});
+
+test('invalid numerical inputs are rejected before starting a simulation',()=>{
+  for(const options of [{B:NaN},{C:0},{cBase:Infinity},{mutationRate:2},{seed:-1},{maxSteps:0},{strategy:'unknown'},{enforceHamilton:'yes'}]) assert.throws(()=>new Engine(options));
+});
 
 test('Hamilton counts use decision-time relatedness and a strict inequality',()=>{
   const w=empty({B:4,C:2});

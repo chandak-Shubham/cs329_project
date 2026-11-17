@@ -4,6 +4,12 @@ Implemented on 16 November 2026; simplified on 17 November after reviewing the p
 
 ## Open and use
 
+**Current behaviour, updated 17 November:** the user explicitly requested blocking donations when rB ≤ C. The browser therefore enforces Hamilton's condition, in addition to energy and mimic restrictions. This changes trajectories relative to the observation-only Python study. It is not evidence that a learned policy independently obeys the rule; earlier audit/sweep outcomes describe the previous browser version.
+
+Every proposed donation to an existing neighbour must satisfy rB > C, donor energy > C, and a non-mimic donor. Equality fails. A failed attempt transfers no donation energy and counts as a non-donation in behavioural history. Metabolic and crowding costs still apply. “Donation checks: last step” lists actual pair values and all failure reasons. No attempted donation is reported as “no attempt,” never an invented pass. B ≤ C immediately reports that every pair fails with the current settings.
+
+Play/Step/Reset are at the top. Mobile collapses secondary settings initially. Behaviour/energy edits mark the experiment “Custom settings.” Automatic injection reports its outcome. Animation progress is clamped to [0,1] using a consistent clock; an unexpected step/drawing error stops playback visibly and Reset starts a fresh run without losing the frame loop.
+
 Double-click `index.html` in the repository root. Everything needed to run the app is embedded: styles, simulation, canvas renderer, charts, and the trained MLP actor. There are no network requests or browser runtime dependencies.
 
 If you prefer an HTTP preview, run this from the repository root, then open `http://127.0.0.1:8000`:
@@ -44,7 +50,7 @@ The smaller-grid invasion preset uses the recorded Phase 4 experiment's ecologic
 The JavaScript engine ports `environment/grid_world.py`, `environment/cues.py`, and the configured Phase 4 rule policies:
 
 1. All policy decisions use one pre-step state. Neighbors are ordered by toroidal Chebyshev distance, then slot number; policies observe the nearest eight.
-2. Donations require donor energy strictly greater than C. A donation costs C and gives B, and mimics cannot donate. A moving recipient retains its identity.
+2. Donations require donor energy strictly greater than C. A donation costs C and gives B, and mimics cannot donate. A moving recipient retains its identity. The browser adds a strict rB > C transfer check; the Python research environment does not enforce that additional condition.
 3. Simultaneous movement allows swaps, cycles, and chains into vacated cells. Destination conflicts randomly select one winner; stationary blockers cancel dependent movement.
 4. Metabolism counts all neighbors within radius 3 after movement, not just the eight observed by a policy.
 5. Starvation precedes mitosis. Mitosis places a child in a free orthogonally adjacent toroidal cell and halves the parent's energy without creating energy. Newborns do not reproduce again in the same transition.
@@ -53,15 +59,17 @@ The JavaScript engine ports `environment/grid_world.py`, `environment/cues.py`, 
 
 Reputation Threshold selects the best recipient with b ≥ 0.5. Fixed-Weight Tag Trust selects the highest 0.5r + 0.5b, requiring a score strictly greater than 0.35. Pure Kin requires r > 0.3. These thresholds match the current Phase 4 configuration, including strict comparisons. Non-donating rule-based residents stay; the selfish policy randomly moves or stays. Mimics cannot donate, but can move under the selfish and neural policies, as in Python; under the stationary rule-based policies they stay.
 
-Relatedness is baseline-corrected Hamming similarity over distinct living pairs. It is not an independently estimated pedigree coefficient. The Hamilton reference r* = C/B updates with the sliders, including B = 0, but does not dictate policy decisions. These policies do not observe B/C directly. B ≤ C with positive metabolic costs depletes total energy; this is not proof of Hamilton's rule.
+Relatedness is baseline-corrected Hamming similarity over distinct living pairs, calculated from the population rather than manually assigned. It is not an independently estimated pedigree coefficient. The reference r* = C/B updates with sliders, including B = 0. Policies propose actions; the execution check blocks proposals failing rB > C. B/C is not directly observed by these policies. Compliance after filtering is not proof of learned Hamilton behaviour. Rule-based comparison policies retain the documented rules above, but their outcomes are not precomputed or scripted.
 
 The neural option evaluates the actual `simple_mlp_seed_42.pt` actor (43 → 64 → 32 → 13, ReLU, action masking, softmax sampling). The actor is frozen and was trained for 1,024 environment transitions. The checkpoint's SHA256 is verified before export and embedded with its metadata. The browser does not load PyTorch, fake neural behavior with a defection heuristic, or train online.
 
 Browser runs use a seeded Mulberry32 generator and JavaScript numbers; Python uses NumPy/PyTorch RNGs and some float32 tensors. Same-seed browser resets reproduce browser trajectories when the intervention schedule is identical. They do not reproduce Python seed trajectories. As requested by the blueprint, injections copy the dominant resident genome; Python's default injection copies its first living agent's genome. Both place injections in the first available x-major empty cells.
 
-The Hamilton panel counts actual donations where rB > C and where rB ≤ C. Relatedness is captured before that transition's movement, starvation, reproduction, or baseline update. Cumulative counts retain the B/C and relatedness classification at the time of each donation even if the sliders change later. Mean donor-recipient relatedness is shown for the latest step, or a dash if no donation occurred. These descriptive counts are not a statistical consistency test: they do not compare donation rates against all available recipients or establish causation. Saved multi-seed research results remain in `results/`; the compact interface does not display the benchmark table.
+The Hamilton panel counts actual donations plus proposals blocked by rB ≤ C. Actual donations at/below the threshold must stay zero in enforced mode. Relatedness is captured before movement, starvation, reproduction, or baseline updates. Cumulative counts and detailed checks retain decision-time values even if sliders change later. Mean donor-recipient relatedness is shown for the latest step, or a dash if none occurred. Saved multi-seed research results remain in `results/`; the compact interface does not display the benchmark table.
 
 ## Export semantics
+
+CSV also includes `hamiltonBlocked`, `energyBlocked`, `mimicBlocked`, `attempts`, `enforceHamilton`, and `checks`. `checks` is JSON with every latest-step proposed transfer, full numerical values, outcomes, and reasons. Reason counters can overlap: a proposal can fail several conditions. Unique blocked attempts are `attempts - totalDonations`. These are attempted donations, not all available recipient opportunities.
 
 CSV contains one row per state, including state 0. Rows contain population, resident/mimic counts, mean energy, last-step and cumulative donations, cumulative `hamiltonAbove` and `hamiltonBelow` counts, births, deaths, total injections, environmental settings, strategy, seed, grid size, initial energy, crowding, mutation rate, automatic-invasion setting, and events.
 
@@ -78,6 +86,8 @@ python visualizer/export_web_data.py --check
 ```
 
 The Node suite covers deterministic replay, toroidal neighbors, swaps/cycles/chains, collision resolution, donation timing and affordability, mitosis, mutation, slot recycling, reputation, relatedness, interventions, extinction, export, and all five strategies across several seeds. Four Python tests compare observations, rule actions, multi-step energy/history/movement, neural logits, and embedded research data against Python sources.
+
+The Python parity fixtures explicitly disable browser enforcement (`enforceHamilton:false`) to compare original research mechanics. The UI always enables enforcement; separate Node tests verify allowed/blocked transfers across all five behaviours, three seeds, and four benefit/cost settings. Run `python visualizer/check_web_robustness.py` for decision CSV, equality failures, input validation, 6× CPU-slowed playback with births, visible controls, mobile settings, and recovery from a deliberately injected rendering error in Chrome and Edge.
 
 After regenerating the MLP checkpoint or Phase 4 results, refresh the embedded data:
 
@@ -97,6 +107,8 @@ Chrome and Edge must already be installed. The checker also supports `--browsers
 Executed verification on 16 November 2026: **21 Node tests and 53 Python tests passed**. Chrome, Edge, and Firefox acceptance checks passed at 1,440, 768, 390, and 320 CSS pixels, including all five strategies, keyboard controls, seeded resets, live parameters, agent selection, injections, automatic invasion, shock expiry, CSV downloads, extinction, no document-level horizontal overflow, and no external runtime requests.
 
 Frontend verification on 17 November 2026: **23 Node tests and all four Python browser-engine parity tests passed**. Chrome and Edge acceptance checks passed at 1,440, 1,024, 768, 620, 390, and 320 CSS pixels. These verify the sidebar layout, Hamilton counts, controls, five policies, replay, keyboard controls, interventions, inspection, CSV export, extinction, and offline operation. Desktop and mobile screenshots were visually reviewed.
+
+After adding enforcement and fixing animation timing: **28 Node tests and all four Python parity tests passed** (parity fixtures explicitly use observation-only mode). Chrome and Edge passed the ordinary acceptance suite and additional regression checks for strict inequality, failure explanations, decision CSV, invalid seeds, laptop control visibility, mobile layout, sustained playback at 30 steps/s with 6× CPU slowdown and births, and Reset recovery after a deliberately injected drawing exception. Embedded research artifacts still match their source files. These checks cover known defects and tested boundaries; they do not guarantee that no future error can occur.
 
 ## GitHub Pages
 

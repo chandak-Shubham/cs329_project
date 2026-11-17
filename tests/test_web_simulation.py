@@ -52,7 +52,9 @@ def fixture_world():
 
 SETUP = """
 const {SimulationEngine, NeuralActor} = Kinship;
-const world = new SimulationEngine({L:10,maxCapacity:8,initialPop:0,cBase:0.5,cDensity:0.05,seed:9});
+// Python studies observe Hamilton consistency; browser UI now enforces it.
+// Compare the original environment mechanics with enforcement explicitly disabled.
+const world = new SimulationEngine({L:10,maxCapacity:8,initialPop:0,cBase:0.5,cDensity:0.05,seed:9,enforceHamilton:false});
 fixture.positions.forEach(([x,y], i) => world.spawn(world.cell(x,y),fixture.genomes[i]));
 world.updateCues();
 """
