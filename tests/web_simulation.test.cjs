@@ -9,6 +9,15 @@ vm.runInThisContext(html.match(/<script id="simulation-engine">([\s\S]*?)<\/scri
 const {SimulationEngine:Engine, NeuralActor, SeededRandom} = globalThis.Kinship;
 const data = JSON.parse(html.match(/<script id="research-data" type="application\/json">([\s\S]*?)<\/script>/)[1]);
 const actor = new NeuralActor(data.neural);
+
+test('paired browser comparison uses actual trajectories and preserves its options',()=>{
+  const options={seed:5,maxSteps:40,neuralActor:actor};
+  const a=Kinship.compareStrategies(options),b=Kinship.compareStrategies(options);
+  assert.deepEqual(a,b);assert.equal(a.length,5);assert.equal(options.strategy,undefined);
+  assert.equal(a.find(r=>r.strategy==='selfish').donations,0);
+  assert.ok(a.every(r=>r.donationRate>=0&&r.donationRate<=1));
+  assert.ok(a.every(r=>r.firstCapacity===null||r.firstCapacity<=r.duration));
+});
 // Original donation-game fixtures explicitly use observation-only mode, matching Python.
 function empty(options={}) {return new Engine({initialPop:0,L:10,maxCapacity:10,cBase:0,cDensity:0,B:6,mutationRate:0,enforceHamilton:false,...options});}
 function place(world,x,y,options={}) {return world.spawn(world.cell(x,y),options.genome??123,options);}

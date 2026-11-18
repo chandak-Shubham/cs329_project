@@ -64,12 +64,18 @@ class GridWorld:
         reward_mode: str = "energy",
         survival_reward: float = 1.0,
         reproduction_reward: float = 5.0,
+        descendant_reward: float = 1.0,
+        descendant_depth: int = 2,
     ):
-        if reward_mode not in ("energy", "demographic"):
-            raise ValueError("reward_mode must be energy or demographic")
+        if reward_mode not in ("energy", "demographic", "lineage"):
+            raise ValueError("reward_mode must be energy, demographic or lineage")
+        if not isinstance(descendant_depth, int) or descendant_depth < 1:
+            raise ValueError("descendant_depth must be a positive integer")
         self.reward_mode = reward_mode
         self.survival_reward = survival_reward
         self.reproduction_reward = reproduction_reward
+        self.descendant_reward = descendant_reward
+        self.descendant_depth = descendant_depth
         if num_agents is not None and initial_population is None:
             initial_population = num_agents
             max_capacity = max(max_capacity, num_agents)
@@ -441,6 +447,22 @@ class GridWorld:
 
         return deaths, births, died_mask, death_records, birth_records
 
+    def living_descendant_counts(self) -> Dict[int, int]:
+        """Count living descendants by persistent ancestor ID, through dead parents.
+
+        No chromosome, cue, position, donation action or Hamilton term is used.
+        Depth two counts children and grandchildren, each once per ancestor.
+        """
+        counts: Dict[int, int] = {}
+        for slot in np.flatnonzero(self.mask):
+            uid = int(self.agent_unique_ids[slot])
+            for _ in range(self.descendant_depth):
+                uid = self.ancestry_records.get(uid, {}).get("parent_uid", -1)
+                if uid < 0:
+                    break
+                counts[uid] = counts.get(uid, 0) + 1
+        return counts
+
     def step(self, actions: np.ndarray) -> Tuple[Dict[str, Any], np.ndarray, np.ndarray, Dict[str, Any]]:
         """
         Executes one environment step according to Algorithm 1:
@@ -457,6 +479,7 @@ class GridWorld:
         move_intents: Dict[int, Tuple[int, int]] = {}
 
         active_indices = np.where(self.mask)[0]
+        acting_uids = self.agent_unique_ids.copy()
 
         # 1. Action parsing
         for i in active_indices:
@@ -508,14 +531,21 @@ class GridWorld:
                                  recipient_is_mimic=bool(self.is_parasite[j]),
                                  benefit=float(self.B), cost=float(self.C)) for i, j in donations]
         deaths, births, died_mask, death_records, birth_records = self._step_demographics()
-        if self.reward_mode == "demographic":
+        if self.reward_mode in ("demographic", "lineage"):
             # Individual survival and reproduction only: no kin coefficient,
             # recipient benefit, donation bonus, or Hamilton threshold in reward.
             rewards.fill(0)
             survivors = active_indices[~died_mask[active_indices]]
             rewards[survivors] = self.survival_reward
-            for birth in birth_records:
-                rewards[birth["parent_slot"]] += self.reproduction_reward
+            if self.reward_mode == "demographic":
+                for birth in birth_records:
+                    rewards[birth["parent_slot"]] += self.reproduction_reward
+            else:
+                # The demographic birth bonus is replaced by continuing fitness
+                # credit. Slot reuse cannot redirect a dead parent's last reward.
+                descendants = self.living_descendant_counts()
+                for slot in active_indices:
+                    rewards[slot] += self.descendant_reward * descendants.get(int(acting_uids[slot]), 0)
 
         # 5. Cue update
         self._update_cues()

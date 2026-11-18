@@ -1,3 +1,5 @@
+> Current model and reporting changes are documented in [the 18 November response](final_review_response_2026-11-18.md). Earlier verification entries below are historical snapshots.
+
 # Kinship Lab: browser simulation
 
 Implemented on 16 November 2026; simplified on 17 November after reviewing the proposal PDF. The frontend uses a plain white layout with controls in a left sidebar and the simulation and results on the right. The current Python environment, policies, and recorded artifacts take precedence over illustrative claims in the original blueprint and design specification.
@@ -10,7 +12,7 @@ The last-step checks retain decision-time values. Turning enforcement on blocks 
 
 Play/Step/Reset are at the top. Mobile collapses secondary settings initially. Behaviour/energy edits mark the experiment “Custom settings.” Automatic injection reports its outcome. Animation progress is clamped to [0,1] using a consistent clock; an unexpected step/drawing error stops playback visibly and Reset starts a fresh run without losing the frame loop.
 
-Double-click `index.html` in the repository root. Everything needed to run the app is embedded: styles, simulation, canvas renderer, charts, and the trained MLP actor. There are no network requests or browser runtime dependencies.
+Double-click `index.html` in the repository root. Everything needed to run the app is embedded: styles, simulation, canvas renderer, charts, and the trained attention actor. There are no network requests or browser runtime dependencies.
 
 If you prefer an HTTP preview, run this from the repository root, then open `http://127.0.0.1:8000`:
 
@@ -61,11 +63,13 @@ Reputation Threshold selects the best recipient with b ≥ 0.5. Fixed-Weight Tag
 
 Relatedness is baseline-corrected Hamming similarity over distinct living pairs, calculated from the population rather than manually assigned. It is not an independently estimated pedigree coefficient. The reference r* = C/B updates with sliders, including B = 0. Policies propose actions; only the optional Hamilton filter blocks proposals failing rB > C. B/C is not directly observed by these policies. Compliance after filtering is not proof of learned Hamilton behaviour. Rule-based outcomes are not precomputed or scripted.
 
-The neural option evaluates the actual `simple_mlp_seed_42.pt` actor (43 → 64 → 32 → 13, ReLU, action masking, softmax sampling). The actor is frozen and was trained for 1,024 environment transitions. The checkpoint's SHA256 is verified before export and embedded with its metadata. The browser does not load PyTorch, fake neural behavior with a defection heuristic, or train online.
+The default neural option evaluates the actual exported contextual attention actor, including neighbourhood-context gating and two-head attention. It uses clean lineage seed 42 after the follow-up evaluation, otherwise revised demographic seed 42. The visible note identifies its objective and 8,192-step training budget. The checkpoint SHA256 is verified before export. JavaScript probabilities match PyTorch across zero to eight neighbours; action masking and seeded replay are tested. Weights are frozen; no training occurs in the browser. The four scripted options are explicitly labelled baselines, not learned policies.
+
+A visible Results section presents saved revised tables, cue sensitivity, learning curves, historical benchmarks and regression, plus the lineage follow-up after evaluation. Source links and interpretation caveats accompany the values. The top headline states the unsupported kin-selection hypothesis. Use Compare five fresh runs to compare rates and time to capacity even when rule baselines all saturate the population pool.
 
 Browser runs use a seeded Mulberry32 generator and JavaScript numbers; Python uses NumPy/PyTorch RNGs and some float32 tensors. Same-seed browser resets reproduce browser trajectories when the intervention schedule is identical. They do not reproduce Python seed trajectories. Both implementations copy the modal resident genome (smallest genome breaks ties), and sample empty cells randomly without replacement.
 
-The Hamilton panel counts actual donations plus proposals blocked by rB ≤ C. Actual donations at/below the threshold must stay zero in enforced mode. Relatedness is captured before movement, starvation, reproduction, or baseline updates. Cumulative counts and detailed checks retain decision-time values even if sliders change later. Mean donor-recipient relatedness is shown for the latest step, or a dash if none occurred. Saved multi-seed research results remain in `results/`; the compact interface does not display the benchmark table.
+The Hamilton panel counts actual donations plus proposals blocked by rB ≤ C. Actual donations at/below the threshold must stay zero in enforced mode. Relatedness is captured before movement, starvation, reproduction, or baseline updates. Cumulative counts and detailed checks retain decision-time values even if sliders change later. Mean donor-recipient relatedness is shown for the latest step, or a dash if none occurred. Saved multi-seed research results remain in `results/` and are displayed separately from the live simulation below it.
 
 ## Export semantics
 

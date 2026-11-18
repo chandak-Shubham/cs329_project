@@ -1,0 +1,47 @@
+{
+  "passed": false,
+  "runs": [
+    {
+      "seed": 42,
+      "final_residents": 0,
+      "duration": 41,
+      "late_donations_per_resident_step": 0.0,
+      "late_steps_with_donations": 0.0,
+      "passed": false
+    },
+    {
+      "seed": 101,
+      "final_residents": 0,
+      "duration": 44,
+      "late_donations_per_resident_step": 0.0,
+      "late_steps_with_donations": 0.0,
+      "passed": false
+    },
+    {
+      "seed": 202,
+      "final_residents": 0,
+      "duration": 42,
+      "late_donations_per_resident_step": 0.0,
+      "late_steps_with_donations": 0.0,
+      "passed": false
+    },
+    {
+      "seed": 303,
+      "final_residents": 0,
+      "duration": 46,
+      "late_donations_per_resident_step": 0.0,
+      "late_steps_with_donations": 0.0,
+      "passed": false
+    },
+    {
+      "seed": 404,
+      "final_residents": 0,
+      "duration": 45,
+      "late_donations_per_resident_step": 0.0,
+      "late_steps_with_donations": 0.0,
+      "passed": false
+    }
+  ],
+  "criterion": "Every training seed: residents survive 300 transitions; last 100 transitions have >=0.1 donations/resident-step and donations in >=50% of transitions.",
+  "interpretation": "Exploratory feasibility screen, not a statistical claim of kin selection."
+}

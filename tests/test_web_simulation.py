@@ -10,6 +10,7 @@ import torch
 
 from environment.grid_world import GridWorld
 from models.mlp_policy import SimpleMLPPolicy
+from models.attention_policy import GatedAttentionPolicy
 from models.rule_based import FixedWeightPolicy, KinOnlyPolicy, ReciprocalPolicy
 from visualizer.export_web_data import build_payload
 
@@ -104,14 +105,18 @@ return fixture.actions.map(actions => {
         np.testing.assert_allclose(js_step["history"], python_step["history"], atol=1e-7)
 
 
-def test_web_neural_logits_match_checkpoint_pytorch():
-    policy = SimpleMLPPolicy(hidden_dim=64)
-    policy.load_state_dict(torch.load(ROOT / "results/checkpoints/simple_mlp_seed_42.pt", map_location="cpu", weights_only=True))
+def test_web_attention_probabilities_match_checkpoint_pytorch():
+    data = build_payload()['neural']
+    policy = GatedAttentionPolicy(d_model=32, num_heads=2, contextual_gate=True)
+    policy.load_state_dict(torch.load(ROOT / data['checkpoint'], map_location="cpu", weights_only=True))
     policy.eval()
     inputs = np.random.default_rng(42).normal(size=(20, 43)).astype(np.float32)
+    counts = np.arange(20) % 9  # zero through eight neighbours, including padding
+    inputs[:, 42] = counts / 8
+    masks = torch.as_tensor(np.arange(8)[None, :] < counts[:, None])
     with torch.no_grad():
-        expected = policy.actor_head(policy.encoder(torch.from_numpy(inputs))).numpy()
-    actual = run_js("const actor=new Kinship.NeuralActor(embedded.neural); return fixture.map(x=>actor.logits(x));", inputs.tolist())
+        expected = policy(torch.from_numpy(inputs[:, :2]), torch.from_numpy(inputs[:, 2:42].reshape(-1,8,5)), masks)[0].probs.numpy()
+    actual = run_js("const actor=new Kinship.NeuralActor(embedded.neural); return fixture.map(x=>{const l=actor.logits(x),m=Math.max(...l),e=l.map(v=>Math.exp(v-m)),s=e.reduce((a,b)=>a+b,0);return e.map(v=>v/s);});", inputs.tolist())
     np.testing.assert_allclose(actual, expected, atol=1e-6, rtol=1e-5)
 
 

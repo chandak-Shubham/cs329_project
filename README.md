@@ -10,6 +10,16 @@ The 17 November review response adds a separate, reproducible study with an indi
 
 See [the review response and protocol](docs/review_response_2026-11-17.md), [executed revised results](results/revised_study/results.md), and [raw revised results](results/revised_study/analysis.json). Historical results remain separate; their tables and figures must not be presented as outputs of the revised training.
 
+The [18 November final-review response](docs/final_review_response_2026-11-18.md) adds a continuing descendant-fitness objective and a clean-first feasibility screen. In its [separate results](results/lineage_study/results.md), all five trained populations became extinct after 41–46 transitions with zero donations; all five matched untrained controls survived. The failed screen withheld noise/mimic follow-ups. The website displays these results alongside the earlier evidence, figures and caveats, and defaults to the actual trained attention policy.
+
+To reproduce this follow-up without overwriting the revised study:
+
+```powershell
+python experiments/lineage_study.py --environment-steps 8192 --workers 3
+python evaluation/revised_report.py --study-dir results/lineage_study
+python visualizer/export_web_data.py
+```
+
 ## Run the revised study
 
 Use Python 3.12 from the repository root:
@@ -28,11 +38,11 @@ The matched default world is 18 x 18, 24 founders, capacity 45, initial energy 3
 
 ## Browser simulation
 
-Open [index.html](index.html) locally. It runs offline without installation or a server. The repository's previously published page is [GitHub Pages](https://chandak-shubham.github.io/cs329_project/); local changes require a separate deployment to appear there.
+Open [index.html](index.html) locally. It runs offline without installation or a server. The [live GitHub Pages site](https://chandak-shubham.github.io/cs329_project/) builds from the repository root on `main`; local changes appear after pushing and a successful Pages build.
 
-**Hamilton enforcement is off by default.** The checkbox explicitly forces the rule when enabled. Results in that mode cannot establish learned Hamilton behaviour. The four rule strategies and the **historical PPO MLP** propose actions; the browser does not execute the new contextual attention checkpoints. Default ecology matches MLP training; stress presets and manual parameter changes are distribution shifts. Browser and Python use different seeded RNG implementations, so identical numeric seeds do not imply identical trajectories.
+**Hamilton enforcement is off by default.** The checkbox explicitly forces the rule when enabled. Results in that mode cannot establish learned Hamilton behaviour. The default executes the **actual trained contextual attention checkpoint**, identified with objective, seed and training budget. The four other strategies are explicitly hand-written baselines. The exporter selects clean lineage seed 42 after evaluation, otherwise revised demographic seed 42. Default ecology matches training; stress presets and manual changes are distribution shifts. Browser and Python use different seeded RNG implementations, so identical numeric seeds do not imply identical trajectories. Action-probability parity is tested separately.
 
-Mimics copy the most common resident genome (smallest genome breaks ties), occupy randomly sampled empty cells, and never donate. The interface and CSV report donations to mimics as a share of post-invasion donations. Affordability and mimic restrictions always apply. See [the browser manual](docs/web_simulation.md). Refresh embedded historical artifacts with `python visualizer/export_web_data.py`.
+Mimics copy the most common resident genome (smallest genome breaks ties), occupy randomly sampled empty cells, and never donate. The interface and CSV report donations to mimics as a share of post-invasion donations. Affordability and mimic restrictions always apply. Compare five fresh browser runs to inspect donation rates and time to capacity. See [the browser manual](docs/web_simulation.md). Refresh weights and visible research tables with `python visualizer/export_web_data.py`; `--check` verifies both against source artifacts.
 
 ## Interpretation
 

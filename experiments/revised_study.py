@@ -172,7 +172,7 @@ def evaluate(policy, condition, seed, attack=False, mutation=.05):
             exposure_donations += info["donations_count"]
         births += info["births_this_step"]
         resident_births += sum(not env.is_parasite[b['slot']] for b in info['birth_records'])
-        curve.append(dict(step=step+1, residents=int((env.mask & ~env.is_parasite).sum()),
+        curve.append(dict(step=step+1, acting_residents=int(residents.sum()), residents=int((env.mask & ~env.is_parasite).sum()),
                           mimics=int((env.mask & env.is_parasite).sum()), donations=info["donations_count"]))
         if np.all(dones):
             break
@@ -192,13 +192,13 @@ def evaluate(policy, condition, seed, attack=False, mutation=.05):
                    for key in ("genetic_tv", "behavior_tv", "genetic_weight")})
 
 
-def analyze(seeds, conditions):
+def analyze(seeds, conditions, attack_modes=(False, True)):
     runs, summary, common_probes = [], {}, []
     for condition in conditions:
         for seed in seeds:
             policy = load_policy(condition, seed)
             common_probes.append(dict(condition=condition, training_seed=seed, **common_input_probe(policy)))
-            for attack in (False, True):
+            for attack in attack_modes:
                 runs.append(evaluate(policy, condition, seed, attack=attack))
             if condition == "demographic_clean":
                 for mutation in (0., .1, .2):

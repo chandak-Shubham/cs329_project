@@ -1,3 +1,5 @@
+> Historical 17 November response. The [18 November follow-up](final_review_response_2026-11-18.md) supersedes its browser-model and future-work status.
+
 # Response to the CS329 Group 21 review of 17 November 2026
 
 Source: the five-page review supplied by the user, “CS329 Group 21 – Project Review Emergent Kin Selection in MARL.pdf”, attributed to @Preet. The document was read in full. Its suggestions are research feedback; the user's request authorizes the repository changes. The original review PDF is preserved.

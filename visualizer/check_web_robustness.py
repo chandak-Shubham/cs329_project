@@ -33,6 +33,7 @@ def check(p, channel):
     page.locator("#seed").fill("42")
     page.locator("#reset").click()
 
+    page.locator('#scenario').select_option('cooperation')
     page.locator("#enforce-hamilton").check()
     set_range(page, "benefit", 2)
     expect(page.locator("#scenario")).to_have_value("custom")

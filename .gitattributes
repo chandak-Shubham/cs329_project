@@ -1,0 +1,2 @@
+# Preserve artifact bytes so recorded SHA256 hashes survive cross-platform checkout.
+results/lineage_study/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

@@ -35,6 +35,18 @@ def check_browser(playwright, channel, firefox_executable=None):
     page.on("pageerror", lambda error: errors.append(str(error)))
     page.on("request", lambda request: requests.append(request.url))
     page.goto((ROOT / "index.html").as_uri())
+    expect(page.locator('#strategy')).to_have_value('neural')
+    assert page.evaluate('kinshipApp.engine.strategy') == 'neural'
+    expect(page.locator('.research-verdict')).to_contain_text('not yet supported')
+    expect(page.locator('#research-results')).to_contain_text('Historical regression')
+    assert page.locator('#research-results tbody tr').count() >= 35
+    page.locator('#research-results img').evaluate_all("images=>images.forEach(img=>img.loading='eager')")
+    page.wait_for_function("Array.from(document.querySelectorAll('#research-results img')).every(img=>img.complete&&img.naturalWidth>0)")
+    page.locator('#compare-strategies').click()
+    expect(page.locator('#comparison-table tbody tr')).to_have_count(5, timeout=30000)
+    expect(page.locator('#comparison-status')).to_contain_text('Hamilton filter off')
+    assert page.evaluate('kinshipApp.engine.stepCount') == 0
+    page.locator('#scenario').select_option('cooperation')  # explicitly test a rule baseline below
     expect(page.locator("#population")).to_have_text("24")
     sidebar = page.locator(".sidebar").bounding_box()
     results = page.locator(".results").bounding_box()
