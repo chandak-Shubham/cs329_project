@@ -6,13 +6,13 @@ Implemented on 16 November 2026; simplified on 17 November after reviewing the p
 
 ## Open and use
 
-**Current behaviour, review response of 17 November:** Hamilton enforcement is **off by default**. Donation choices remain subject to affordability and the non-mimic donor restriction. The visible checkbox enables an explicitly forced Hamilton filter; counts in that mode are not evidence of learning. Below-threshold donations are permitted and counted in observation mode.
+**Current behaviour, review response of 18 November:** Hamilton enforcement is **off by default**. Donation choices remain subject to affordability and the non-mimic donor restriction. The visible checkbox enables an explicitly forced Hamilton filter; counts in that mode are not evidence of learning. Below-threshold donations are permitted and counted in observation mode.
 
 The last-step checks retain decision-time values. Turning enforcement on blocks rB <= C (including equality), without a donation transfer. CSV records the enforcement setting, donations and energy delivered to mimics, and their share of post-invasion donations. The share is null without an invasion or post-invasion donations. Mimic extinction alone is not evidence of defense.
 
 Play/Step/Reset are at the top. Mobile collapses secondary settings initially. Behaviour/energy edits mark the experiment “Custom settings.” Automatic injection reports its outcome. Animation progress is clamped to [0,1] using a consistent clock; an unexpected step/drawing error stops playback visibly and Reset starts a fresh run without losing the frame loop.
 
-Double-click `index.html` in the repository root. Everything needed to run the app is embedded: styles, simulation, canvas renderer, charts, and the trained attention actor. There are no network requests or browser runtime dependencies.
+Double-click `index.html` in the repository root. Styles, simulation, canvas renderer, live charts, and the trained attention actor are embedded. Research figures load from relative repository paths, so keep the complete checkout for offline viewing. No external service or browser runtime dependency is required.
 
 If you prefer an HTTP preview, run this from the repository root, then open `http://127.0.0.1:8000`:
 
@@ -37,13 +37,14 @@ All scenarios start paused with 24 founders, capacity 45, cost C = 2, mitosis th
 
 | Scenario | Grid | Initial energy | Benefit B | Base drain | Crowding cost | Automatic invasion |
 | --- | --- | --- | --- | --- | --- | --- |
+| Learned PPO (default) | 18 × 18 | 30 | 5 | 0.6 | 0.08 | No |
 | Cooperation | 18 × 18 | 30 | 5 | 0.6 | 0.08 | No |
 | Selfish baseline | 18 × 18 | 30 | 5 | 0.6 | 0.08 | No |
 | Genetic matching | 18 × 18 | 30 | 5 | 0.6 | 0.08 | No |
 | Mimics at step 40 | 18 × 18 | 25 | 3 | 0.8 | 0.10 | After 40 transitions |
 | Mimics in stress ecology | 20 × 20 | 25 | 3 | 0.8 | 0.10 | After 40 transitions |
 
-The selfish scenario selects Never donate; Genetic matching selects Help genetic relatives; the others select Help recent donors. The Experiment selector replaces the current run and restores parameter defaults. The invasion scenarios use a lower benefit and higher drain as an explicit out-of-distribution stress test. An attack remains conditional on resident survival and free slots. The automatic attack occurs at state 40, immediately before transition 41; it is logged at step 40. The stress-ecology scenario is an invasion experiment, not cue corruption. The browser does not implement the proposal's cue-corruption sweep or gated-attention training.
+Learned PPO selects the trained attention model. The selfish scenario selects Never donate; Genetic matching selects Help genetic relatives; Cooperation and the invasion presets select Help recent donors. The Experiment selector replaces the current run and restores parameter defaults. The invasion scenarios use a lower benefit and higher drain as an explicit out-of-distribution stress test. An attack remains conditional on resident survival and free slots. The automatic attack occurs at state 40, immediately before transition 41; it is logged at step 40. The stress-ecology scenario is an invasion experiment, not cue corruption. The browser does not implement the proposal's cue-corruption sweep or gated-attention training.
 
 The stress-ecology invasion preset uses the historical Phase 4 benefit and drain settings, with 24 founders and capacity 45. It is a distribution-shift demonstration, not a replay of the historical Python evaluation.
 
@@ -89,11 +90,11 @@ python -m pytest -q
 python visualizer/export_web_data.py --check
 ```
 
-The Node suite covers deterministic replay, toroidal neighbors, swaps/cycles/chains, collision resolution, donation timing and affordability, mitosis, mutation, slot recycling, reputation, relatedness, interventions, extinction, export, and all five strategies across several seeds. Four Python tests compare observations, rule actions, multi-step energy/history/movement, neural logits, and embedded research data against Python sources.
+The Node suite covers deterministic replay, toroidal neighbors, swaps/cycles/chains, collision resolution, donation timing and affordability, mitosis, mutation, slot recycling, reputation, relatedness, interventions, extinction, export, and all five strategies across several seeds. Four Python tests compare observations, rule actions, multi-step energy/history/movement, attention action probabilities, and embedded research data against Python sources.
 
 The Python parity fixtures explicitly set ecology and disable enforcement (`enforceHamilton:false`). The UI defaults to this observation mode; separate Node tests explicitly enable enforcement to verify allowed/blocked transfers. Run `python visualizer/check_web_robustness.py` for decision CSV, equality failures, input validation, 6× CPU-slowed playback with births, visible controls, mobile settings, and recovery from a deliberately injected rendering error in Chrome and Edge.
 
-After regenerating the MLP checkpoint or Phase 4 results, refresh the embedded data:
+After regenerating the attention checkpoint or research results, refresh the embedded data and visible tables:
 
 ```powershell
 python visualizer/export_web_data.py
@@ -116,6 +117,6 @@ After adding enforcement and fixing animation timing: **28 Node tests and all fo
 
 ## GitHub Pages
 
-The root `index.html` and `.nojekyll` are ready for the branch-based deployment described in the original guide. No npm build, backend, or Sites hosting is required. Keep the research files alongside the HTML if you want its source links to work.
+GitHub Pages is configured to deploy the repository root from `main`, with `.nojekyll` present. No npm build, backend, or Sites hosting is required. Keep the research files alongside the HTML for its figures and source links.
 
-Once the changes are reviewed and pushed to the desired branch, select that branch and `/ (root)` under the repository's **Settings → Pages → Deploy from a branch**. GitHub will show the deployment URL when publication succeeds. This implementation does not push commits or change repository hosting settings.
+Push updates to `main`, then check the **pages build and deployment** workflow and verify the [live page](https://chandak-shubham.github.io/cs329_project/). The 18 November response retains the existing hosting configuration and checks the published HTML against the committed file.
