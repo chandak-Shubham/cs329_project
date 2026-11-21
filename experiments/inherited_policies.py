@@ -8,7 +8,9 @@ from copy import deepcopy
 from pathlib import Path
 import hashlib
 import json
+import os
 import sys
+import tempfile
 import time
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -212,9 +214,38 @@ def optimize(population, rollout, next_values, settings):
 
 def source_hashes():
     paths = [ROOT/'experiments/inherited_policies.py', ROOT/'experiments/inheritance_study.py',
-             ROOT/'experiments/dyadic_baseline.py', ROOT/'experiments/config.py']
+             ROOT/'experiments/dyadic_baseline.py', ROOT/'experiments/config.py',
+             ROOT/'evaluation/uncertainty.py']
     paths += [p for folder in ('environment', 'models') for p in (ROOT/folder).glob('*.py')]
     return {p.relative_to(ROOT).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(paths)}
+
+
+def archive_sources(directory, hashes):
+    """Keep the actual experiment source, not just hashes of unavailable versions."""
+    directory = Path(directory)
+    for name, digest in hashes.items():
+        content = (ROOT/name).read_bytes()
+        if hashlib.sha256(content).hexdigest() != digest:
+            raise ValueError(f'Source changed while preparing experiment: {name}')
+        target = directory/name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        if target.exists():
+            if target.read_bytes() != content:
+                raise ValueError(f'Archive contains a different source: {target}')
+            continue
+        # Publish a complete file atomically. Concurrent workers must never
+        # observe another writer's truncated file or overwrite a different one.
+        with tempfile.NamedTemporaryFile(dir=target.parent, delete=False) as stream:
+            stream.write(content)
+            temporary = Path(stream.name)
+        try:
+            try:
+                os.link(temporary, target)
+            except FileExistsError:
+                if target.read_bytes() != content:
+                    raise ValueError(f'Archive contains a different source: {target}')
+        finally:
+            temporary.unlink()
 
 
 def train(path, seed=42, steps=8192, config=None, architecture='attention',
@@ -224,6 +255,10 @@ def train(path, seed=42, steps=8192, config=None, architecture='attention',
         raise ValueError('steps must be a positive integer')
     settings = {**PPO, **(ppo or {})}
     sources = source_hashes()
+    path = Path(path)
+    if path.exists() or path.with_suffix('.json').exists():
+        raise ValueError(f'Refusing to overwrite an existing experiment: {path}')
+    archive_sources(path.parent.parent/'source', sources)
     if settings['rollout_length'] < 1:
         raise ValueError('rollout_length must be positive')
     torch.set_num_threads(1)

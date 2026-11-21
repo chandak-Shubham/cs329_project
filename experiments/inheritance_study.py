@@ -20,7 +20,7 @@ import torch
 from environment.grid_world import GridWorld
 from evaluation.uncertainty import mean_ci, proportion_ci
 from experiments.config import SEEDS, environment_config
-from experiments.inherited_policies import LineagePopulation, train, load, source_hashes, PPO
+from experiments.inherited_policies import LineagePopulation, train, load, source_hashes, archive_sources, PPO
 from experiments.dyadic_baseline import RulePopulation
 
 OUT = Path('results/inheritance_study')
@@ -41,7 +41,29 @@ CONDITIONS = {
     'mutation020': dict(config=dict(mutation_rate=.2)),
     'random_placement': dict(config=dict(offspring_placement='random')),
     'fallback': dict(config=dict(enable_starvation=False, enable_mitosis=False)),
+    'low_lr': dict(ppo=dict(lr=3e-5)),
+    'high_entropy': dict(ppo=dict(ent_coef=.1)),
+    'long_training': dict(budget_multiplier=4),
 }
+
+
+def training_spec(condition, steps):
+    spec = deepcopy(CONDITIONS[condition])
+    budget = steps * spec.pop('budget_multiplier', 1)
+    return budget, spec
+
+
+def checkpoint_matches(meta, condition, seed, steps):
+    budget, expected = training_spec(condition, steps)
+    return (meta['environment_steps'] == budget and meta['seed'] == seed
+            and meta['source_sha256'] == source_hashes()
+            and meta['torch_version'] == str(torch.__version__) and meta['numpy_version'] == np.__version__
+            and meta['architecture'] == expected.get('architecture', 'attention')
+            and meta['selection'] == expected.get('selection', True)
+            and meta['learning'] == expected.get('learning', True)
+            and meta['invasion'] == expected.get('invasion', False)
+            and meta['environment'] == environment_config(**{'reward_mode':'energy', **expected.get('config', {})})
+            and meta['ppo'] == {**PPO, **expected.get('ppo', {})})
 
 
 def evaluate(population, genomes, config, world_seed, attack=False):
@@ -168,7 +190,8 @@ def write_report(out, result):
     for name, row in result['summary'].items():
         lines.append('| '+name+' | '+' | '.join(interval(row[m]) for m in (
             'final_residents','donations_per_resident_step','resident_survival','mimic_donation_share'))+' |')
-    lines += ['', 'Not run: '+', '.join(result['not_run'])+'.', '',
+    lines += ['', 'Not run: '+(', '.join(result['not_run']) or 'none')+'.', '',
+              'All-condition runs are exploratory, including when the clean feasibility screen fails. Long training uses four times the base budget; low learning rate and high entropy each change one optimizer setting. None changes the energy-only reward.', '',
               'The untrained-ancestor control uses the same evolved founder chromosomes and ancestor composition with their initial neural weights. It is not an independent evolutionary training run. The evolution-only condition is the separate control for selection without PPO.', '',
               'Fallback survival is forced when starvation is disabled. Adjacent Hamming similarity needs its matched random-placement comparison before it supports assortment; tag preference is descriptive, not Hamiltonian or pedigree evidence.', '',
               'See [raw analysis](analysis.json) and [protocol](../../docs/inherited_policy_protocol.md).']
@@ -185,17 +208,22 @@ def main():
     p.add_argument('--conditions', nargs='+', choices=CONDITIONS)
     p.add_argument('--worker', choices=CONDITIONS)
     p.add_argument('--evaluate-only', action='store_true')
+    p.add_argument('--complete', action='store_true', help='Run every declared condition, including failure diagnostics, regardless of the clean screen.')
     args = p.parse_args()
     if args.steps < 1 or args.workers < 1 or args.worlds < 1 or len(set(args.seeds)) != len(args.seeds):
         p.error('positive steps/workers/worlds and distinct seeds are required')
+    if args.complete and args.conditions:
+        p.error('--complete and --conditions are mutually exclusive')
     torch.set_num_threads(1)
     checkpoints = args.out/'checkpoints'
     checkpoints.mkdir(parents=True, exist_ok=True)
     def path(condition, seed):
         return checkpoints/f'{condition}_seed_{seed}.pt'
     if args.worker:
-        train(path(args.worker,args.seeds[0]),seed=args.seeds[0],steps=args.steps,**CONDITIONS[args.worker])
+        budget, spec = training_spec(args.worker, args.steps)
+        train(path(args.worker,args.seeds[0]),seed=args.seeds[0],steps=budget,**spec)
         return
+    archive_sources(args.out/'source', source_hashes())
     previous = None
     if (args.out/'analysis.json').exists():
         previous = json.loads((args.out/'analysis.json').read_text(encoding='utf-8'))
@@ -205,23 +233,14 @@ def main():
     def worker(job):
         condition, seed = job
         target = path(condition,seed)
-        if args.evaluate_only:
-            return
         if target.exists():
             _, _, meta = load(target)
-            expected = CONDITIONS[condition]
-            if (meta['environment_steps'] == args.steps and meta['seed'] == seed
-                and meta['source_sha256'] == source_hashes()
-                and meta['torch_version'] == str(torch.__version__) and meta['numpy_version'] == np.__version__
-                and meta['architecture'] == expected.get('architecture','attention')
-                and meta['selection'] == expected.get('selection',True)
-                and meta['learning'] == expected.get('learning',True)
-                and meta['invasion'] == expected.get('invasion',False)
-                and meta['environment'] == environment_config(**{'reward_mode':'energy',**expected.get('config',{})})
-                and meta['ppo'] == PPO):
+            if checkpoint_matches(meta, condition, seed, args.steps):
                 print(f'Reusing {target}', flush=True)
                 return
             raise ValueError(f'Existing checkpoint differs from requested protocol: {target}. Use a separate --out directory.')
+        if args.evaluate_only:
+            raise FileNotFoundError(f'Missing evaluation checkpoint: {target}')
         with target.with_suffix('.log').open('w') as log:
             subprocess.run([sys.executable,'-u',__file__,'--worker',condition,'--seeds',str(seed),
                             '--steps',str(args.steps),'--out',str(args.out)],stdout=log,stderr=subprocess.STDOUT,check=True)
@@ -235,20 +254,25 @@ def main():
                 rows.extend(dict(condition=condition,**r) for r in evaluate_checkpoint(path(condition,seed),args.worlds,condition == 'clean'))
                 print(f'Evaluated {condition}, seed {seed}',flush=True)
         return rows
-    conditions = args.conditions or ['clean']
+    conditions = list(CONDITIONS) if args.complete else (args.conditions or ['clean'])
     runs = execute(conditions)
     if previous is not None:
         runs += [r for r in previous['runs'] if r['condition'] not in conditions]
         conditions = sorted({r['condition'] for r in runs})
     gate = feasibility(runs,args.seeds,args.worlds)
-    if args.conditions is None:
+    if args.conditions is None and not args.complete:
         followups = [c for c in CONDITIONS if c != 'clean'] if gate['passed'] else ['no_selection','evolution_only','fallback']
         # Mechanism/fallback controls are informative even when clean training fails.
+        runs = [r for r in runs if r['condition'] not in followups]
         runs.extend(execute(followups))
         conditions += followups
     result = dict(protocol='inherited-policy-ppo-v1',training_seeds=args.seeds,
                   environment_steps_per_run=args.steps,evaluation_worlds_per_seed=args.worlds,
-                  clean_feasibility=gate, explicit_conditions=args.conditions is not None,
+                  clean_feasibility=gate, explicit_conditions=args.conditions is not None or args.complete,
+                  completed_all_conditions=args.complete,
+                  budgets_by_condition={c:training_spec(c,args.steps)[0] for c in conditions},
+                  evaluation_source_sha256={p.relative_to(Path(__file__).resolve().parents[1]).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
+                                            for p in (Path(__file__).resolve(), Path(__file__).resolve().parents[1]/'evaluation/uncertainty.py')},
                   runs=runs,summary=summarize(runs),not_run=[c for c in CONDITIONS if c not in conditions])
     (args.out/'analysis.json').write_text(json.dumps(result,indent=2,allow_nan=False),encoding='utf-8')
     write_report(args.out,result)

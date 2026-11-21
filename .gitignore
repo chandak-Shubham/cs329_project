@@ -17,6 +17,10 @@ results/revised_study/checkpoints/*.lock
 results/lineage_study/checkpoints/*.log
 results/lineage_study/checkpoints/*.lock
 results/inheritance_study/checkpoints/*.log
+results/submission_study/checkpoints/*.log
+# Timing probe and interrupted source-archive batch; excluded from submission.
+results/runtime_probe/
+results/final_study/
 
 # IDE
 .vscode/

@@ -48,7 +48,8 @@ def paired_contrasts(runs):
     """Pair seed means, not individual worlds or recipients."""
     pairs = [('clean','no_selection'),('clean','evolution_only'),('clean','fixed_gate'),
              ('clean','mlp'),('clean','random_placement'),('noise050','clean'),
-             ('noise_mimics','fixed_noise_mimics')]
+             ('noise_mimics','fixed_noise_mimics'),('low_lr','clean'),
+             ('high_entropy','clean'),('long_training','clean')]
     result = {}
     for a,b in pairs:
         for metric in ('donations_per_resident_step','final_residents','adjacent_hamming_similarity',
@@ -71,8 +72,8 @@ def paired_contrasts(runs):
 def hamilton_regression(root, analysis):
     required = {'clean','bc150','bc450'}
     present = {r['condition'] for r in analysis['runs']}
-    if not analysis['clean_feasibility']['passed'] or not required <= present:
-        return dict(status='not fitted',reason='Clean feasibility and independently trained matched B/C conditions are required. No historical regression is substituted.')
+    if not required <= present:
+        return dict(status='not fitted',reason='Independently trained matched B/C conditions are required. No historical regression is substituted.')
     from evaluation.analysis import fit_logistic_regression
     rows = []
     class Recorder:
@@ -116,6 +117,8 @@ def hamilton_regression(root, analysis):
     result = fit_logistic_regression(x,y,['intercept','corrected_tag_cue','behavior_history','B_over_C'],groups=groups)
     result['status'] = 'exploratory fit' if result['converged'] else 'optimizer did not converge'
     result['eligible_records_before_sampling'] = len(data)
+    result['clean_feasibility_passed'] = analysis['clean_feasibility']['passed']
+    result['scope'] = 'Transient recipient decisions, including trajectories ending in extinction; not an equilibrium cooperation test.'
     result['interpretation'] = 'Recipient decisions are dependent within seed; cluster-t inference with five seeds is exploratory. B/C indexes independently trained conditions, not an observed policy input. This association is not a causal validation of Hamilton rule.'
     return result
 
@@ -151,10 +154,15 @@ def main(root):
     figures = root/'figures'
     figures.mkdir(exist_ok=True)
     fig, axes = plt.subplots(2,1,figsize=(10,7),sharex=True,layout='constrained')
+    # Keep the overview readable; every condition remains in raw diagnostics.
+    overview = {'clean','no_selection','evolution_only','fixed_gate','mlp',
+                'low_lr','high_entropy','long_training'}
     for condition, runs in records.items():
+        if len(records) > 8 and condition not in overview:
+            continue
         # Episode termination makes rollout endpoints irregular. Bin actual
         # transitions rather than pretending each update is exactly 64 steps.
-        budget = analysis['environment_steps_per_run']
+        budget = max(r['environment_steps'] for r in runs)
         edges = np.linspace(0,budget,17)
         for axis,metric,label in zip(axes,('donations_per_step','final_residents'),('Donations / transition','Residents at rollout endpoint')):
             columns = []
@@ -177,17 +185,19 @@ def main(root):
                 axis.fill_between(x,[r['ci95'][0] for r in columns],[r['ci95'][1] for r in columns],alpha=.12)
             axis.set_ylabel(label)
             axis.grid(alpha=.2)
-    axes[0].legend(fontsize=8)
+    axes[0].legend(fontsize=8, ncol=2)
     axes[0].set_title('Inherited policies: seed means and pointwise 95% t intervals')
     axes[-1].set_xlabel('Environment transitions per training run')
     fig.savefig(figures/'learning_curves.png',dpi=160)
     plt.close(fig)
+    cue_conditions = [c for c in conditions if len(conditions) <= 8 or c in
+                      ('clean','noise025','noise050','noise_mimics','fixed_noise_mimics')]
     fig, ax = plt.subplots(figsize=(10,5),layout='constrained')
     for offset,key,label in ((-.18,'genetic_tv','Genetic cue'),(.18,'behavior_tv','Behaviour cue')):
-        rows = [summary[c][key] for c in conditions]
+        rows = [summary[c][key] for c in cue_conditions]
         errors = np.array([[r['mean']-r['ci95'][0],r['ci95'][1]-r['mean']] if r['ci95'] else [0,0] for r in rows]).T
-        ax.bar(np.arange(len(conditions))+offset,[r['mean'] for r in rows],.36,yerr=errors,capsize=3,label=label)
-    ax.set_xticks(np.arange(len(conditions)),[c.replace('_','\n') for c in conditions])
+        ax.bar(np.arange(len(cue_conditions))+offset,[r['mean'] for r in rows],.36,yerr=errors,capsize=3,label=label)
+    ax.set_xticks(np.arange(len(cue_conditions)),[c.replace('_','\n') for c in cue_conditions])
     ax.set_ylabel('Mean total variation in action probabilities')
     ax.set_title('Common-input cue sensitivity; descriptive, not successful adaptation')
     ax.legend()

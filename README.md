@@ -1,8 +1,40 @@
-# Emergent Kin Selection in Multi-Agent Reinforcement Learning
+# Investigating Kin Selection in Multi-Agent Reinforcement Learning
 
 CS329 | Group 21 | IIT Gandhinagar
 
-## Results and scientific status
+## Final submission study
+
+The current submission investigates whether individual energy-only PPO, inherited family policies and survivor selection sustain cooperation and reliable recipient choice. The report distinguishes ecological survival, learning, marker preference and evidence for kin selection.
+
+- [Final report](docs/final_report.md), [printable PDF](docs/final_report.pdf), and [readable HTML](docs/final_report.html).
+- [Complete experimental protocol](docs/final_study_protocol.md).
+- [All conditions and confidence intervals](results/submission_study/results.md), [raw evaluations](results/submission_study/analysis.json), and [source integrity and optimizer diagnostics](results/submission_study/submission_diagnostics.json).
+
+The complete study has 19 conditions and five training seeds per condition, with three fresh evaluation worlds per checkpoint. Matched runs use 2,048 environment transitions; the longer-training control uses 8,192. Conditions cover neural ablations, cue corruption, mimics, B/C, mutation, placement, selection, static demographics, learning rate, entropy and training duration. All conditions execute even if clean feasibility fails. These are finite-budget exploratory experiments, not a convergence guarantee or proof of kin selection.
+
+```powershell
+python -m pip install -r requirements.txt
+python experiments/inheritance_study.py --complete --steps 2048 --workers 3 --worlds 3 --out results/submission_study
+python evaluation/inheritance_report.py --study-dir results/submission_study
+python evaluation/final_report.py --study-dir results/submission_study
+python visualizer/export_web_data.py
+python -m pytest -q
+node --test tests/web_simulation.test.cjs
+python visualizer/export_web_data.py --check
+```
+
+Matching completed checkpoints are verified and reused. Source files, settings, versions or budgets that differ cause an explicit error; use a new `--out` directory for a changed experiment. The exact training source is saved under `results/submission_study/source`. Report-generation code and exact package versions are archived with the results. Independent units are the five training seeds; evaluation worlds and family networks do not inflate that sample size.
+
+Optional HTML/PDF regeneration requires an installed Edge browser:
+
+```powershell
+python -m pip install -r requirements-report.txt
+python evaluation/export_submission.py
+```
+
+The browser's research section links the complete study. Its live actor remains the earlier shared-policy checkpoint; it does not execute the new multi-policy experiment. Earlier experiments below are retained as historical evidence and use distinct objectives or protocols.
+
+## Earlier studies and scientific status
 
 **The kin-selection hypothesis is not yet supported.** In the historical five-seed, 1,024-step study, every learned Phase 2 population became extinct. The historical regression estimated a negative relatedness coefficient (-0.556) and pseudo-R-squared around 0.002. Those observations do not demonstrate learned kin preference or adaptive cue reliability.
 
@@ -25,9 +57,8 @@ python visualizer/export_web_data.py
 ## Run the inherited-policy study
 
 ```powershell
-python experiments/inheritance_study.py --steps 8192 --workers 3
-python evaluation/inheritance_report.py
-python visualizer/export_web_data.py
+python experiments/inheritance_study.py --steps 8192 --workers 3 --out results/inheritance_reproduction
+python evaluation/inheritance_report.py --study-dir results/inheritance_reproduction
 ```
 
 Each founder has a separate network and optimizer; children inherit their family policy by persistent ID. PPO uses the original energy-only reward. At completed episode horizons, the next population samples actual surviving residents and inherits their genomes, policy and optimizer states. Extinction produces no selection winner. This explicit outer loop is documented in the [protocol](docs/inherited_policy_protocol.md).

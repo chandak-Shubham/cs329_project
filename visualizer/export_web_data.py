@@ -52,6 +52,23 @@ def results_html(data):
               table(['Training condition','Genetic cue TV [95% CI]','Behaviour cue TV [95% CI]'],
                     [[name.replace('_',' '),interval(row['genetic_tv']),interval(row['behavior_tv'])] for name,row in data['revised']['cueSensitivity'].items()], 'Total variation after permuting one cue'),
               '<div class="research-figures"><figure><img src="results/revised_study/figures/learning_curves.png" width="1600" height="1120" loading="lazy" alt="Training donation rates and population over environment transitions, with seed means and pointwise 95% intervals"><figcaption>Training curves: cooperation collapses as training proceeds.</figcaption></figure><figure><img src="results/revised_study/figures/cue_sensitivity.png" width="1600" height="800" loading="lazy" alt="Genetic and behavioural cue permutation sensitivity across training conditions"><figcaption>Cue sensitivity measures action changes, not successful cooperative adaptation.</figcaption></figure></div>']
+    if data.get('submission'):
+        study = data['submission']
+        selected = {name: row for name,row in study['summary'].items()
+                    if name in ('clean/trained/clean','clean/untrained_ancestors/clean',
+                                'evolution_only/trained/clean','low_lr/trained/clean',
+                                'high_entropy/trained/clean','long_training/trained/clean')}
+        chunks[1:1] = [
+            '<h3>Complete submission study</h3>',
+            f'<p>{study["conditions"]} conditions and {study["checkpoints"]} experiment runs; five training seeds and three fresh evaluation worlds per checkpoint. Matched conditions use {study["baseBudget"]:,} transitions; the longer-training control uses {4*study["baseBudget"]:,}. All declared comparisons were executed regardless of clean feasibility.</p>',
+            table(['Condition','Final residents [95% CI]','Donations / resident-step [95% CI]',
+                   'Seeds with all worlds surviving [Wilson 95% CI]'],
+                  [[name.replace('_',' '),interval(row['final_residents']),
+                    interval(row['donations_per_resident_step']),interval(row['all_worlds_survive'],True)]
+                   for name,row in selected.items()],
+                  'Complete inherited-policy study: selected controls; all conditions are linked below'),
+            '<p>These are exploratory finite-budget results. Full-policy cue sensitivity, spatial comparisons and a transient Hamilton association analysis are reported separately from claims of sustained cooperation. The live actor above remains the earlier shared-policy demonstration.</p>',
+            '<p><a href="docs/final_report.md">Final submission report</a> · <a href="results/submission_study/results.md">All experimental conditions</a> · <a href="results/submission_study/analysis.json">Raw evaluations</a> · <a href="docs/final_study_protocol.md">Protocol and reproduction commands</a> · <a href="results/submission_study/submission_diagnostics.json">Source integrity and optimizer comparisons</a></p>']
     if data['lineage']:
         lineage = data['lineage']
         passed = lineage['feasibility']['passed']
@@ -115,7 +132,18 @@ def build_payload() -> dict:
     diagnostics_current = (inheritance is not None and diagnostics_path.exists()
                            and json.loads(diagnostics_path.read_text(encoding='utf-8')).get('analysis_sha256')
                            == hashlib.sha256(inheritance_path.read_bytes()).hexdigest())
+    submission_root = ROOT/'results/submission_study'
+    submission = None
+    if (submission_root/'submission_diagnostics.json').exists():
+        audit = json.loads((submission_root/'submission_diagnostics.json').read_text(encoding='utf-8'))
+        for filename, field in (('analysis.json','analysis_sha256'),('diagnostics.json','diagnostics_sha256')):
+            if hashlib.sha256((submission_root/filename).read_bytes()).hexdigest() != audit[field]:
+                raise ValueError('Submission report is stale; regenerate evaluation/final_report.py')
+        final = json.loads((submission_root/'analysis.json').read_text(encoding='utf-8'))
+        submission = dict(summary=final['summary'], conditions=len(final['budgets_by_condition']),
+                          checkpoints=len(audit['integrity']['checkpoints']),baseBudget=final['environment_steps_per_run'])
     return {
+        'submission': submission,
         "neural": {
             "architecture": "contextual_attention", "dModel": 32, "numHeads": 2,
             "checkpoint": checkpoint.relative_to(ROOT).as_posix(),
