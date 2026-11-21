@@ -1,6 +1,6 @@
 # Revised study: executed results
 
-All intervals and comparisons are exploratory. See protocol and limitations in docs/review_response_2026-11-17.md.
+All intervals and comparisons are exploratory. See protocol and limitations in docs/final_report.md.
 
 Values are means [95% intervals]. Survival uses Wilson intervals; other metrics use Student t intervals across training seeds.
 

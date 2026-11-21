@@ -255,15 +255,17 @@ def main(root):
               '## Contributions and references', '',
               'The ideation assigned environment and demographic modeling to Vansh Barfiwala; gating, cues and attention to Pratham Choksi; PPO and evaluation to Shubham Chandak. These are the team’s declared responsibilities, not an independent authorship audit.', '',
               'Hamilton (1964), The genetical evolution of social behaviour, parts I and II; Leibo et al. (2017), Multi-agent reinforcement learning in sequential social dilemmas; Hughes et al. (2018), Inequity aversion improves cooperation in intertemporal social dilemmas; Jaques et al. (2019), Social influence as intrinsic motivation for multi-agent deep reinforcement learning; Lupu and Precup (2020), Gifting in multi-agent reinforcement learning. Bibliographic background follows the supplied ideation; no novelty or literature-completeness claim is made.', '']
-    report = ROOT/'docs/final_report.md'
-    report.write_text('\n'.join(lines), encoding='utf-8')
+    # The hand-written submission is docs/final_report.md. This generated summary
+    # of the energy-only study stays beside its results and never overwrites it.
+    report = root/'final_report.md'
+    text = '\n'.join(lines)
     # Freeze report and analysis sources separately from training provenance.
     for path in (Path(__file__), ROOT/'evaluation/inheritance_report.py', ROOT/'evaluation/analysis.py'):
         target = root/'report_source'/path.relative_to(ROOT)
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(path.read_bytes())
-    (root/'final_report.md').write_text(report.read_text(encoding='utf-8').replace(result_path, '.')
-                                      .replace('](final_study_protocol.md)', '](../../docs/final_study_protocol.md)'), encoding='utf-8')
+    report.write_text(text.replace(result_path, '.')
+                      .replace('](final_study_protocol.md)', '](../../docs/final_report.md)'), encoding='utf-8')
     manifest = {p.relative_to(root).as_posix():digest(p) for p in root.rglob('*')
                 if p.is_file() and p.name != 'manifest.json' and p.suffix not in ('.log','.pyc')}
     (root/'manifest.json').write_text(json.dumps(manifest,indent=2), encoding='utf-8')

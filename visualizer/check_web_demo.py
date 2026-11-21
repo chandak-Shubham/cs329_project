@@ -1,7 +1,7 @@
 """Optional browser acceptance checks. Requires Playwright and installed Chrome/Edge.
 
 python visualizer/check_web_demo.py --browsers chrome msedge
-Screenshots and downloaded CSVs are saved to the ignored .review_tools directory.
+Screenshots and downloaded CSVs are saved to the ignored .browser_checks directory.
 """
 import argparse
 import csv
@@ -37,7 +37,7 @@ def check_browser(playwright, channel, firefox_executable=None):
     page.goto((ROOT / "index.html").as_uri())
     expect(page.locator('#strategy')).to_have_value('neural')
     assert page.evaluate('kinshipApp.engine.strategy') == 'neural'
-    expect(page.locator('.research-verdict')).to_contain_text('not yet supported')
+    expect(page.locator('.research-verdict')).to_contain_text('unlearns cooperation')
     expect(page.locator('#research-results')).to_contain_text('Historical regression')
     assert page.locator('#research-results tbody tr').count() >= 35
     page.locator('#research-results img').evaluate_all("images=>images.forEach(img=>img.loading='eager')")
@@ -118,7 +118,7 @@ def check_browser(playwright, channel, firefox_executable=None):
     expect(page.locator("#shock")).to_be_enabled()
     with page.expect_download() as download_event:
         page.locator("#export").click()
-    destination = ROOT / f".review_tools/web-{channel}.csv"
+    destination = ROOT / f".browser_checks/web-{channel}.csv"
     download_event.value.save_as(destination)
     with destination.open(encoding="utf-8", newline="") as stream:
         rows = list(csv.DictReader(stream))
@@ -156,7 +156,7 @@ def check_browser(playwright, channel, firefox_executable=None):
         page.wait_for_timeout(120)
         assert page.evaluate("document.documentElement.scrollWidth <= innerWidth"), f"Horizontal overflow at {width}px"
         assert page.locator("#world").bounding_box()["width"] > 200
-        page.screenshot(path=str(ROOT / f".review_tools/web-{channel}-{width}.png"), full_page=True)
+        page.screenshot(path=str(ROOT / f".browser_checks/web-{channel}-{width}.png"), full_page=True)
     assert not errors, errors
     assert not [url for url in requests if url.startswith(("http:", "https:"))], requests
     context.close()
@@ -169,7 +169,7 @@ def main():
     parser.add_argument("--browsers", nargs="+", choices=["chrome", "msedge", "firefox"], default=["chrome", "msedge"])
     parser.add_argument("--firefox-executable", help="Optional path to an existing Playwright Firefox executable")
     args = parser.parse_args()
-    (ROOT / ".review_tools").mkdir(exist_ok=True)
+    (ROOT / ".browser_checks").mkdir(exist_ok=True)
     with sync_playwright() as playwright:
         for channel in args.browsers:
             check_browser(playwright, channel, args.firefox_executable)

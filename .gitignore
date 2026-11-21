@@ -8,16 +8,19 @@ __pycache__/
 venv/
 .venv/
 env/
-.review_tools/
 
-# Small reproducible checkpoints are tracked.
+# Output of the optional browser checks (visualizer/check_web_*.py)
+.browser_checks/
+
+# Trained checkpoints of all studies are tracked; per-run training logs are not.
 *.pth
-results/revised_study/checkpoints/*.log
-results/revised_study/checkpoints/*.lock
-results/lineage_study/checkpoints/*.log
-results/lineage_study/checkpoints/*.lock
-results/inheritance_study/checkpoints/*.log
-results/submission_study/checkpoints/*.log
+results/*/checkpoints/*.log
+results/*/checkpoints/*.lock
+results/*/evaluations/*.log
+
+# Logs of local command-line runs (historical tracked logs are unaffected)
+results/*_run*.log
+
 # Timing probe and interrupted source-archive batch; excluded from submission.
 results/runtime_probe/
 results/final_study/

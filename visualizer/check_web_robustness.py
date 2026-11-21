@@ -50,7 +50,7 @@ def check(p, channel):
     assert page.evaluate("kinshipApp.engine.lastChecks.every(c=>c.B===10)")
     with page.expect_download() as event:
         page.locator("#export").click()
-    out = ROOT / f".review_tools/enforced-{channel}.csv"
+    out = ROOT / f".browser_checks/enforced-{channel}.csv"
     event.value.save_as(out)
     with out.open(encoding="utf-8", newline="") as stream:
         rows = list(csv.DictReader(stream))
@@ -93,7 +93,7 @@ def check(p, channel):
     page.wait_for_function("kinshipApp.engine.stepCount >= 5")
     page.locator("#play").click()
     assert not errors, errors
-    page.screenshot(path=str(ROOT / f".review_tools/enforced-{channel}-desktop.png"), full_page=True)
+    page.screenshot(path=str(ROOT / f".browser_checks/enforced-{channel}-desktop.png"), full_page=True)
 
     page.set_viewport_size({"width": 390, "height": 844})
     page.reload()
@@ -103,13 +103,13 @@ def check(p, channel):
     expect(page.locator("#step-count")).to_have_text("0001")
     page.locator("#check-details").evaluate("el=>el.open=true")
     assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
-    page.screenshot(path=str(ROOT / f".review_tools/enforced-{channel}-mobile.png"), full_page=True)
+    page.screenshot(path=str(ROOT / f".browser_checks/enforced-{channel}-mobile.png"), full_page=True)
     browser.close()
     print(f"{channel}: strict inequality, failure details, decision CSV, seeds, visible controls, slow playback, error recovery, mobile: PASS")
 
 
 if __name__ == "__main__":
-    (ROOT / ".review_tools").mkdir(exist_ok=True)
+    (ROOT / ".browser_checks").mkdir(exist_ok=True)
     with sync_playwright() as p:
         for channel in ["chrome", "msedge"]:
             check(p, channel)
