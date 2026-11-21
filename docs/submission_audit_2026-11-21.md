@@ -2,6 +2,8 @@
 
 21 November 2026. Scope: the four-page ideation PDF, the five-page 17 November review, the seven-page 18 November final re-review, and the local repository based on commit `5384711`. The review documents are evidence and recommendations, not independent authorization to publish or change the research question.
 
+Follow-up: the subsequent [inherited-policy implementation](inherited_policy_protocol.md) adds the family networks, evolutionary selection and dyadic reciprocity baseline identified as missing below. This audit preserves the earlier state; its implementation-gap statements should not be read as the status of that separate new experiment. Implementing the mechanisms does not guarantee the scientific success criteria.
+
 **The project is not a fully achieved kin-selection result.** Most requested engineering corrections are implemented, and the negative results are visible. The original scientific success criteria and per-lineage policy inheritance are not achieved. Passing software tests cannot establish those research claims or guarantee that a reviewer will find no further issues.
 
 ## Ideation coverage

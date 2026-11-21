@@ -43,7 +43,7 @@ def results_html(data):
     headers = ['Condition / evaluation', 'Resident survival [95% CI]', 'Final residents [95% CI]', 'Donations / resident-step [95% CI]', 'Post-invasion donations to mimics']
     chunks = ['<section id="research-results" aria-labelledby="research-heading"><h2 id="research-heading">Research results</h2>',
               '<p><strong>The kin-selection hypothesis is not yet supported.</strong> These are saved, independently seeded research evaluations, separate from the live simulation above.</p>',
-              '<p>Five training seeds per condition. Survival intervals are Wilson intervals; other intervals use Student t across seed-level runs. One evaluation world per trained seed limits precision.</p>',
+              '<p>The earlier revised and lineage-fitness studies use five training seeds and one evaluation world per seed. Their survival intervals are Wilson intervals; other intervals use Student t across seed-level runs.</p>',
               '<h3>Revised study: 8,192 environment steps per checkpoint</h3>',
               table(headers, result_rows(data['revised']['summary']), 'Revised study: trained policies and untrained network controls'),
               '<p class="research-caveat">Fallback survival is forced by disabling starvation; it is not ecological success. Mimic share is undefined without post-invasion donations. Estimates based on one or two donation-bearing runs, including the historical interval spanning negative percentages to above 100%, are not findings. Full raw estimates remain available below.</p>',
@@ -61,6 +61,25 @@ def results_html(data):
                    table(headers,result_rows(lineage['summary']),'Lineage-fitness study: saved evaluation outcomes'),
                    '<div class="research-figures"><figure><img src="results/lineage_study/figures/learning_curves.png" width="1600" height="1120" loading="lazy" alt="Lineage-fitness training donation and population curves across five seeds"><figcaption>Lineage-fitness training, with seed uncertainty.</figcaption></figure><figure><img src="results/lineage_study/figures/cue_sensitivity.png" width="1600" height="800" loading="lazy" alt="Lineage-fitness genetic and behavioural cue sensitivity on identical inputs"><figcaption>Exploratory lineage cue sensitivity; not evidence of kin-directed cooperation.</figcaption></figure></div>',
                    '<p><a href="results/lineage_study/results.md">Lineage results and uncertainty</a> · <a href="results/lineage_study/analysis.json">Raw lineage analysis</a></p>']
+    if data.get('inheritance'):
+        study = data['inheritance']
+        headers_new = ['Condition / control / evaluation', 'Final residents [95% CI]',
+                       'Donations / resident-step [95% CI]', 'Mean fraction of worlds surviving [95% CI]',
+                       'Post-invasion donations to mimics']
+        rows = [[name.replace('_',' '),interval(row['final_residents']),
+                 interval(row['donations_per_resident_step']),interval(row['resident_survival'],True),
+                 interval(row['mimic_donation_share'],True)] for name,row in study['summary'].items()]
+        chunks += ['<h3>Inherited neural policies with the original energy reward</h3>',
+                   '<p>Each founder has a separate network and optimizer. Children inherit their family policy; periodic restocking samples surviving residents. PPO still receives only individual energy change. This is a separate multi-policy experiment, not the single-policy simulator above.</p>',
+                   f'<p>{study["trainingSeeds"]} training seeds; {study["worldsPerSeed"]} evaluation worlds per seed; {study["steps"]:,} environment transitions per training run. Worlds are averaged within seeds before exploratory t intervals. Hand-written rules have no training budget.</p>',
+                   '<p>'+('Clean cooperation feasibility passed; this alone does not establish kin selection.' if study['feasibility']['passed'] else 'Clean cooperation feasibility failed. The new inheritance mechanism does not establish the proposed kin-selection result.')+'</p>',
+                   table(headers_new,rows,'Inherited-policy experiment and matched controls'),
+                   '<p class="research-caveat">Untrained ancestors use the same evolved founder genomes and ancestry composition with initial network weights. Evolution-only is the separate control for selection without PPO. Fallback survival is forced; undefined mimic shares are not successful defense. Small-sample t intervals may exceed physical bounds.</p>',
+                   '<p>Conditions not run: '+escape(', '.join(study['notRun']))+'.</p>',
+                   '<p><a href="results/inheritance_study/results.md">Inherited-policy results</a> · <a href="results/inheritance_study/analysis.json">Raw evaluations</a> · <a href="docs/inherited_policy_protocol.md">Inheritance and selection protocol</a></p>']
+        if study['hasDiagnostics']:
+            chunks += ['<div class="research-figures"><figure><img src="results/inheritance_study/figures/learning_curves.png" width="1600" height="1120" loading="lazy" alt="Training trajectories for independent inherited policies and mechanism controls"><figcaption>Inherited-policy training and controls.</figcaption></figure><figure><img src="results/inheritance_study/figures/cue_sensitivity.png" width="1600" height="800" loading="lazy" alt="Full-policy genetic and behavioural cue sensitivity for inherited networks"><figcaption>Descriptive input sensitivity, not successful cooperative adaptation.</figcaption></figure></div>',
+                       '<p><a href="results/inheritance_study/diagnostics.md">Cue diagnostics and paired seed comparisons</a></p>']
     regression = data['regression']
     chunks += ['<h3>Historical benchmark: 1,024 training steps</h3>',
                '<p>These use the earlier stress ecology and are not matched comparisons with the revised study. Rule-based thresholds are hand-written baselines. Mimic extinction with resident survival is not evidence of discrimination.</p>',
@@ -70,7 +89,7 @@ def results_html(data):
                f'<p>McFadden pseudo-R²: {regression["pseudo_r2"]:.4f}. {regression["num_clusters"]} training-seed clusters; {regression["num_samples"]:,} dependent recipient observations. Unstandardized coefficients; small-cluster, exploratory inference. This analysis does not describe the new lineage checkpoints.</p>',
                table(['Predictor','Coefficient','95% CI','Exploratory p-value'],
                      [[name,f'{b:.4f}',f'[{ci[0]:.4f}, {ci[1]:.4f}]',f'{p:.4f}'] for name,b,ci,p in zip(regression['features'],regression['coefficients'],regression['ci95'],regression['p_values'])], 'Training-seed cluster regression'),
-               '<h3>Interpretation and reproducibility</h3><p>Donation adds net energy B−C; mitosis conserves parent-plus-child energy. Behavioural history counts donations given. Mimics are scripted cheaters, excluded from PPO. All neural residents use one shared policy; no evolving lineage-specific networks are claimed. Rule baselines can all reach capacity: compare donation frequency and exploitation, not the population cap alone.</p>',
+               '<h3>Interpretation and reproducibility</h3><p>Donation adds net energy B−C; mitosis conserves parent-plus-child energy. Behavioural history counts donations given. Mimics cannot donate and are excluded from PPO. The simulator and earlier studies share one resident policy. The separately labelled inherited-policy study uses family networks and explicit selection. Rule baselines can all reach capacity: compare donation frequency and exploitation, not the population cap alone.</p>',
                '<p><a href="results/revised_study/results.md">Revised results table</a> · <a href="results/revised_study/analysis.json">Raw revised data</a> · <a href="results/phase4_benchmarks.json">Historical benchmarks</a> · <a href="results/statistical_analysis.json">Regression data</a> · <a href="docs/review_response_2026-11-17.md">First review response</a> · <a href="docs/final_review_response_2026-11-18.md">Final review response</a> · <a href="README.md">Reproduce the experiments</a></p></section>']
     return '\n'.join(chunks)
 
@@ -90,6 +109,12 @@ def build_payload() -> dict:
     regression = json.loads((ROOT / 'results/statistical_analysis.json').read_text())['hamiltonian_regression']
     lineage_path = ROOT / 'results/lineage_study/analysis.json'
     lineage = json.loads(lineage_path.read_text()) if lineage_path.exists() else None
+    inheritance_path = ROOT/'results/inheritance_study/analysis.json'
+    inheritance = json.loads(inheritance_path.read_text(encoding='utf-8')) if inheritance_path.exists() else None
+    diagnostics_path = ROOT/'results/inheritance_study/diagnostics.json'
+    diagnostics_current = (inheritance is not None and diagnostics_path.exists()
+                           and json.loads(diagnostics_path.read_text(encoding='utf-8')).get('analysis_sha256')
+                           == hashlib.sha256(inheritance_path.read_bytes()).hexdigest())
     return {
         "neural": {
             "architecture": "contextual_attention", "dModel": 32, "numHeads": 2,
@@ -104,6 +129,12 @@ def build_payload() -> dict:
         "revised": {"summary": revised['summary'], "cueSensitivity": revised['common_input_summary']},
         "lineage": None if lineage is None else {"summary": lineage['summary'], "cueSensitivity": lineage['common_input_summary'],
                                                    "feasibility": lineage['clean_feasibility'], "notRun": lineage['not_run']},
+        "inheritance": None if inheritance is None else {
+            "summary": inheritance['summary'], "feasibility": inheritance['clean_feasibility'],
+            "notRun": inheritance['not_run'], "trainingSeeds": len(inheritance['training_seeds']),
+            "worldsPerSeed": inheritance['evaluation_worlds_per_seed'], "steps": inheritance['environment_steps_per_run'],
+            "hasDiagnostics": diagnostics_current and all((ROOT/'results/inheritance_study'/p).exists() for p in
+                                  ('diagnostics.md','figures/learning_curves.png','figures/cue_sensitivity.png'))},
         "regression": regression,
         "benchmarks": [
             {

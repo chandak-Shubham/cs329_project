@@ -6,9 +6,9 @@ CS329 | Group 21 | IIT Gandhinagar
 
 **The kin-selection hypothesis is not yet supported.** In the historical five-seed, 1,024-step study, every learned Phase 2 population became extinct. The historical regression estimated a negative relatedness coefficient (-0.556) and pseudo-R-squared around 0.002. Those observations do not demonstrate learned kin preference or adaptive cue reliability.
 
-The [21 November submission audit](docs/submission_audit_2026-11-21.md) maps the ideation and both supplied reviews to implemented features, verified evidence and remaining gaps. The implementation is a documented negative-result study, not full validation of the original proposal; independently inherited neural lineage policies remain unimplemented.
+The [21 November submission audit](docs/submission_audit_2026-11-21.md) records the gaps found before the latest implementation. The separate [inherited-policy experiment](docs/inherited_policy_protocol.md) now implements independent founder networks, family policy inheritance, energy-only PPO and survivor-based selection. This closes the inheritance implementation gap; it does not by itself validate the hypothesis.
 
-The 17 November review response adds a separate, reproducible study with an individual survival/reproduction objective, contextual gating, independently trained noise conditions, matched ecological settings, mimic donation-share measurements, a fixed neural gate, and the demographic fallback. Changing the reward changes the research question. A shared policy still does not implement competing, inherited lineage policies.
+The 17 November review response adds a separate, reproducible study with an individual survival/reproduction objective, contextual gating, independently trained noise conditions, matched ecological settings, mimic donation-share measurements, a fixed neural gate, and the demographic fallback. Changing the reward changes the research question. That study uses a shared policy and does not implement competing, inherited lineage policies.
 
 See [the review response and protocol](docs/review_response_2026-11-17.md), [executed revised results](results/revised_study/results.md), and [raw revised results](results/revised_study/analysis.json). Historical results remain separate; their tables and figures must not be presented as outputs of the revised training.
 
@@ -21,6 +21,18 @@ python experiments/lineage_study.py --environment-steps 8192 --workers 3
 python evaluation/revised_report.py --study-dir results/lineage_study
 python visualizer/export_web_data.py
 ```
+
+## Run the inherited-policy study
+
+```powershell
+python experiments/inheritance_study.py --steps 8192 --workers 3
+python evaluation/inheritance_report.py
+python visualizer/export_web_data.py
+```
+
+Each founder has a separate network and optimizer; children inherit their family policy by persistent ID. PPO uses the original energy-only reward. At completed episode horizons, the next population samples actual surviving residents and inherits their genomes, policy and optimizer states. Extinction produces no selection winner. This explicit outer loop is documented in the [protocol](docs/inherited_policy_protocol.md).
+
+Five independent training seeds each receive three fresh evaluation worlds. Worlds are averaged within seeds before inference. The clean screen controls further noise/mimic experiments; selection-only, PPO-without-selection and static-demography controls diagnose failure even when clean cooperation is not sustained. The matched clean benchmarks now include a genuine dyadic Tit-for-tat rule, separately from public reputation. Outputs live in `results/inheritance_study`; earlier results remain separate. The browser simulator still executes the earlier single-policy actor; the multi-policy experiment has its own visible research section.
 
 ## Run the revised study
 

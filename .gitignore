@@ -16,6 +16,7 @@ results/revised_study/checkpoints/*.log
 results/revised_study/checkpoints/*.lock
 results/lineage_study/checkpoints/*.log
 results/lineage_study/checkpoints/*.lock
+results/inheritance_study/checkpoints/*.log
 
 # IDE
 .vscode/

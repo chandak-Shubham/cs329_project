@@ -1,0 +1,489 @@
+{
+  "analysis_sha256": "99982273eba3c137d41c4eff652b0290058e01b7634cb122398b1b786a3b0fdc",
+  "common_input_probes": [
+    {
+      "condition": "clean",
+      "training_seed": 42,
+      "genetic_weight": 0.28642220546801883,
+      "genetic_tv": 0.003303726058220491,
+      "behavior_tv": 0.0233574930850106
+    },
+    {
+      "condition": "clean",
+      "training_seed": 101,
+      "genetic_weight": 0.5320653989911079,
+      "genetic_tv": 0.010125697774734968,
+      "behavior_tv": 0.008256023361658057
+    },
+    {
+      "condition": "clean",
+      "training_seed": 202,
+      "genetic_weight": 0.8001526494820913,
+      "genetic_tv": 0.005475145522116994,
+      "behavior_tv": 0.007116860884707421
+    },
+    {
+      "condition": "clean",
+      "training_seed": 303,
+      "genetic_weight": 0.517654354373614,
+      "genetic_tv": 0.005018532867931451,
+      "behavior_tv": 0.008336834725923836
+    },
+    {
+      "condition": "clean",
+      "training_seed": 404,
+      "genetic_weight": 0.42629626020789146,
+      "genetic_tv": 0.010862814087886363,
+      "behavior_tv": 0.01263257449803253
+    },
+    {
+      "condition": "evolution_only",
+      "training_seed": 42,
+      "genetic_weight": 0.45232468470931053,
+      "genetic_tv": 0.002121834511247774,
+      "behavior_tv": 0.0029199570999480784
+    },
+    {
+      "condition": "evolution_only",
+      "training_seed": 101,
+      "genetic_weight": 0.5406399965286255,
+      "genetic_tv": 0.0014377015177160501,
+      "behavior_tv": 0.0018827735912054777
+    },
+    {
+      "condition": "evolution_only",
+      "training_seed": 202,
+      "genetic_weight": 0.5056793093681335,
+      "genetic_tv": 0.0010408259695395827,
+      "behavior_tv": 0.0006491607637144625
+    },
+    {
+      "condition": "evolution_only",
+      "training_seed": 303,
+      "genetic_weight": 0.5572911500930786,
+      "genetic_tv": 0.0014124119188636541,
+      "behavior_tv": 0.0007815095013938844
+    },
+    {
+      "condition": "evolution_only",
+      "training_seed": 404,
+      "genetic_weight": 0.4836887717247009,
+      "genetic_tv": 0.0008989255293272436,
+      "behavior_tv": 0.0022662279661744833
+    },
+    {
+      "condition": "fallback",
+      "training_seed": 42,
+      "genetic_weight": 0.6365480944514275,
+      "genetic_tv": 0.010678451071726158,
+      "behavior_tv": 0.005241918299968044
+    },
+    {
+      "condition": "fallback",
+      "training_seed": 101,
+      "genetic_weight": 0.7002668951948484,
+      "genetic_tv": 0.021421369009961683,
+      "behavior_tv": 0.007601281036234771
+    },
+    {
+      "condition": "fallback",
+      "training_seed": 202,
+      "genetic_weight": 0.7250000387430191,
+      "genetic_tv": 0.014628318992132941,
+      "behavior_tv": 0.002772795812537273
+    },
+    {
+      "condition": "fallback",
+      "training_seed": 303,
+      "genetic_weight": 0.8133138194680214,
+      "genetic_tv": 0.019983388696952414,
+      "behavior_tv": 0.005875762377399951
+    },
+    {
+      "condition": "fallback",
+      "training_seed": 404,
+      "genetic_weight": 0.7437253035604954,
+      "genetic_tv": 0.018636214876702677,
+      "behavior_tv": 0.005986721545923501
+    },
+    {
+      "condition": "no_selection",
+      "training_seed": 42,
+      "genetic_weight": 0.4615171526869138,
+      "genetic_tv": 0.005724030105435911,
+      "behavior_tv": 0.007436784122546669
+    },
+    {
+      "condition": "no_selection",
+      "training_seed": 101,
+      "genetic_weight": 0.4193255480689307,
+      "genetic_tv": 0.007840960674608747,
+      "behavior_tv": 0.0107293645463263
+    },
+    {
+      "condition": "no_selection",
+      "training_seed": 202,
+      "genetic_weight": 0.4318175495912631,
+      "genetic_tv": 0.007714340157690458,
+      "behavior_tv": 0.007709796860581264
+    },
+    {
+      "condition": "no_selection",
+      "training_seed": 303,
+      "genetic_weight": 0.48179973708465695,
+      "genetic_tv": 0.005966562215083589,
+      "behavior_tv": 0.006840083500719629
+    },
+    {
+      "condition": "no_selection",
+      "training_seed": 404,
+      "genetic_weight": 0.4563199202530086,
+      "genetic_tv": 0.007746866472492305,
+      "behavior_tv": 0.006485919050949936
+    }
+  ],
+  "common_input_summary": {
+    "clean": {
+      "genetic_tv": {
+        "n": 5,
+        "mean": 0.006957183262178054,
+        "ci95": [
+          0.0028112530822401224,
+          0.011103113442115986
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "behavior_tv": {
+        "n": 5,
+        "mean": 0.01193995731106649,
+        "ci95": [
+          0.00359545876380433,
+          0.02028445585832865
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "genetic_weight": {
+        "n": 5,
+        "mean": 0.5125181737045447,
+        "ci95": [
+          0.2788215786429,
+          0.7462147687661893
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "evolution_only": {
+      "genetic_tv": {
+        "n": 5,
+        "mean": 0.001382339889338861,
+        "ci95": [
+          0.0007929931488646061,
+          0.001971686629813116
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "behavior_tv": {
+        "n": 5,
+        "mean": 0.0016999257844872774,
+        "ci95": [
+          0.0004912624243445316,
+          0.002908589144630023
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "genetic_weight": {
+        "n": 5,
+        "mean": 0.5079247824847698,
+        "ci95": [
+          0.4552779334790598,
+          0.5605716314904798
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "fallback": {
+      "genetic_tv": {
+        "n": 5,
+        "mean": 0.017069548529495174,
+        "ci95": [
+          0.01163278344700877,
+          0.022506313611981577
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "behavior_tv": {
+        "n": 5,
+        "mean": 0.005495695814412708,
+        "ci95": [
+          0.0033185632934648454,
+          0.007672828335360571
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "genetic_weight": {
+        "n": 5,
+        "mean": 0.7237708302835624,
+        "ci95": [
+          0.6438355352260854,
+          0.8037061253410394
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "no_selection": {
+      "genetic_tv": {
+        "n": 5,
+        "mean": 0.006998551925062202,
+        "ci95": [
+          0.005685761802695411,
+          0.008311342047428992
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "behavior_tv": {
+        "n": 5,
+        "mean": 0.00784038961622476,
+        "ci95": [
+          0.005747777686856545,
+          0.009933001545592976
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "genetic_weight": {
+        "n": 5,
+        "mean": 0.45015598153695463,
+        "ci95": [
+          0.4193937006666299,
+          0.48091826240727936
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    }
+  },
+  "cue_paired_contrasts": {
+    "noise025_minus_clean/genetic_tv": {
+      "n": 0,
+      "mean": null,
+      "ci95": null
+    },
+    "noise025_minus_clean/behavior_tv": {
+      "n": 0,
+      "mean": null,
+      "ci95": null
+    },
+    "noise025_minus_clean/genetic_weight": {
+      "n": 0,
+      "mean": null,
+      "ci95": null
+    },
+    "noise050_minus_clean/genetic_tv": {
+      "n": 0,
+      "mean": null,
+      "ci95": null
+    },
+    "noise050_minus_clean/behavior_tv": {
+      "n": 0,
+      "mean": null,
+      "ci95": null
+    },
+    "noise050_minus_clean/genetic_weight": {
+      "n": 0,
+      "mean": null,
+      "ci95": null
+    },
+    "noise_mimics_minus_noise050/genetic_tv": {
+      "n": 0,
+      "mean": null,
+      "ci95": null
+    },
+    "noise_mimics_minus_noise050/behavior_tv": {
+      "n": 0,
+      "mean": null,
+      "ci95": null
+    },
+    "noise_mimics_minus_noise050/genetic_weight": {
+      "n": 0,
+      "mean": null,
+      "ci95": null
+    }
+  },
+  "ecological_paired_contrasts": {
+    "clean_minus_no_selection/donations_per_resident_step": {
+      "n": 5,
+      "mean": -0.0019239979825886849,
+      "ci95": [
+        -0.08583692508305438,
+        0.081988929117877
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "clean_minus_no_selection/final_residents": {
+      "n": 5,
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "clean_minus_no_selection/adjacent_hamming_similarity": {
+      "n": 5,
+      "mean": 0.41614238306620044,
+      "ci95": [
+        0.20336816774365002,
+        0.6289165983887508
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "clean_minus_no_selection/opportunity_adjusted_tag_preference": {
+      "n": 5,
+      "mean": -0.0005450263415378688,
+      "ci95": [
+        -0.01614869597204792,
+        0.01505864328897218
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "clean_minus_evolution_only/donations_per_resident_step": {
+      "n": 5,
+      "mean": -0.4099349431570243,
+      "ci95": [
+        -0.5190229814030319,
+        -0.3008469049110166
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "clean_minus_evolution_only/final_residents": {
+      "n": 5,
+      "mean": -45.0,
+      "ci95": [
+        -45.0,
+        -45.0
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "clean_minus_evolution_only/adjacent_hamming_similarity": {
+      "n": 5,
+      "mean": 0.24925061953877056,
+      "ci95": [
+        0.07523156652054985,
+        0.42326967255699127
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "clean_minus_evolution_only/opportunity_adjusted_tag_preference": {
+      "n": 5,
+      "mean": -0.004084282953262195,
+      "ci95": [
+        -0.023399617149369216,
+        0.015231051242844825
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "clean_minus_fixed_gate/donations_per_resident_step": {
+      "n": 0,
+      "mean": null,
+      "ci95": null
+    },
+    "clean_minus_fixed_gate/final_residents": {
+      "n": 0,
+      "mean": null,
+      "ci95": null
+    },
+    "clean_minus_fixed_gate/adjacent_hamming_similarity": {
+      "n": 0,
+      "mean": null,
+      "ci95": null
+    },
+    "clean_minus_fixed_gate/opportunity_adjusted_tag_preference": {
+      "n": 0,
+      "mean": null,
+      "ci95": null
+    },
+    "clean_minus_mlp/donations_per_resident_step": {
+      "n": 0,
+      "mean": null,
+      "ci95": null
+    },
+    "clean_minus_mlp/final_residents": {
+      "n": 0,
+      "mean": null,
+      "ci95": null
+    },
+    "clean_minus_mlp/adjacent_hamming_similarity": {
+      "n": 0,
+      "mean": null,
+      "ci95": null
+    },
+    "clean_minus_mlp/opportunity_adjusted_tag_preference": {
+      "n": 0,
+      "mean": null,
+      "ci95": null
+    },
+    "clean_minus_random_placement/donations_per_resident_step": {
+      "n": 0,
+      "mean": null,
+      "ci95": null
+    },
+    "clean_minus_random_placement/final_residents": {
+      "n": 0,
+      "mean": null,
+      "ci95": null
+    },
+    "clean_minus_random_placement/adjacent_hamming_similarity": {
+      "n": 0,
+      "mean": null,
+      "ci95": null
+    },
+    "clean_minus_random_placement/opportunity_adjusted_tag_preference": {
+      "n": 0,
+      "mean": null,
+      "ci95": null
+    },
+    "noise050_minus_clean/donations_per_resident_step": {
+      "n": 0,
+      "mean": null,
+      "ci95": null
+    },
+    "noise050_minus_clean/final_residents": {
+      "n": 0,
+      "mean": null,
+      "ci95": null
+    },
+    "noise050_minus_clean/adjacent_hamming_similarity": {
+      "n": 0,
+      "mean": null,
+      "ci95": null
+    },
+    "noise050_minus_clean/opportunity_adjusted_tag_preference": {
+      "n": 0,
+      "mean": null,
+      "ci95": null
+    },
+    "noise_mimics_minus_fixed_noise_mimics/donations_per_resident_step": {
+      "n": 0,
+      "mean": null,
+      "ci95": null
+    },
+    "noise_mimics_minus_fixed_noise_mimics/final_residents": {
+      "n": 0,
+      "mean": null,
+      "ci95": null
+    },
+    "noise_mimics_minus_fixed_noise_mimics/adjacent_hamming_similarity": {
+      "n": 0,
+      "mean": null,
+      "ci95": null
+    },
+    "noise_mimics_minus_fixed_noise_mimics/opportunity_adjusted_tag_preference": {
+      "n": 0,
+      "mean": null,
+      "ci95": null
+    }
+  },
+  "interpretation": "Full-policy cue permutation is an exploratory off-manifold diagnostic, not causal reliability. Networks within a run are not independent replicates.",
+  "hamilton_regression": {
+    "status": "not fitted",
+    "reason": "Clean feasibility and independently trained matched B/C conditions are required. No historical regression is substituted."
+  }
+}

@@ -4,6 +4,8 @@ from pathlib import Path
 import shutil
 
 import pytest
+import torch
+import numpy as np
 
 from experiments import revised_study as study
 from experiments.lineage_study import CONDITIONS
@@ -17,6 +19,11 @@ def checkpoint(tmp_path, monkeypatch):
     target.parent.mkdir()
     for suffix in ('.pt', '.json'):
         shutil.copyfile(source.with_suffix(suffix), target.with_suffix(suffix))
+    sidecar = target.with_suffix('.json')
+    record = json.loads(sidecar.read_text())
+    record['torch_version'] = str(torch.__version__)
+    record['numpy_version'] = np.__version__
+    sidecar.write_text(json.dumps(record))
     monkeypatch.setattr(study, 'OUT', tmp_path)
     monkeypatch.setattr(study, 'CONDITIONS', CONDITIONS)
     return target
