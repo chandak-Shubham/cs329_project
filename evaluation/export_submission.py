@@ -53,7 +53,7 @@ def main():
                  prefer_css_page_size=True,display_header_footer=True,
                  header_template='<span></span>',
                  footer_template='<div style="font-size:8px;width:100%;text-align:center;color:#64748b">CS329 · Group 21 · <span class="pageNumber"></span> / <span class="totalPages"></span></div>')
-        preview = root/'.review_tools/final_report_preview.png'
+        preview = root/'.browser_checks/final_report_preview.png'
         preview.parent.mkdir(exist_ok=True)
         page.screenshot(path=str(preview))
         browser_version = browser.version

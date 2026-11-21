@@ -1,0 +1,753 @@
+{
+  "analysis_sha256": "a5a5ce5e908e4336938d219c047e559932b5ed4bba17896dd12e7a655f02219c",
+  "diagnostics_sha256": "c06def8f72a56779efa2b6f1fefbe2c270289ddee18b0d43210e89bd61f26aca",
+  "integrity": {
+    "checkpoints": [
+      {
+        "checkpoint": "bc150_seed_101",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "bc150_seed_202",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "bc150_seed_303",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "bc150_seed_404",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "bc150_seed_42",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "bc450_seed_101",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "bc450_seed_202",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "bc450_seed_303",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "bc450_seed_404",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "bc450_seed_42",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "clean_seed_101",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "clean_seed_202",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "clean_seed_303",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "clean_seed_404",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "clean_seed_42",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "evolution_only_seed_101",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "evolution_only_seed_202",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "evolution_only_seed_303",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "evolution_only_seed_404",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "evolution_only_seed_42",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "fallback_seed_101",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "fallback_seed_202",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "fallback_seed_303",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "fallback_seed_404",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "fallback_seed_42",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "fixed_gate_seed_101",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "fixed_gate_seed_202",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "fixed_gate_seed_303",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "fixed_gate_seed_404",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "fixed_gate_seed_42",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "fixed_noise_mimics_seed_101",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "fixed_noise_mimics_seed_202",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "fixed_noise_mimics_seed_303",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "fixed_noise_mimics_seed_404",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "fixed_noise_mimics_seed_42",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "high_entropy_seed_101",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "high_entropy_seed_202",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "high_entropy_seed_303",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "high_entropy_seed_404",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "high_entropy_seed_42",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "long_training_seed_101",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 8192
+      },
+      {
+        "checkpoint": "long_training_seed_202",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 8192
+      },
+      {
+        "checkpoint": "long_training_seed_303",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 8192
+      },
+      {
+        "checkpoint": "long_training_seed_404",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 8192
+      },
+      {
+        "checkpoint": "long_training_seed_42",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 8192
+      },
+      {
+        "checkpoint": "low_lr_seed_101",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "low_lr_seed_202",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "low_lr_seed_303",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "low_lr_seed_404",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "low_lr_seed_42",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "mlp_seed_101",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "mlp_seed_202",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "mlp_seed_303",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "mlp_seed_404",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "mlp_seed_42",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "mutation000_seed_101",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "mutation000_seed_202",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "mutation000_seed_303",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "mutation000_seed_404",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "mutation000_seed_42",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "mutation010_seed_101",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "mutation010_seed_202",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "mutation010_seed_303",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "mutation010_seed_404",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "mutation010_seed_42",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "mutation020_seed_101",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "mutation020_seed_202",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "mutation020_seed_303",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "mutation020_seed_404",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "mutation020_seed_42",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "no_selection_seed_101",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "no_selection_seed_202",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "no_selection_seed_303",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "no_selection_seed_404",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "no_selection_seed_42",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "noise025_seed_101",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "noise025_seed_202",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "noise025_seed_303",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "noise025_seed_404",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "noise025_seed_42",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "noise050_seed_101",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "noise050_seed_202",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "noise050_seed_303",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "noise050_seed_404",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "noise050_seed_42",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "noise_mimics_seed_101",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "noise_mimics_seed_202",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "noise_mimics_seed_303",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "noise_mimics_seed_404",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "noise_mimics_seed_42",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "random_placement_seed_101",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "random_placement_seed_202",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "random_placement_seed_303",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "random_placement_seed_404",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      },
+      {
+        "checkpoint": "random_placement_seed_42",
+        "weight_hash_matches": true,
+        "archived_source_mismatches": [],
+        "current_source_mismatches": [],
+        "environment_steps": 2048
+      }
+    ],
+    "passed": true
+  },
+  "reward_probe": {
+    "stay": [
+      -0.6800000071525574,
+      -0.6800000071525574
+    ],
+    "give": [
+      -2.680000066757202,
+      4.320000171661377
+    ],
+    "donor_reward_difference": -2.0000000596046448,
+    "recipient_reward_difference": 5.000000178813934,
+    "interpretation": "Holding the state and other action fixed, giving immediately costs the donor C and benefits the recipient B. This tests reward plumbing, not the long-term optimal action."
+  },
+  "optimizer_tests": [
+    {
+      "condition": "low_lr",
+      "differences": [
+        0.3769778732402991,
+        0.26258157185315917,
+        0.3679775103949906,
+        0.26711422330156265,
+        0.32695801638014765
+      ],
+      "summary": {
+        "n": 5,
+        "mean": 0.3203218390340318,
+        "ci95": [
+          0.2531973038499491,
+          0.38744637421811445
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "p_sign_flip": 0.0625,
+      "p_holm": 0.1875
+    },
+    {
+      "condition": "high_entropy",
+      "differences": [
+        0.06016060500218079,
+        -0.03442786777664353,
+        0.030467341530410974,
+        -0.02892787572321376,
+        0.0030069657038129805
+      ],
+      "summary": {
+        "n": 5,
+        "mean": 0.006055833747309491,
+        "ci95": [
+          -0.04359261630819616,
+          0.055704283802815134
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "p_sign_flip": 0.8125,
+      "p_holm": 0.8125
+    },
+    {
+      "condition": "long_training",
+      "differences": [
+        -0.14079629943330327,
+        -0.22386862553030729,
+        -0.03041272955381702,
+        -0.08686610933133428,
+        -0.06376010250711568
+      ],
+      "summary": {
+        "n": 5,
+        "mean": -0.10914077327117551,
+        "ci95": [
+          -0.20312707609019826,
+          -0.015154470452152749
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "p_sign_flip": 0.0625,
+      "p_holm": 0.1875
+    }
+  ],
+  "inference": "Exact two-sided sign flips assume exchangeable paired effects under the null. Holm adjustment covers the three declared donation-rate comparisons. Five independent pairs limit power."
+}

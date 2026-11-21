@@ -41,8 +41,34 @@ def results_html(data):
                          interval(row['final_residents']), interval(row['donations_per_resident_step']), text])
         return rows
     headers = ['Condition / evaluation', 'Resident survival [95% CI]', 'Final residents [95% CI]', 'Donations / resident-step [95% CI]', 'Post-invasion donations to mimics']
-    chunks = ['<section id="research-results" aria-labelledby="research-heading"><h2 id="research-heading">Research results</h2>',
-              '<p><strong>The kin-selection hypothesis is not yet supported.</strong> These are saved, independently seeded research evaluations, separate from the live simulation above.</p>',
+    chunks = ['<section id="research-results" aria-labelledby="research-heading"><h2 id="research-heading">Research results</h2>']
+    h = data.get('hamilton')
+    if h:
+        count = lambda r: f"{round(r['mean']*r['n'])}/{r['n']}"
+        chunks += [
+            '<h3>Final study: does learning need kinship?</h3>',
+            f'<p><strong>Main finding.</strong> With the purely individual energy reward, PPO <em>unlearns</em> cooperation and every population dies out. '
+            f'Adding Hamilton\'s inclusive-fitness term <em>rB</em> to the donor\'s reward preserves cooperation, and learned giving follows Hamilton\'s threshold <em>rB &gt; C</em>. '
+            f'{h["conditions"]} conditions, {h["seeds"]} independent training seeds each, {h["steps"]:,} transitions per run, {h["worlds"]} fresh evaluation worlds per seed. '
+            f'Read the <a href="docs/final_report.md">final report</a>.</p>',
+            table(['B/C', 'Inclusive PPO: donations / step [95% CI]', 'Energy-only PPO: donations / step [95% CI]',
+                   'Untrained networks', 'Seeds surviving (inclusive)', 'Seeds surviving (energy-only)'],
+                  [[row['bc'], interval(row['inclusive']), interval(row['energy']), f"{row['untrained']['mean']:.3f}",
+                    count(row['inclusiveSurvival']), count(row['energySurvival'])] for row in h['sweep']],
+                  'Hamilton study: trained populations at five benefit/cost ratios'),
+            '<p>Inclusive learners gave more than energy-only learners in '
+            f'{h["stacked"]["donations_per_resident_step"]["positive"]}/{h["stacked"]["donations_per_resident_step"]["pairs"]} independent paired runs '
+            f'(exact sign test p = {h["stacked"]["donations_per_resident_step"]["sign_test_p"]:.1e}). Survival at B/C &ge; 4: '
+            f'{h["fisher"]["B/C >= 4"]["inclusive"]} versus {h["fisher"]["B/C >= 4"]["energy"]} (Fisher p = {h["fisher"]["B/C >= 4"]["fisher_p"]:.1e}). '
+            'Below the threshold (B/C &le; 1.5) inclusive learners abandon giving too; at B/C = 6 they give more than untrained networks in every seed.</p>',
+            '<p class="research-caveat">Limits: learners prefer related recipients but are far less selective than the scripted Hamilton rule; when the genetic cue is corrupted its weight falls, '
+            'but they do not switch to behavioural history, and they keep feeding genetic mimics (a public-reputation rule gives them nothing). Spatial assortment was not detected because selection makes populations near-clonal.</p>',
+            '<div class="research-figures"><figure><img src="results/hamilton_study/figures/bc_sweep.png" width="1800" height="1200" loading="lazy" alt="Survival, donations, lifetime and Hamilton gap across five benefit-to-cost ratios for inclusive-fitness PPO, energy-only PPO and untrained networks"><figcaption>Cooperation is learnable only with inclusive credit, and only above Hamilton\'s threshold.</figcaption></figure>'
+            '<figure><img src="results/hamilton_study/figures/learning_curves.png" width="1800" height="600" loading="lazy" alt="Population size during training for five seeds under energy-only and inclusive-fitness rewards"><figcaption>Energy-only populations die out during training; inclusive populations persist.</figcaption></figure>'
+            '<figure><img src="results/hamilton_study/figures/cue_reliance.png" width="900" height="600" loading="lazy" alt="Weight of genetic and behavioural cues in recipient choice at three cue-noise levels"><figcaption>Reliance on the genetic cue falls as it becomes noisier.</figcaption></figure></div>',
+            '<p><a href="docs/final_report.md">Final report</a> · <a href="results/hamilton_study/results.md">All conditions and statistics</a> · <a href="results/hamilton_study/analysis.json">Raw evaluations</a></p>',
+            '<h3>Earlier studies</h3>']
+    chunks += ['<p>The studies below preceded the final study and use the individual energy reward or other objectives. They are kept as supporting evidence. The live simulation above runs one of these earlier shared-policy checkpoints.</p>',
               '<p>The earlier revised and lineage-fitness studies use five training seeds and one evaluation world per seed. Their survival intervals are Wilson intervals; other intervals use Student t across seed-level runs.</p>',
               '<h3>Revised study: 8,192 environment steps per checkpoint</h3>',
               table(headers, result_rows(data['revised']['summary']), 'Revised study: trained policies and untrained network controls'),
@@ -58,7 +84,8 @@ def results_html(data):
                     if name in ('clean/trained/clean','clean/untrained_ancestors/clean',
                                 'evolution_only/trained/clean','low_lr/trained/clean',
                                 'high_entropy/trained/clean','long_training/trained/clean')}
-        chunks[1:1] = [
+        at = next(i for i, c in enumerate(chunks) if c.startswith('<p>The studies below preceded')) + 1
+        chunks[at:at] = [
             '<h3>Complete submission study</h3>',
             f'<p>{study["conditions"]} conditions and {study["checkpoints"]} experiment runs; five training seeds and three fresh evaluation worlds per checkpoint. Matched conditions use {study["baseBudget"]:,} transitions; the longer-training control uses {4*study["baseBudget"]:,}. All declared comparisons were executed regardless of clean feasibility.</p>',
             table(['Condition','Final residents [95% CI]','Donations / resident-step [95% CI]',
@@ -68,7 +95,7 @@ def results_html(data):
                    for name,row in selected.items()],
                   'Complete inherited-policy study: selected controls; all conditions are linked below'),
             '<p>These are exploratory finite-budget results. Full-policy cue sensitivity, spatial comparisons and a transient Hamilton association analysis are reported separately from claims of sustained cooperation. The live actor above remains the earlier shared-policy demonstration.</p>',
-            '<p><a href="docs/final_report.md">Final submission report</a> · <a href="results/submission_study/results.md">All experimental conditions</a> · <a href="results/submission_study/analysis.json">Raw evaluations</a> · <a href="docs/final_study_protocol.md">Protocol and reproduction commands</a> · <a href="results/submission_study/submission_diagnostics.json">Source integrity and optimizer comparisons</a></p>']
+            '<p><a href="docs/final_report.md">Final submission report</a> · <a href="results/submission_study/results.md">All experimental conditions</a> · <a href="results/submission_study/analysis.json">Raw evaluations</a> · <a href="docs/final_report.md">Protocol and reproduction commands</a> · <a href="results/submission_study/submission_diagnostics.json">Source integrity and optimizer comparisons</a></p>']
     if data['lineage']:
         lineage = data['lineage']
         passed = lineage['feasibility']['passed']
@@ -93,7 +120,7 @@ def results_html(data):
                    table(headers_new,rows,'Inherited-policy experiment and matched controls'),
                    '<p class="research-caveat">Untrained ancestors use the same evolved founder genomes and ancestry composition with initial network weights. Evolution-only is the separate control for selection without PPO. Fallback survival is forced; undefined mimic shares are not successful defense. Small-sample t intervals may exceed physical bounds.</p>',
                    '<p>Conditions not run: '+escape(', '.join(study['notRun']))+'.</p>',
-                   '<p><a href="results/inheritance_study/results.md">Inherited-policy results</a> · <a href="results/inheritance_study/analysis.json">Raw evaluations</a> · <a href="docs/inherited_policy_protocol.md">Inheritance and selection protocol</a></p>']
+                   '<p><a href="results/inheritance_study/results.md">Inherited-policy results</a> · <a href="results/inheritance_study/analysis.json">Raw evaluations</a> · <a href="docs/final_report.md">Inheritance and selection protocol</a></p>']
         if study['hasDiagnostics']:
             chunks += ['<div class="research-figures"><figure><img src="results/inheritance_study/figures/learning_curves.png" width="1600" height="1120" loading="lazy" alt="Training trajectories for independent inherited policies and mechanism controls"><figcaption>Inherited-policy training and controls.</figcaption></figure><figure><img src="results/inheritance_study/figures/cue_sensitivity.png" width="1600" height="800" loading="lazy" alt="Full-policy genetic and behavioural cue sensitivity for inherited networks"><figcaption>Descriptive input sensitivity, not successful cooperative adaptation.</figcaption></figure></div>',
                        '<p><a href="results/inheritance_study/diagnostics.md">Cue diagnostics and paired seed comparisons</a></p>']
@@ -107,7 +134,7 @@ def results_html(data):
                table(['Predictor','Coefficient','95% CI','Exploratory p-value'],
                      [[name,f'{b:.4f}',f'[{ci[0]:.4f}, {ci[1]:.4f}]',f'{p:.4f}'] for name,b,ci,p in zip(regression['features'],regression['coefficients'],regression['ci95'],regression['p_values'])], 'Training-seed cluster regression'),
                '<h3>Interpretation and reproducibility</h3><p>Donation adds net energy B−C; mitosis conserves parent-plus-child energy. Behavioural history counts donations given. Mimics cannot donate and are excluded from PPO. The simulator and earlier studies share one resident policy. The separately labelled inherited-policy study uses family networks and explicit selection. Rule baselines can all reach capacity: compare donation frequency and exploitation, not the population cap alone.</p>',
-               '<p><a href="results/revised_study/results.md">Revised results table</a> · <a href="results/revised_study/analysis.json">Raw revised data</a> · <a href="results/phase4_benchmarks.json">Historical benchmarks</a> · <a href="results/statistical_analysis.json">Regression data</a> · <a href="docs/review_response_2026-11-17.md">First review response</a> · <a href="docs/final_review_response_2026-11-18.md">Final review response</a> · <a href="README.md">Reproduce the experiments</a></p></section>']
+               '<p><a href="results/revised_study/results.md">Revised results table</a> · <a href="results/revised_study/analysis.json">Raw revised data</a> · <a href="results/phase4_benchmarks.json">Historical benchmarks</a> · <a href="results/statistical_analysis.json">Regression data</a> · <a href="README.md">Reproduce the experiments</a></p></section>']
     return '\n'.join(chunks)
 
 
@@ -142,7 +169,27 @@ def build_payload() -> dict:
         final = json.loads((submission_root/'analysis.json').read_text(encoding='utf-8'))
         submission = dict(summary=final['summary'], conditions=len(final['budgets_by_condition']),
                           checkpoints=len(audit['integrity']['checkpoints']),baseBudget=final['environment_steps_per_run'])
+    hamilton = None
+    hamilton_path = ROOT/'results/hamilton_study/analysis.json'
+    if hamilton_path.exists():
+        h = json.loads(hamilton_path.read_text(encoding='utf-8'))
+        levels = ('bc100', 'bc150', 'bc250', 'bc400', 'bc600')
+        hamilton = dict(
+            steps=h['protocol']['environment_steps_per_run'], seeds=len(h['protocol']['training_seeds']),
+            worlds=h['protocol']['evaluation_worlds_per_seed'], conditions=len(h['protocol']['conditions']),
+            sweep=[dict(bc=int(k[2:])/100,
+                        inclusive=h['summary'][f'inclusive_{k}/trained/clean']['donations_per_resident_step'],
+                        energy=h['summary'][f'energy_{k}/trained/clean']['donations_per_resident_step'],
+                        untrained=h['summary'][f'inclusive_{k}/untrained_ancestors/clean']['donations_per_resident_step'],
+                        inclusiveSurvival=h['survival_by_bc'][f'inclusive_{k}/trained'],
+                        energySurvival=h['survival_by_bc'][f'energy_{k}/trained']) for k in levels],
+            stacked=h['stacked_sign_test'], fisher=h['survival_fisher'],
+            choice=h['hamilton_choice_regression']['inclusive'].get('coefficients'),
+            cue={c: h['cue_reliance'][c]['genetic'] for c in ('inclusive_bc250', 'inclusive_noise025', 'inclusive_noise050')},
+            mimics={k.split('/')[1]: h['summary'][k]['mimic_donation_share'] for k in h['summary']
+                    if k.startswith('inclusive_noise050_mimics/') and k.endswith('/attack')})
     return {
+        'hamilton': hamilton,
         'submission': submission,
         "neural": {
             "architecture": "contextual_attention", "dModel": 32, "numHeads": 2,

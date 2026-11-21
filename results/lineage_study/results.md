@@ -3,7 +3,7 @@
 Clean feasibility failed. Noise, mimic and fixed-gate follow-ups were not run. This remains a negative result.
 
 
-All intervals and comparisons are exploratory. See protocol and limitations in ../../docs/final_review_response_2026-11-18.md.
+All intervals and comparisons are exploratory. See protocol and limitations in ../../docs/final_report.md.
 
 Values are means [95% intervals]. Survival uses Wilson intervals; other metrics use Student t intervals across training seeds.
 

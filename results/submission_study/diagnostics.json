@@ -1,0 +1,1727 @@
+{
+  "analysis_sha256": "a5a5ce5e908e4336938d219c047e559932b5ed4bba17896dd12e7a655f02219c",
+  "common_input_probes": [
+    {
+      "condition": "bc150",
+      "training_seed": 42,
+      "genetic_weight": 0.48737454414367676,
+      "genetic_tv": 0.0020851133958785795,
+      "behavior_tv": 0.00247122990549542
+    },
+    {
+      "condition": "bc150",
+      "training_seed": 101,
+      "genetic_weight": 0.47430213540792465,
+      "genetic_tv": 0.0028347301752849794,
+      "behavior_tv": 0.0028568473887086534
+    },
+    {
+      "condition": "bc150",
+      "training_seed": 202,
+      "genetic_weight": 0.46946914990743,
+      "genetic_tv": 0.0021888670283563747,
+      "behavior_tv": 0.002596056651479254
+    },
+    {
+      "condition": "bc150",
+      "training_seed": 303,
+      "genetic_weight": 0.47997601330280304,
+      "genetic_tv": 0.0021929493523202837,
+      "behavior_tv": 0.0023587930481880903
+    },
+    {
+      "condition": "bc150",
+      "training_seed": 404,
+      "genetic_weight": 0.4710909500718117,
+      "genetic_tv": 0.002132284843052427,
+      "behavior_tv": 0.0023808128219873956
+    },
+    {
+      "condition": "bc450",
+      "training_seed": 42,
+      "genetic_weight": 0.38349511846899986,
+      "genetic_tv": 0.006099793895070131,
+      "behavior_tv": 0.009807883102136353
+    },
+    {
+      "condition": "bc450",
+      "training_seed": 101,
+      "genetic_weight": 0.4316669050604105,
+      "genetic_tv": 0.010370264460410302,
+      "behavior_tv": 0.009502868226263672
+    },
+    {
+      "condition": "bc450",
+      "training_seed": 202,
+      "genetic_weight": 0.4532521938284238,
+      "genetic_tv": 0.014310473467048723,
+      "behavior_tv": 0.012651013385038823
+    },
+    {
+      "condition": "bc450",
+      "training_seed": 303,
+      "genetic_weight": 0.3980475962162018,
+      "genetic_tv": 0.006084485736209899,
+      "behavior_tv": 0.007446652821575602
+    },
+    {
+      "condition": "bc450",
+      "training_seed": 404,
+      "genetic_weight": 0.37560006603598595,
+      "genetic_tv": 0.008558370813261718,
+      "behavior_tv": 0.008896354993339628
+    },
+    {
+      "condition": "clean",
+      "training_seed": 42,
+      "genetic_weight": 0.33668605610728264,
+      "genetic_tv": 0.004152046050876379,
+      "behavior_tv": 0.01500287225159506
+    },
+    {
+      "condition": "clean",
+      "training_seed": 101,
+      "genetic_weight": 0.4180399129788081,
+      "genetic_tv": 0.006033602500489603,
+      "behavior_tv": 0.007216733455910192
+    },
+    {
+      "condition": "clean",
+      "training_seed": 202,
+      "genetic_weight": 0.6607013841470083,
+      "genetic_tv": 0.0020565058512147516,
+      "behavior_tv": 0.0039055003920414797
+    },
+    {
+      "condition": "clean",
+      "training_seed": 303,
+      "genetic_weight": 0.47714387997984886,
+      "genetic_tv": 0.005382982965481157,
+      "behavior_tv": 0.007495954749174416
+    },
+    {
+      "condition": "clean",
+      "training_seed": 404,
+      "genetic_weight": 0.4474489899973075,
+      "genetic_tv": 0.012338083741875986,
+      "behavior_tv": 0.011854585260152817
+    },
+    {
+      "condition": "evolution_only",
+      "training_seed": 42,
+      "genetic_weight": 0.4660733838876088,
+      "genetic_tv": 0.002026217339638,
+      "behavior_tv": 0.0020920720999129117
+    },
+    {
+      "condition": "evolution_only",
+      "training_seed": 101,
+      "genetic_weight": 0.5476361686984698,
+      "genetic_tv": 0.0016572806246889134,
+      "behavior_tv": 0.0012925825794809498
+    },
+    {
+      "condition": "evolution_only",
+      "training_seed": 202,
+      "genetic_weight": 0.5346531271934509,
+      "genetic_tv": 0.0015414625668199733,
+      "behavior_tv": 0.0017964397848118097
+    },
+    {
+      "condition": "evolution_only",
+      "training_seed": 303,
+      "genetic_weight": 0.5443282326062521,
+      "genetic_tv": 0.001612315162977514,
+      "behavior_tv": 0.001001395108081245
+    },
+    {
+      "condition": "evolution_only",
+      "training_seed": 404,
+      "genetic_weight": 0.4909467175602913,
+      "genetic_tv": 0.0009983723599968168,
+      "behavior_tv": 0.0019561507748827958
+    },
+    {
+      "condition": "fallback",
+      "training_seed": 42,
+      "genetic_weight": 0.5219472795724869,
+      "genetic_tv": 0.0013281046485644765,
+      "behavior_tv": 0.0012385149918069753
+    },
+    {
+      "condition": "fallback",
+      "training_seed": 101,
+      "genetic_weight": 0.5568177128831545,
+      "genetic_tv": 0.0020961296419651867,
+      "behavior_tv": 0.0010907144799906139
+    },
+    {
+      "condition": "fallback",
+      "training_seed": 202,
+      "genetic_weight": 0.48385519658525783,
+      "genetic_tv": 0.00124218422085202,
+      "behavior_tv": 0.0017750409606378525
+    },
+    {
+      "condition": "fallback",
+      "training_seed": 303,
+      "genetic_weight": 0.5333466157317162,
+      "genetic_tv": 0.0032083506375784054,
+      "behavior_tv": 0.002832008593638117
+    },
+    {
+      "condition": "fallback",
+      "training_seed": 404,
+      "genetic_weight": 0.49984678874413174,
+      "genetic_tv": 0.0019988309698722637,
+      "behavior_tv": 0.0014452644973061979
+    },
+    {
+      "condition": "fixed_gate",
+      "training_seed": 42,
+      "genetic_weight": 0.5,
+      "genetic_tv": 0.003557912234100513,
+      "behavior_tv": 0.010337479664788892
+    },
+    {
+      "condition": "fixed_gate",
+      "training_seed": 101,
+      "genetic_weight": 0.5,
+      "genetic_tv": 0.007910364773124456,
+      "behavior_tv": 0.009522295324131846
+    },
+    {
+      "condition": "fixed_gate",
+      "training_seed": 202,
+      "genetic_weight": 0.5,
+      "genetic_tv": 0.003075903582309062,
+      "behavior_tv": 0.012783387559466064
+    },
+    {
+      "condition": "fixed_gate",
+      "training_seed": 303,
+      "genetic_weight": 0.5,
+      "genetic_tv": 0.0048619708977639675,
+      "behavior_tv": 0.010794290030996004
+    },
+    {
+      "condition": "fixed_gate",
+      "training_seed": 404,
+      "genetic_weight": 0.5,
+      "genetic_tv": 0.008720279748861989,
+      "behavior_tv": 0.010895592664989332
+    },
+    {
+      "condition": "fixed_noise_mimics",
+      "training_seed": 42,
+      "genetic_weight": 0.5,
+      "genetic_tv": 0.0018828059498143073,
+      "behavior_tv": 0.00823164991258333
+    },
+    {
+      "condition": "fixed_noise_mimics",
+      "training_seed": 101,
+      "genetic_weight": 0.5,
+      "genetic_tv": 0.0018966194669095178,
+      "behavior_tv": 0.001409673372108955
+    },
+    {
+      "condition": "fixed_noise_mimics",
+      "training_seed": 202,
+      "genetic_weight": 0.5,
+      "genetic_tv": 0.003406277915928513,
+      "behavior_tv": 0.006295841342459123
+    },
+    {
+      "condition": "fixed_noise_mimics",
+      "training_seed": 303,
+      "genetic_weight": 0.5,
+      "genetic_tv": 0.0018145083352768172,
+      "behavior_tv": 0.0038490263978019357
+    },
+    {
+      "condition": "fixed_noise_mimics",
+      "training_seed": 404,
+      "genetic_weight": 0.5,
+      "genetic_tv": 0.010317272894705335,
+      "behavior_tv": 0.025919953108920406
+    },
+    {
+      "condition": "high_entropy",
+      "training_seed": 42,
+      "genetic_weight": 0.4684871342033148,
+      "genetic_tv": 0.006484116645879112,
+      "behavior_tv": 0.010027206153608859
+    },
+    {
+      "condition": "high_entropy",
+      "training_seed": 101,
+      "genetic_weight": 0.3513539427270492,
+      "genetic_tv": 0.0068882374713818235,
+      "behavior_tv": 0.011888522286123285
+    },
+    {
+      "condition": "high_entropy",
+      "training_seed": 202,
+      "genetic_weight": 0.43475059668223065,
+      "genetic_tv": 0.0035868015086938008,
+      "behavior_tv": 0.006564452836755663
+    },
+    {
+      "condition": "high_entropy",
+      "training_seed": 303,
+      "genetic_weight": 0.3633056792120139,
+      "genetic_tv": 0.005413670713702838,
+      "behavior_tv": 0.010393439830901722
+    },
+    {
+      "condition": "high_entropy",
+      "training_seed": 404,
+      "genetic_weight": 0.2634205011030038,
+      "genetic_tv": 0.004466503586930533,
+      "behavior_tv": 0.0064404598088003695
+    },
+    {
+      "condition": "long_training",
+      "training_seed": 42,
+      "genetic_weight": 0.28642220546801883,
+      "genetic_tv": 0.003303726094600279,
+      "behavior_tv": 0.023357493240231026
+    },
+    {
+      "condition": "long_training",
+      "training_seed": 101,
+      "genetic_weight": 0.5320653989911079,
+      "genetic_tv": 0.010125697784436246,
+      "behavior_tv": 0.00825602341016444
+    },
+    {
+      "condition": "long_training",
+      "training_seed": 202,
+      "genetic_weight": 0.8001526494820913,
+      "genetic_tv": 0.005475145279585074,
+      "behavior_tv": 0.007116861136940618
+    },
+    {
+      "condition": "long_training",
+      "training_seed": 303,
+      "genetic_weight": 0.517654354373614,
+      "genetic_tv": 0.0050185326642046375,
+      "behavior_tv": 0.00833683437667787
+    },
+    {
+      "condition": "long_training",
+      "training_seed": 404,
+      "genetic_weight": 0.42629626020789146,
+      "genetic_tv": 0.010862813816250613,
+      "behavior_tv": 0.01263257443982487
+    },
+    {
+      "condition": "low_lr",
+      "training_seed": 42,
+      "genetic_weight": 0.455571544667085,
+      "genetic_tv": 0.0018018038293424372,
+      "behavior_tv": 0.0020933276343081766
+    },
+    {
+      "condition": "low_lr",
+      "training_seed": 101,
+      "genetic_weight": 0.5151049482325712,
+      "genetic_tv": 0.0008160818130515205,
+      "behavior_tv": 0.0007365779359436905
+    },
+    {
+      "condition": "low_lr",
+      "training_seed": 202,
+      "genetic_weight": 0.4431934816141923,
+      "genetic_tv": 0.0011735664981339748,
+      "behavior_tv": 0.001565144938164546
+    },
+    {
+      "condition": "low_lr",
+      "training_seed": 303,
+      "genetic_weight": 0.4862152623633544,
+      "genetic_tv": 0.0025708313090338684,
+      "behavior_tv": 0.00420776102206825
+    },
+    {
+      "condition": "low_lr",
+      "training_seed": 404,
+      "genetic_weight": 0.5291425175964832,
+      "genetic_tv": 0.0021796005797417215,
+      "behavior_tv": 0.0023592833652704335
+    },
+    {
+      "condition": "mlp",
+      "training_seed": 42,
+      "genetic_weight": null,
+      "genetic_tv": 0.015788222391468782,
+      "behavior_tv": 0.015296632035945853
+    },
+    {
+      "condition": "mlp",
+      "training_seed": 101,
+      "genetic_weight": null,
+      "genetic_tv": 0.021401533003275592,
+      "behavior_tv": 0.022672593127936125
+    },
+    {
+      "condition": "mlp",
+      "training_seed": 202,
+      "genetic_weight": null,
+      "genetic_tv": 0.015552927856333554,
+      "behavior_tv": 0.017397514622037608
+    },
+    {
+      "condition": "mlp",
+      "training_seed": 303,
+      "genetic_weight": null,
+      "genetic_tv": 0.024609993988027174,
+      "behavior_tv": 0.025981559573362272
+    },
+    {
+      "condition": "mlp",
+      "training_seed": 404,
+      "genetic_weight": null,
+      "genetic_tv": 0.022789184974196058,
+      "behavior_tv": 0.025183821950728696
+    },
+    {
+      "condition": "mutation000",
+      "training_seed": 42,
+      "genetic_weight": 0.3727094667653243,
+      "genetic_tv": 0.0030207142432724745,
+      "behavior_tv": 0.007801226495454709
+    },
+    {
+      "condition": "mutation000",
+      "training_seed": 101,
+      "genetic_weight": 0.4045056601365407,
+      "genetic_tv": 0.009447758532284448,
+      "behavior_tv": 0.01018273785787945
+    },
+    {
+      "condition": "mutation000",
+      "training_seed": 202,
+      "genetic_weight": 0.4714297292133172,
+      "genetic_tv": 0.002884361078031361,
+      "behavior_tv": 0.004821799717319664
+    },
+    {
+      "condition": "mutation000",
+      "training_seed": 303,
+      "genetic_weight": 0.47500432406862575,
+      "genetic_tv": 0.003859869100172849,
+      "behavior_tv": 0.005466936985612847
+    },
+    {
+      "condition": "mutation000",
+      "training_seed": 404,
+      "genetic_weight": 0.440151405831178,
+      "genetic_tv": 0.006167703851436575,
+      "behavior_tv": 0.005836054069125869
+    },
+    {
+      "condition": "mutation010",
+      "training_seed": 42,
+      "genetic_weight": 0.20535137597471476,
+      "genetic_tv": 0.001635811723341855,
+      "behavior_tv": 0.01426708399473379
+    },
+    {
+      "condition": "mutation010",
+      "training_seed": 101,
+      "genetic_weight": 0.47037506103515625,
+      "genetic_tv": 0.00855990213555439,
+      "behavior_tv": 0.008670804391537482
+    },
+    {
+      "condition": "mutation010",
+      "training_seed": 202,
+      "genetic_weight": 0.28664540002743405,
+      "genetic_tv": 0.009233859775122255,
+      "behavior_tv": 0.012529152523105344
+    },
+    {
+      "condition": "mutation010",
+      "training_seed": 303,
+      "genetic_weight": 0.29148908083637554,
+      "genetic_tv": 0.0035382823067872473,
+      "behavior_tv": 0.01716336551180575
+    },
+    {
+      "condition": "mutation010",
+      "training_seed": 404,
+      "genetic_weight": 0.4150259892145793,
+      "genetic_tv": 0.006746705752448179,
+      "behavior_tv": 0.005817734752781689
+    },
+    {
+      "condition": "mutation020",
+      "training_seed": 42,
+      "genetic_weight": 0.3668949243923028,
+      "genetic_tv": 0.0046838685375405475,
+      "behavior_tv": 0.00977420928150726
+    },
+    {
+      "condition": "mutation020",
+      "training_seed": 101,
+      "genetic_weight": 0.4089363031089306,
+      "genetic_tv": 0.006163761184628432,
+      "behavior_tv": 0.009066183595374847
+    },
+    {
+      "condition": "mutation020",
+      "training_seed": 202,
+      "genetic_weight": 0.19213565749426684,
+      "genetic_tv": 0.004603277969484528,
+      "behavior_tv": 0.009994510328397155
+    },
+    {
+      "condition": "mutation020",
+      "training_seed": 303,
+      "genetic_weight": 0.34000412685175735,
+      "genetic_tv": 0.004553300391611022,
+      "behavior_tv": 0.012486937048379332
+    },
+    {
+      "condition": "mutation020",
+      "training_seed": 404,
+      "genetic_weight": 0.3711219057440758,
+      "genetic_tv": 0.006525275869838272,
+      "behavior_tv": 0.010956450350931846
+    },
+    {
+      "condition": "no_selection",
+      "training_seed": 42,
+      "genetic_weight": 0.46215126911799115,
+      "genetic_tv": 0.00317967562781026,
+      "behavior_tv": 0.005150925280759111
+    },
+    {
+      "condition": "no_selection",
+      "training_seed": 101,
+      "genetic_weight": 0.438115347797672,
+      "genetic_tv": 0.003258758441612978,
+      "behavior_tv": 0.005671904046418301
+    },
+    {
+      "condition": "no_selection",
+      "training_seed": 202,
+      "genetic_weight": 0.4533998593688011,
+      "genetic_tv": 0.002797208709428863,
+      "behavior_tv": 0.004266510717570782
+    },
+    {
+      "condition": "no_selection",
+      "training_seed": 303,
+      "genetic_weight": 0.4607489953438441,
+      "genetic_tv": 0.0029069400916341692,
+      "behavior_tv": 0.004979579430558563
+    },
+    {
+      "condition": "no_selection",
+      "training_seed": 404,
+      "genetic_weight": 0.44678738589088124,
+      "genetic_tv": 0.0036045233112721085,
+      "behavior_tv": 0.004558074969584898
+    },
+    {
+      "condition": "noise025",
+      "training_seed": 42,
+      "genetic_weight": 0.19302890822291374,
+      "genetic_tv": 0.0035262568368731686,
+      "behavior_tv": 0.0128222107499217
+    },
+    {
+      "condition": "noise025",
+      "training_seed": 101,
+      "genetic_weight": 0.3997827048103015,
+      "genetic_tv": 0.007313564953316624,
+      "behavior_tv": 0.007640516460620954
+    },
+    {
+      "condition": "noise025",
+      "training_seed": 202,
+      "genetic_weight": 0.44258293757836026,
+      "genetic_tv": 0.003647145330129812,
+      "behavior_tv": 0.005339236280027156
+    },
+    {
+      "condition": "noise025",
+      "training_seed": 303,
+      "genetic_weight": 0.2901697003593047,
+      "genetic_tv": 0.003297720448851275,
+      "behavior_tv": 0.010499868132077003
+    },
+    {
+      "condition": "noise025",
+      "training_seed": 404,
+      "genetic_weight": 0.21425723284482956,
+      "genetic_tv": 0.0020730978624972827,
+      "behavior_tv": 0.006601926637813449
+    },
+    {
+      "condition": "noise050",
+      "training_seed": 42,
+      "genetic_weight": 0.4007156925896804,
+      "genetic_tv": 0.004710148636756155,
+      "behavior_tv": 0.004344556330276343
+    },
+    {
+      "condition": "noise050",
+      "training_seed": 101,
+      "genetic_weight": 0.22318846359848976,
+      "genetic_tv": 0.004622557797119953,
+      "behavior_tv": 0.010264649851402888
+    },
+    {
+      "condition": "noise050",
+      "training_seed": 202,
+      "genetic_weight": 0.3805413953959942,
+      "genetic_tv": 0.0038905602511173734,
+      "behavior_tv": 0.006174111214932054
+    },
+    {
+      "condition": "noise050",
+      "training_seed": 303,
+      "genetic_weight": 0.5648010248939196,
+      "genetic_tv": 0.0037145128493042043,
+      "behavior_tv": 0.008189349609892815
+    },
+    {
+      "condition": "noise050",
+      "training_seed": 404,
+      "genetic_weight": 0.2532773731897275,
+      "genetic_tv": 0.004589957786568751,
+      "behavior_tv": 0.011580083790856103
+    },
+    {
+      "condition": "noise_mimics",
+      "training_seed": 42,
+      "genetic_weight": 0.3490882646292448,
+      "genetic_tv": 0.0031756909787266827,
+      "behavior_tv": 0.00784369768613639
+    },
+    {
+      "condition": "noise_mimics",
+      "training_seed": 101,
+      "genetic_weight": 0.47154252355297405,
+      "genetic_tv": 0.0016481842637100879,
+      "behavior_tv": 0.0014072610501898453
+    },
+    {
+      "condition": "noise_mimics",
+      "training_seed": 202,
+      "genetic_weight": 0.47831952944397926,
+      "genetic_tv": 0.0028201727788352096,
+      "behavior_tv": 0.011068965657614172
+    },
+    {
+      "condition": "noise_mimics",
+      "training_seed": 303,
+      "genetic_weight": 0.5645917219420274,
+      "genetic_tv": 0.0032398767580161802,
+      "behavior_tv": 0.0029418855968591138
+    },
+    {
+      "condition": "noise_mimics",
+      "training_seed": 404,
+      "genetic_weight": 0.08394089403251807,
+      "genetic_tv": 0.0033711956445282945,
+      "behavior_tv": 0.010121665797972431
+    },
+    {
+      "condition": "random_placement",
+      "training_seed": 42,
+      "genetic_weight": 0.3834150359034538,
+      "genetic_tv": 0.0046579711585460854,
+      "behavior_tv": 0.008263317596477767
+    },
+    {
+      "condition": "random_placement",
+      "training_seed": 101,
+      "genetic_weight": 0.3623248754690091,
+      "genetic_tv": 0.0023386232739236825,
+      "behavior_tv": 0.0067874689945407836
+    },
+    {
+      "condition": "random_placement",
+      "training_seed": 202,
+      "genetic_weight": 0.4085012897849083,
+      "genetic_tv": 0.0042062953968221945,
+      "behavior_tv": 0.00565275826860064
+    },
+    {
+      "condition": "random_placement",
+      "training_seed": 303,
+      "genetic_weight": 0.355661874016126,
+      "genetic_tv": 0.004542161717836279,
+      "behavior_tv": 0.015693872817792
+    },
+    {
+      "condition": "random_placement",
+      "training_seed": 404,
+      "genetic_weight": 0.4315882536272208,
+      "genetic_tv": 0.005987438438751269,
+      "behavior_tv": 0.009013727603208585
+    }
+  ],
+  "common_input_summary": {
+    "bc150": {
+      "genetic_tv": {
+        "n": 5,
+        "mean": 0.002286788958978529,
+        "ci95": [
+          0.0019024850717376984,
+          0.0026710928462193597
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "behavior_tv": {
+        "n": 5,
+        "mean": 0.0025327479631717625,
+        "ci95": [
+          0.002279666578382755,
+          0.00278582934796077
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "genetic_weight": {
+        "n": 5,
+        "mean": 0.4764425585667292,
+        "ci95": [
+          0.46736389799377,
+          0.4855212191396884
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "bc450": {
+      "genetic_tv": {
+        "n": 5,
+        "mean": 0.009084677674400155,
+        "ci95": [
+          0.004821710586841636,
+          0.013347644761958674
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "behavior_tv": {
+        "n": 5,
+        "mean": 0.009660954505670815,
+        "ci95": [
+          0.0072989538413819974,
+          0.012022955169959633
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "genetic_weight": {
+        "n": 5,
+        "mean": 0.4084123759220043,
+        "ci95": [
+          0.36743591920770463,
+          0.44938883263630397
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "clean": {
+      "genetic_tv": {
+        "n": 5,
+        "mean": 0.005992644221987575,
+        "ci95": [
+          0.0012030167231339125,
+          0.010782271720841237
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "behavior_tv": {
+        "n": 5,
+        "mean": 0.009095129221774792,
+        "ci95": [
+          0.003699459695811122,
+          0.01449079874773846
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "genetic_weight": {
+        "n": 5,
+        "mean": 0.46800404464205103,
+        "ci95": [
+          0.3192902994367182,
+          0.6167177898473839
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "evolution_only": {
+      "genetic_tv": {
+        "n": 5,
+        "mean": 0.0015671296108242434,
+        "ci95": [
+          0.0011087747277712216,
+          0.002025484493877265
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "behavior_tv": {
+        "n": 5,
+        "mean": 0.0016277280694339425,
+        "ci95": [
+          0.001053146134782526,
+          0.0022023100040853586
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "genetic_weight": {
+        "n": 5,
+        "mean": 0.5167275259892146,
+        "ci95": [
+          0.4716628087697241,
+          0.561792243208705
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "fallback": {
+      "genetic_tv": {
+        "n": 5,
+        "mean": 0.0019747200237664702,
+        "ci95": [
+          0.0009946926599894532,
+          0.0029547473875434875
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "behavior_tv": {
+        "n": 5,
+        "mean": 0.0016763087046759513,
+        "ci95": [
+          0.0008130718589652035,
+          0.002539545550386699
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "genetic_weight": {
+        "n": 5,
+        "mean": 0.5191627187033494,
+        "ci95": [
+          0.48378857668488245,
+          0.5545368607218163
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "fixed_gate": {
+      "genetic_tv": {
+        "n": 5,
+        "mean": 0.005625286247231997,
+        "ci95": [
+          0.0024501322719107897,
+          0.008800440222553205
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "behavior_tv": {
+        "n": 5,
+        "mean": 0.010866609048874428,
+        "ci95": [
+          0.009375672601897643,
+          0.012357545495851214
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "genetic_weight": {
+        "n": 5,
+        "mean": 0.5,
+        "ci95": [
+          0.5,
+          0.5
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "fixed_noise_mimics": {
+      "genetic_tv": {
+        "n": 5,
+        "mean": 0.003863496912526898,
+        "ci95": [
+          -0.0006923428932109387,
+          0.008419336718264735
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "behavior_tv": {
+        "n": 5,
+        "mean": 0.00914122882677475,
+        "ci95": [
+          -0.002932852423630049,
+          0.02121531007717955
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "genetic_weight": {
+        "n": 5,
+        "mean": 0.5,
+        "ci95": [
+          0.5,
+          0.5
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "high_entropy": {
+      "genetic_tv": {
+        "n": 5,
+        "mean": 0.005367865985317621,
+        "ci95": [
+          0.0036626349812796015,
+          0.007073096989355641
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "behavior_tv": {
+        "n": 5,
+        "mean": 0.009062816183237978,
+        "ci95": [
+          0.006033830707180221,
+          0.012091801659295735
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "genetic_weight": {
+        "n": 5,
+        "mean": 0.37626357078552247,
+        "ci95": [
+          0.2772260327880347,
+          0.47530110878301024
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "long_training": {
+      "genetic_tv": {
+        "n": 5,
+        "mean": 0.00695718312781537,
+        "ci95": [
+          0.0028112529858714905,
+          0.01110311326975925
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "behavior_tv": {
+        "n": 5,
+        "mean": 0.011939957320767766,
+        "ci95": [
+          0.0035954586998299624,
+          0.020284455941705568
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "genetic_weight": {
+        "n": 5,
+        "mean": 0.5125181737045447,
+        "ci95": [
+          0.2788215786428996,
+          0.7462147687661898
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "low_lr": {
+      "genetic_tv": {
+        "n": 5,
+        "mean": 0.0017083768058607045,
+        "ci95": [
+          0.0008180031441417916,
+          0.0025987504675796173
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "behavior_tv": {
+        "n": 5,
+        "mean": 0.0021924189791510196,
+        "ci95": [
+          0.0005959977817733757,
+          0.0037888401765286636
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "genetic_weight": {
+        "n": 5,
+        "mean": 0.48584555089473724,
+        "ci95": [
+          0.43994346969534914,
+          0.5317476320941253
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "mlp": {
+      "genetic_tv": {
+        "n": 5,
+        "mean": 0.020028372442660234,
+        "ci95": [
+          0.014889796261716281,
+          0.025166948623604187
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "behavior_tv": {
+        "n": 5,
+        "mean": 0.021306424262002112,
+        "ci95": [
+          0.015411635135393264,
+          0.027201213388610958
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "genetic_weight": {
+        "n": 0,
+        "mean": null,
+        "ci95": null
+      }
+    },
+    "mutation000": {
+      "genetic_tv": {
+        "n": 5,
+        "mean": 0.005076081361039541,
+        "ci95": [
+          0.0016300138318966271,
+          0.008522148890182454
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "behavior_tv": {
+        "n": 5,
+        "mean": 0.006821751025078508,
+        "ci95": [
+          0.004111157742945917,
+          0.009532344307211098
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "genetic_weight": {
+        "n": 5,
+        "mean": 0.43276011720299723,
+        "ci95": [
+          0.37814476011786924,
+          0.4873754742881252
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "mutation010": {
+      "genetic_tv": {
+        "n": 5,
+        "mean": 0.005942912338650785,
+        "ci95": [
+          0.0018880468240414627,
+          0.009997777853260108
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "behavior_tv": {
+        "n": 5,
+        "mean": 0.01168962823479281,
+        "ci95": [
+          0.00610551067113731,
+          0.01727374579844831
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "genetic_weight": {
+        "n": 5,
+        "mean": 0.333777381417652,
+        "ci95": [
+          0.20096688326376833,
+          0.4665878795715357
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "mutation020": {
+      "genetic_tv": {
+        "n": 5,
+        "mean": 0.0053058967906205595,
+        "ci95": [
+          0.004116584507947373,
+          0.006495209073293746
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "behavior_tv": {
+        "n": 5,
+        "mean": 0.010455658120918088,
+        "ci95": [
+          0.00881490400815642,
+          0.012096412233679755
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "genetic_weight": {
+        "n": 5,
+        "mean": 0.33581858351826666,
+        "ci95": [
+          0.23152515209210853,
+          0.44011201494442476
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "no_selection": {
+      "genetic_tv": {
+        "n": 5,
+        "mean": 0.003149421236351676,
+        "ci95": [
+          0.0027553818413225965,
+          0.0035434606313807554
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "behavior_tv": {
+        "n": 5,
+        "mean": 0.004925398888978331,
+        "ci95": [
+          0.00425096610580573,
+          0.0055998316721509326
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "genetic_weight": {
+        "n": 5,
+        "mean": 0.45224057150383795,
+        "ci95": [
+          0.439805036444372,
+          0.4646761065633039
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "noise025": {
+      "genetic_tv": {
+        "n": 5,
+        "mean": 0.003971557086333633,
+        "ci95": [
+          0.0015249153529549404,
+          0.006418198819712325
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "behavior_tv": {
+        "n": 5,
+        "mean": 0.008580751652092052,
+        "ci95": [
+          0.004805388809847551,
+          0.012356114494336552
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "genetic_weight": {
+        "n": 5,
+        "mean": 0.30796429676314196,
+        "ci95": [
+          0.1707328926457073,
+          0.44519570088057664
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "noise050": {
+      "genetic_tv": {
+        "n": 5,
+        "mean": 0.004305547464173287,
+        "ci95": [
+          0.0037275988222357365,
+          0.004883496106110838
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "behavior_tv": {
+        "n": 5,
+        "mean": 0.00811055015947204,
+        "ci95": [
+          0.004457834890867699,
+          0.011763265428076382
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "genetic_weight": {
+        "n": 5,
+        "mean": 0.36450478993356233,
+        "ci95": [
+          0.19558733662640287,
+          0.5334222432407218
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "noise_mimics": {
+      "genetic_tv": {
+        "n": 5,
+        "mean": 0.0028510240847632908,
+        "ci95": [
+          0.001978546612526946,
+          0.0037235015569996354
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "behavior_tv": {
+        "n": 5,
+        "mean": 0.006676695157754389,
+        "ci95": [
+          0.0013275331561905341,
+          0.012025857159318244
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "genetic_weight": {
+        "n": 5,
+        "mean": 0.3894965867201487,
+        "ci95": [
+          0.15697326988675384,
+          0.6220199035535435
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "random_placement": {
+      "genetic_tv": {
+        "n": 5,
+        "mean": 0.004346497997175902,
+        "ci95": [
+          0.0027181652503325358,
+          0.0059748307440192685
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "behavior_tv": {
+        "n": 5,
+        "mean": 0.009082229056123953,
+        "ci95": [
+          0.004216857155390733,
+          0.013947600956857174
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "genetic_weight": {
+        "n": 5,
+        "mean": 0.3882982657601436,
+        "ci95": [
+          0.3488093377065495,
+          0.4277871938137377
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    }
+  },
+  "cue_paired_contrasts": {
+    "noise025_minus_clean/genetic_tv": {
+      "n": 5,
+      "mean": -0.002021087135653943,
+      "ci95": [
+        -0.008035611251397685,
+        0.0039934369800898005
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "noise025_minus_clean/behavior_tv": {
+      "n": 5,
+      "mean": -0.0005143775696827405,
+      "ci95": [
+        -0.004551288271061623,
+        0.0035225331316961427
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "noise025_minus_clean/genetic_weight": {
+      "n": 5,
+      "mean": -0.16003974787890912,
+      "ci95": [
+        -0.2672488123453898,
+        -0.05283068341242847
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "noise050_minus_clean/genetic_tv": {
+      "n": 5,
+      "mean": -0.0016870967578142882,
+      "ci95": [
+        -0.006259896459642762,
+        0.0028857029440141854
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "noise050_minus_clean/behavior_tv": {
+      "n": 5,
+      "mean": -0.0009845790623027521,
+      "ci95": [
+        -0.007890766668757498,
+        0.005921608544151993
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "noise050_minus_clean/genetic_weight": {
+      "n": 5,
+      "mean": -0.1034992547084888,
+      "ci95": [
+        -0.3116237856161523,
+        0.10462527619917468
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "noise_mimics_minus_noise050/genetic_tv": {
+      "n": 5,
+      "mean": -0.0014545233794099961,
+      "ci95": [
+        -0.00261261335166464,
+        -0.00029643340715535243
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "noise_mimics_minus_noise050/behavior_tv": {
+      "n": 5,
+      "mean": -0.0014338550017176503,
+      "ci95": [
+        -0.008621579864984203,
+        0.005753869861548903
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "noise_mimics_minus_noise050/genetic_weight": {
+      "n": 5,
+      "mean": 0.024991796786586452,
+      "ci95": [
+        -0.1707993947409867,
+        0.2207829883141596
+      ],
+      "method": "Student t interval across independent training-seed units"
+    }
+  },
+  "ecological_paired_contrasts": {
+    "clean_minus_no_selection/donations_per_resident_step": {
+      "n": 5,
+      "mean": -0.11784679357672753,
+      "ci95": [
+        -0.1618604257008268,
+        -0.07383316145262828
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "clean_minus_no_selection/final_residents": {
+      "n": 5,
+      "mean": -12.4,
+      "ci95": [
+        -22.43795731071085,
+        -2.362042689289149
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "clean_minus_no_selection/adjacent_hamming_similarity": {
+      "n": 5,
+      "mean": 0.2355044560665296,
+      "ci95": [
+        -0.011751502113602597,
+        0.4827604142466618
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "clean_minus_no_selection/opportunity_adjusted_tag_preference": {
+      "n": 5,
+      "mean": -0.004941658001060096,
+      "ci95": [
+        -0.014815039111051883,
+        0.004931723108931691
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "clean_minus_evolution_only/donations_per_resident_step": {
+      "n": 5,
+      "mean": -0.32025998384510573,
+      "ci95": [
+        -0.37792777638092084,
+        -0.2625921913092906
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "clean_minus_evolution_only/final_residents": {
+      "n": 5,
+      "mean": -45.0,
+      "ci95": [
+        -45.0,
+        -45.0
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "clean_minus_evolution_only/adjacent_hamming_similarity": {
+      "n": 5,
+      "mean": 0.13028435592123083,
+      "ci95": [
+        -0.10032421115221021,
+        0.3608929229946719
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "clean_minus_evolution_only/opportunity_adjusted_tag_preference": {
+      "n": 5,
+      "mean": -0.004177462242672074,
+      "ci95": [
+        -0.011394271467419517,
+        0.00303934698207537
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "clean_minus_fixed_gate/donations_per_resident_step": {
+      "n": 5,
+      "mean": 0.027719312115962336,
+      "ci95": [
+        -0.026538631973586812,
+        0.08197725620551148
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "clean_minus_fixed_gate/final_residents": {
+      "n": 5,
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "clean_minus_fixed_gate/adjacent_hamming_similarity": {
+      "n": 5,
+      "mean": 0.006092366847930042,
+      "ci95": [
+        -0.17069281354612556,
+        0.18287754724198566
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "clean_minus_fixed_gate/opportunity_adjusted_tag_preference": {
+      "n": 5,
+      "mean": 0.001499353100644656,
+      "ci95": [
+        -0.012383922005423187,
+        0.015382628206712498
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "clean_minus_mlp/donations_per_resident_step": {
+      "n": 5,
+      "mean": -0.058092876259727276,
+      "ci95": [
+        -0.1685792683829374,
+        0.05239351586348286
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "clean_minus_mlp/final_residents": {
+      "n": 5,
+      "mean": -9.066666666666666,
+      "ci95": [
+        -23.858169097758065,
+        5.724835764424734
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "clean_minus_mlp/adjacent_hamming_similarity": {
+      "n": 5,
+      "mean": -0.031965825599936507,
+      "ci95": [
+        -0.42378712277916614,
+        0.35985547157929315
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "clean_minus_mlp/opportunity_adjusted_tag_preference": {
+      "n": 5,
+      "mean": -0.0036037638295792125,
+      "ci95": [
+        -0.011853381304334122,
+        0.004645853645175698
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "clean_minus_random_placement/donations_per_resident_step": {
+      "n": 5,
+      "mean": -0.0076839428519029866,
+      "ci95": [
+        -0.04788690233019409,
+        0.03251901662638812
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "clean_minus_random_placement/final_residents": {
+      "n": 5,
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "clean_minus_random_placement/adjacent_hamming_similarity": {
+      "n": 5,
+      "mean": 0.11490196038680825,
+      "ci95": [
+        -0.13888322743199213,
+        0.36868714820560866
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "clean_minus_random_placement/opportunity_adjusted_tag_preference": {
+      "n": 5,
+      "mean": -0.0017335736582819697,
+      "ci95": [
+        -0.020428394359205744,
+        0.016961247042641805
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "noise050_minus_clean/donations_per_resident_step": {
+      "n": 5,
+      "mean": -5.2376360887784745e-05,
+      "ci95": [
+        -0.0634929090313757,
+        0.06338815630960012
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "noise050_minus_clean/final_residents": {
+      "n": 5,
+      "mean": 0.5333333333333333,
+      "ci95": [
+        -0.947437389438826,
+        2.014104056105493
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "noise050_minus_clean/adjacent_hamming_similarity": {
+      "n": 5,
+      "mean": -0.03575646839256175,
+      "ci95": [
+        -0.3806308940082244,
+        0.3091179572231009
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "noise050_minus_clean/opportunity_adjusted_tag_preference": {
+      "n": 5,
+      "mean": 0.004002671657267641,
+      "ci95": [
+        -0.01107600271170212,
+        0.0190813460262374
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "noise_mimics_minus_fixed_noise_mimics/donations_per_resident_step": {
+      "n": 5,
+      "mean": 0.0022028676975046567,
+      "ci95": [
+        -0.09086005930669405,
+        0.09526579470170338
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "noise_mimics_minus_fixed_noise_mimics/final_residents": {
+      "n": 5,
+      "mean": -2.0,
+      "ci95": [
+        -20.002938601337366,
+        16.002938601337366
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "noise_mimics_minus_fixed_noise_mimics/adjacent_hamming_similarity": {
+      "n": 5,
+      "mean": 0.008698116724862048,
+      "ci95": [
+        -0.060690376237719806,
+        0.07808660968744391
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "noise_mimics_minus_fixed_noise_mimics/opportunity_adjusted_tag_preference": {
+      "n": 5,
+      "mean": 0.0006736305919778695,
+      "ci95": [
+        -0.001656896127123217,
+        0.0030041573110789564
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "low_lr_minus_clean/donations_per_resident_step": {
+      "n": 5,
+      "mean": 0.3203218390340318,
+      "ci95": [
+        0.2531973038499491,
+        0.38744637421811445
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "low_lr_minus_clean/final_residents": {
+      "n": 5,
+      "mean": 45.0,
+      "ci95": [
+        45.0,
+        45.0
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "low_lr_minus_clean/adjacent_hamming_similarity": {
+      "n": 5,
+      "mean": -0.10438586624819672,
+      "ci95": [
+        -0.3493556181581416,
+        0.14058388566174812
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "low_lr_minus_clean/opportunity_adjusted_tag_preference": {
+      "n": 5,
+      "mean": 0.005416228636988016,
+      "ci95": [
+        -0.003965045218056203,
+        0.014797502492032235
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "high_entropy_minus_clean/donations_per_resident_step": {
+      "n": 5,
+      "mean": 0.006055833747309491,
+      "ci95": [
+        -0.04359261630819616,
+        0.055704283802815134
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "high_entropy_minus_clean/final_residents": {
+      "n": 5,
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "high_entropy_minus_clean/adjacent_hamming_similarity": {
+      "n": 5,
+      "mean": -0.04430165056300086,
+      "ci95": [
+        -0.24498908535239544,
+        0.1563857842263937
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "high_entropy_minus_clean/opportunity_adjusted_tag_preference": {
+      "n": 5,
+      "mean": -0.002849584667474539,
+      "ci95": [
+        -0.01836125395180514,
+        0.012662084616856063
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "long_training_minus_clean/donations_per_resident_step": {
+      "n": 5,
+      "mean": -0.10914077327117551,
+      "ci95": [
+        -0.20312707609019826,
+        -0.015154470452152749
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "long_training_minus_clean/final_residents": {
+      "n": 5,
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "long_training_minus_clean/adjacent_hamming_similarity": {
+      "n": 5,
+      "mean": 0.0979329347918659,
+      "ci95": [
+        -0.05486098031816436,
+        0.2507268499018962
+      ],
+      "method": "Student t interval across independent training-seed units"
+    },
+    "long_training_minus_clean/opportunity_adjusted_tag_preference": {
+      "n": 5,
+      "mean": -0.01731866160625025,
+      "ci95": [
+        -0.06678687776785933,
+        0.03214955455535882
+      ],
+      "method": "Student t interval across independent training-seed units"
+    }
+  },
+  "interpretation": "Full-policy cue permutation is an exploratory off-manifold diagnostic, not causal reliability. Networks within a run are not independent replicates.",
+  "hamilton_regression": {
+    "features": [
+      "intercept",
+      "corrected_tag_cue",
+      "behavior_history",
+      "B_over_C"
+    ],
+    "coefficients": [
+      -1.398766877843348,
+      -0.2343015100528646,
+      -0.09195041142236239,
+      -0.4344051758747166
+    ],
+    "std_errors": [
+      0.13688573724425365,
+      0.07030925362875792,
+      0.16659075728793138,
+      0.035212899297676785
+    ],
+    "z_scores": [
+      -10.218499794083309,
+      -3.332442003864915,
+      -0.5519538593815115,
+      -12.336535319128835
+    ],
+    "p_values": [
+      0.0005168579979916648,
+      0.0290394749081743,
+      0.6103661005230645,
+      0.0002480788630826728
+    ],
+    "pseudo_r2": 0.0342248962548074,
+    "log_likelihood": -11656.331453706058,
+    "num_samples": 60000,
+    "ci95": [
+      [
+        -1.778822612986548,
+        -1.0187111427001478
+      ],
+      [
+        -0.4295112931405401,
+        -0.03909172696518909
+      ],
+      [
+        -0.554480504065634,
+        0.37057968122090923
+      ],
+      [
+        -0.5321718577695743,
+        -0.3366384939798589
+      ]
+    ],
+    "inference": "training-seed cluster robust sandwich covariance with t reference",
+    "num_clusters": 5,
+    "converged": true,
+    "optimizer_message": "Optimization terminated successfully.",
+    "status": "exploratory fit",
+    "eligible_records_before_sampling": 753999,
+    "clean_feasibility_passed": false,
+    "scope": "Transient recipient decisions, including trajectories ending in extinction; not an equilibrium cooperation test.",
+    "interpretation": "Recipient decisions are dependent within seed; cluster-t inference with five seeds is exploratory. B/C indexes independently trained conditions, not an observed policy input. This association is not a causal validation of Hamilton rule."
+  }
+}
