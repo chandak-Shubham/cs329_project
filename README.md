@@ -6,6 +6,8 @@ CS329 | Group 21 | IIT Gandhinagar
 
 **The kin-selection hypothesis is not yet supported.** In the historical five-seed, 1,024-step study, every learned Phase 2 population became extinct. The historical regression estimated a negative relatedness coefficient (-0.556) and pseudo-R-squared around 0.002. Those observations do not demonstrate learned kin preference or adaptive cue reliability.
 
+The [21 November submission audit](docs/submission_audit_2026-11-21.md) maps the ideation and both supplied reviews to implemented features, verified evidence and remaining gaps. The implementation is a documented negative-result study, not full validation of the original proposal; independently inherited neural lineage policies remain unimplemented.
+
 The 17 November review response adds a separate, reproducible study with an individual survival/reproduction objective, contextual gating, independently trained noise conditions, matched ecological settings, mimic donation-share measurements, a fixed neural gate, and the demographic fallback. Changing the reward changes the research question. A shared policy still does not implement competing, inherited lineage policies.
 
 See [the review response and protocol](docs/review_response_2026-11-17.md), [executed revised results](results/revised_study/results.md), and [raw revised results](results/revised_study/analysis.json). Historical results remain separate; their tables and figures must not be presented as outputs of the revised training.

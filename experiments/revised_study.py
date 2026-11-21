@@ -5,6 +5,7 @@ Run from the repository root. Historical artifacts are never overwritten.
 import argparse
 from concurrent.futures import ThreadPoolExecutor
 import hashlib
+import inspect
 import json
 from pathlib import Path
 import subprocess
@@ -84,10 +85,32 @@ def reusable(condition, seed, steps):
         return False
     metadata = json.loads(path.with_suffix('.json').read_text())
     if (metadata['environment_steps'] != steps or
+        metadata.get('seed') != seed or
+        metadata.get('model_type') != 'attention' or
         metadata['environment'] != environment_config(**CONDITIONS[condition]) or
         not metadata.get('contextual_gate') or
         metadata.get('fixed_gate') != (.5 if condition == 'fixed_noise_mimics' else None) or
         metadata.get('invasion_step') != (10 if 'mimics' in condition else None)):
+        return False
+    # File integrity alone does not establish that this is the requested run.
+    # Reject checkpoints from changed training code, hyperparameters or libraries.
+    defaults = inspect.signature(train_model).parameters
+    for key in ('rollout_length', 'num_epochs', 'batch_size', 'lr', 'gamma',
+                'gae_lambda', 'clip_eps', 'vf_coef', 'ent_coef', 'invasion_count'):
+        if metadata.get(key) != defaults[key].default:
+            return False
+    if (metadata.get('torch_version') != str(torch.__version__) or
+        metadata.get('numpy_version') != np.__version__):
+        return False
+    root = Path(__file__).resolve().parents[1]
+    current_sources = {
+        p.relative_to(root).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
+        for folder in ('environment', 'models', 'training')
+        for p in sorted((root / folder).glob('*.py'))
+    }
+    recorded_sources = {name.replace('\\', '/'): digest
+                        for name, digest in metadata.get('source_sha256', {}).items()}
+    if recorded_sources != current_sources:
         return False
     load_policy(condition, seed)
     return True
