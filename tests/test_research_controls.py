@@ -86,6 +86,24 @@ def test_cluster_regression_reports_training_units_and_intervals():
     assert np.isfinite(result["std_errors"]).all()
 
 
+def test_large_interaction_regression_converges_and_recovers_known_effect():
+    # The submission's large likelihood previously stopped with precision loss.
+    # A known synthetic model checks the fitted effect as well as termination.
+    from scipy.special import expit
+    rng = np.random.default_rng(7001)
+    r = rng.uniform(0, 1, 30000)
+    ratio = rng.choice([1., 1.5, 2.5, 3., 4.5], 30000)
+    x = np.column_stack([np.ones(len(r)), r, ratio, r*ratio])
+    expected = np.array([-2., .3, -.2, .4])
+    y = rng.binomial(1, expit(x@expected))
+    fitted = fit_logistic_regression(x, y, ['intercept','r','ratio','interaction'],
+                                     groups=np.repeat(np.arange(5), 6000))
+    assert fitted['converged']
+    assert fitted['max_abs_mean_gradient'] < 1e-7
+    assert fitted['coefficients'][3] == pytest.approx(.4, abs=.10)
+    assert fitted['num_clusters'] == 5
+
+
 def test_training_records_actual_budget_and_checkpoint_hash(tmp_path):
     path = tmp_path / "tiny.pt"
     train_model("mlp", total_timesteps=48, rollout_length=2,

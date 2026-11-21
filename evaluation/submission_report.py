@@ -19,13 +19,26 @@ import matplotlib.pyplot as plt
 
 from evaluation.complete_study import digest, verify_checkpoint
 from evaluation.uncertainty import mean_ci
-from evaluation.final_report import interval, immediate_reward_probe
+from evaluation.final_report import interval as format_interval, immediate_reward_probe
 from evaluation.inheritance_report import common_probe
 from experiments.inherited_policies import load
 from experiments.mechanism_study import CONDITIONS, RATIOS
 
 BASE = ROOT/'results/submission_study'
 MECH = ROOT/'results/mechanism_study'
+
+
+def interval(row):
+    return f'{format_interval(row)}; n={row["n"]}'
+
+
+def condition_label(name):
+    condition,control,_=name.split('/')
+    if condition=='clean' and control!='trained':
+        if control.startswith('rule_'):
+            return control.removeprefix('rule_').replace('_',' ').title()+' (rule)'
+        return control.replace('_',' ').title()
+    return 'Clean PPO' if condition=='clean' else condition.replace('_',' ').title()
 
 
 def seed_means(runs, condition, metric, control='trained'):
@@ -333,6 +346,7 @@ def main():
         'World means are averaged **within training seed** before Student t intervals or paired contrasts. The effective sample size is five seed blocks, not fifteen worlds, 24 family networks, or thousands of recipient decisions. '
         'Survival events use Wilson intervals across seeds. Small-sample mean intervals can exceed physical bounds; these are exploratory intervals, not guaranteed coverage under all distributions.', '',
         'Reward contrasts use exact paired sign-flip tests with Holm adjustment across five ratios. Five pairs give a minimum two-sided p of 0.0625, so these runs cannot establish conventional 5% significance with that test. '
+        'Sign-flip validity assumes exchangeable signs of paired effects under the null; seed matching alone does not guarantee this assumption. '
         'Effect sizes and intervals are reported without equating a nonsignificant p with no effect. All-condition evaluation proceeds even after the original cooperation screen fails.', '',
         '## 4. Results: completed original study', '',
         f'Clean sustained-cooperation screen passed: **{base["clean_feasibility"]["passed"]}**.', '',
@@ -341,13 +355,20 @@ def main():
     ]
     for name,row in base['summary'].items():
         if '/trained/clean' in name or name.startswith('clean/'):
-            lines.append(f'| {name} | {interval(row["final_residents"])} | {interval(row["donations_per_resident_step"])} | {interval(row["all_worlds_survive"])} |')
-    lines += ['', 'The rule baselines demonstrate feasibility under the matched ecology; they do not establish that the neural objective finds the same strategies. '
+            lines.append(f'| {condition_label(name)} | {interval(row["final_residents"])} | {interval(row["donations_per_resident_step"])} | {interval(row["all_worlds_survive"])} |')
+    entropy=base['summary']['high_entropy/trained/clean']
+    longer=base['summary']['long_training/trained/clean']
+    lines += ['', f'The fourfold training budget yields {interval(longer["donations_per_resident_step"])} donations per resident transition and '
+              f'{interval(longer["final_residents"])} final residents. The high-entropy control yields '
+              f'{interval(entropy["donations_per_resident_step"])} and {interval(entropy["final_residents"])}, respectively. '
+              'These distinguish finite-budget and exploration effects; higher entropy can preserve diverse donation actions without demonstrating learned recipient discrimination.', '',
+              'The rule baselines demonstrate feasibility under the matched ecology; they do not establish that the neural objective finds the same strategies. '
               'Dyadic Tit-for-tat remembers directed encounters, while public reputation uses an individual\'s public donation history. '
               'The untrained-ancestor comparator restores initial neural weights but retains the trained founder chromosomes and ancestry composition; the evolution-only condition is the separate selection-without-PPO control. '
               'The static fallback disables birth/death and forces persistence; its survival count is not ecological success.', '',
               '![Original donation learning curves](../results/mechanism_study/figures/original_learning.png)', '',
               'Curves are binned by actual environment transitions and weighted by resident exposure within each run; shaded regions are pointwise seed-level 95% t intervals. '
+              'Rollout totals are apportioned to bins by temporal overlap, an approximation within each rollout. '
               'The dotted 0.2 line replaces basal drain only at B/C=2.5; crowding increases the required giving rate. It is not a learned decision threshold.', '',
               '## 5. Results: matched reward x benefit/cost experiment', '',
               '| Objective / B:C | Final residents (95% interval) | Donations / resident transition (95% interval) | Seed fraction surviving every world |',
@@ -363,6 +384,8 @@ def main():
     for row in reward_tests:
         lines.append(f'| {row["ratio"]:g} | {interval(row["summary"])} | {row["p_sign_flip"]:.4f} | {row["p_holm"]:.4f} |')
     default_effect=next(r for r in reward_tests if r['ratio']==2.5)
+    private_high=mech['summary']['energy_bc450/trained/clean']
+    shaped_high=mech['summary']['inclusive_bc450/trained/clean']
     direction='increases' if default_effect['summary']['mean'] > 0 else 'decreases'
     lines += ['', f'At the default B/C=2.5, the shaped objective {direction} mean giving relative to matched private PPO: '
               f'{interval(default_effect["summary"])}. The proportion of seed blocks surviving every fresh world is '
@@ -370,6 +393,12 @@ def main():
               'This is a measured incentive-control result at the declared budget. It does not validate the proposal\'s claim that private-reward policy sharing inherently values kin. '
               'Giving more and sustaining a population are separate outcomes; neither establishes biological kin selection. '
               'The finite budget and coarse marker reward remain possible limits on what the optimizer can discover.', '',
+              f'At B/C=4.5, final resident counts are {interval(private_high["final_residents"])} under private reward and '
+              f'{interval(shaped_high["final_residents"])} under shaped reward. Their giving rates are '
+              f'{interval(private_high["donations_per_resident_step"])} and {interval(shaped_high["donations_per_resident_step"])}, respectively. '
+              'Survival is therefore sensitive to the resource benefit as well as the reward objective. Giving frequency need not increase monotonically with B/C. '
+              'At B/C=1, donation creates no net energy, so positive giving alone cannot replace metabolic losses; both reward conditions become extinct. '
+              'This boundary control separates the amount of giving from whether it is ecologically productive.', '',
               '![Matched reward learning curves](../results/mechanism_study/figures/reward_learning.png)', '',
               '## 6. Results: spatial structure where survival is possible', '',
               '| Condition | Final residents | Late adjacent similarity | Late global similarity | Late adjacent minus global similarity |',
@@ -426,6 +455,11 @@ def main():
               'Summing pre-demographic energy changes yields `(B-C)*D - c_base*N - c_density*sum_i |N_i|`, where D is the donation count. '
               'At the default B-C=3, fewer than 0.2 donations per resident transition cannot replace even basal energy loss. Crowding raises that threshold. '
               'The plotted collapse in giving therefore has a concrete ecological consequence, but this energy balance alone cannot identify why PPO chose those actions.', '',
+              'For a trajectory without reproduction, the private discounted energy sum telescopes to '
+              '`sum_t gamma^t Delta E_t = -E_0 + (1-gamma)*sum_(t=1 to T-1) gamma^(t-1)*E_t + gamma^(T-1)*E_T`. '
+              'At gamma=1 it reduces to terminal minus initial energy; at gamma=0.99 it also values earlier stored energy. '
+              'There is no direct descendant-fitness term. Reproduction adds bookkeeping terms because reward precedes the split, so this identity is deliberately restricted to trajectories without reproduction. '
+              'It does not prove that giving is privately suboptimal: later reciprocity can still improve individual return.', '',
               'The main limits are five seeds, short finite training budgets, one base ecology, eight-bit marker proxies, restocking energy, and a privileged shaped reward. '
               'The original one-factor controls and new reward/incentive factorial do not span all interactions. '
               'Noise/mimic effects are measured under trajectories that may go extinct; late assortment is reported only where defined. '

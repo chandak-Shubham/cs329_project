@@ -12,6 +12,7 @@ import numpy as np
 import torch
 import scipy.stats as stats
 from scipy.optimize import minimize
+from scipy.special import expit
 
 # Ensure project root is in sys.path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -54,22 +55,27 @@ def fit_logistic_regression(
         logits = np.dot(X, beta)
         log_loss = np.sum(np.logaddexp(0.0, logits) - y * logits)
         ridge = 0.5 * l2_reg * np.sum(beta[1:] ** 2)  # Don't penalize intercept
-        return log_loss + ridge
+        # Scaling the entire penalized objective preserves the optimum and
+        # avoids precision-loss termination for tens of thousands of rows.
+        return (log_loss + ridge) / N
 
     def gradient(beta):
-        p = 1.0 / (1.0 + np.exp(-np.clip(np.dot(X, beta), -20, 20)))
+        p = expit(np.dot(X, beta))
         grad = np.dot(X.T, (p - y))
         grad[1:] += l2_reg * beta[1:]
-        return grad
+        return grad / N
 
     beta_init = np.zeros(D)
-    res = minimize(objective, beta_init, jac=gradient, method="BFGS")
+    res = minimize(objective, beta_init, jac=gradient, method="BFGS",
+                   options={'gtol': 1e-9, 'maxiter': 1000})
     beta_hat = res.x
 
     # Compute Hessian for standard errors: H = X^T * W * X + l2_reg * I
-    p = 1.0 / (1.0 + np.exp(-np.clip(np.dot(X, beta_hat), -20, 20)))
+    p = expit(np.dot(X, beta_hat))
     w = p * (1.0 - p)
-    Hessian = np.dot(X.T * w, X) + np.eye(D) * max(l2_reg, 1e-5)
+    # The intercept is unpenalized in the objective and must also be
+    # unpenalized in the observed information used for uncertainty.
+    Hessian = np.dot(X.T * w, X) + np.diag([0.] + [l2_reg] * (D-1))
 
     try:
         cov_matrix = np.linalg.pinv(Hessian)
@@ -111,6 +117,7 @@ def fit_logistic_regression(
         "num_clusters": len(np.unique(groups)) if groups is not None else None,
         "converged": bool(res.success),
         "optimizer_message": str(res.message),
+        "max_abs_mean_gradient": float(np.max(np.abs(gradient(beta_hat)))),
     }
     return summary
 

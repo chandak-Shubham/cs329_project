@@ -1,0 +1,625 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>CS329 Group 21 Final Report</title><style>
+    @page { size: A4; margin: 17mm 16mm 19mm; }
+    * { box-sizing: border-box; }
+    body { color: #172333; font-family: Arial, sans-serif; font-size: 10pt; line-height: 1.5;
+           max-width: 980px; margin: 36px auto; padding: 0 24px; }
+    h1 { font-size: 24pt; line-height: 1.15; color: #183d50; }
+    h2 { font-size: 16pt; color: #183d50; border-bottom: 1px solid #aebfc8; padding-bottom: 5px; margin-top: 28px; }
+    h3 { font-size: 12pt; color: #183d50; margin-top: 20px; }
+    h1,h2,h3 { break-after: avoid; }
+    p { margin: 9px 0; orphans: 3; widows: 3; }
+    a { color: #075985; text-decoration: underline; overflow-wrap: anywhere; }
+    code { font-family: Consolas, monospace; font-size: 8.5pt; overflow-wrap: anywhere; }
+    pre { padding: 12px; background: #f1f5f8; border: 1px solid #cbd5df; white-space: pre-wrap; break-inside: avoid; }
+    table { border-collapse: collapse; width: 100%; font-size: 8.2pt; line-height: 1.35; table-layout: fixed; margin: 12px 0; }
+    th,td { border: 1px solid #c0cbd2; padding: 6px; vertical-align: top; overflow-wrap: anywhere; }
+    th { text-align: left; background: #e9f0f4; }
+    tr { break-inside: avoid; }
+    table:not(:has(tbody tr:nth-child(7))) { break-inside: avoid; }
+    thead { display: table-header-group; }
+    img { width: 100%; height: auto; break-inside: avoid; }
+    @media print { body { margin: 0; padding: 0; max-width: none; } a { color: #172333; } }
+    </style></head><body><h1>Does private-reward learning preserve cooperation?</h1>
+<h2>Inherited policies, cue reliability, and spatial assortment in a donation game</h2>
+<p>CS329 Multi-Agent Systems | Group 21 | IIT Gandhinagar</p>
+<p>Vansh Barfiwala (24110380), Pratham Choksi (24110275), Shubham Chandak (24110335)</p>
+<h2>Abstract</h2>
+<p>We investigate whether individual energy-reward PPO preserves cooperation supported by inherited policies and survivor selection, and whether incentive alignment, cue reliability, and spatial placement alter the outcome. We complete evaluation of 95 existing checkpoints (19 conditions, five seeds) and add 65 new training runs: a two-objective by five-incentive factorial and a learning by placement control. The original clean PPO policies yield 0.1822 donations per resident transition and 0.00 final residents; selection without PPO yields 0.5056 and 45.00, respectively. In the new matched B/C=2.5 experiment, private and marker-weighted rewards yield donation rates of 0.1753 and 0.2025. We report uncertainty at the training-seed level. The experiments distinguish ecological cooperation, marker preference, reward shaping, and evolutionary kin selection; none is assumed equivalent.</p>
+<h2>1. Computational question and success criteria</h2>
+<p><strong>Primary question:</strong> Does private energy optimization preserve, create, or suppress giving that an inherited-policy population sustains without PPO? <strong>Mechanism questions:</strong> Does adding marker-weighted social energy to the reward change this answer across five B/C ratios? Does local reproduction cause spatial assortment, and does that depend on learning? <strong>Robustness question:</strong> Do independently trained noise and mimic conditions change the full policy's dependence on genetic and behavioural information?</p>
+<p>Sustained cooperation requires survival through 300 evaluation transitions and a late donation rate at least 0.1 per resident transition, with giving on at least half of the final 100 transitions, in every expected seed/world. Cue adaptation additionally requires maintained cooperation and evidence of changed full-policy sensitivity; a gate weight alone is insufficient. Spatial assortment requires a matched local-minus-random difference among surviving populations and a comparison with contemporaneous global similarity. Hamilton-style discrimination is explored with an interaction regression and a direct reward intervention, not inferred from survival alone. These are declared operational criteria for this analysis, not a preregistered protocol.</p>
+<h3>Known and unknown information</h3>
+<table>
+<thead>
+<tr>
+  <th>Quantity</th>
+  <th>Information available to the actor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Own state</td>
+  <td>Energy/E_mitosis and age/1000</td>
+</tr>
+<tr>
+  <td>Neighbours</td>
+  <td>Up to eight nearest: relative position/radius, normalized energy, corrected genetic cue, donation history</td>
+</tr>
+<tr>
+  <td>Incentives and rules</td>
+  <td>Fixed by each training environment; B/C is not a numerical policy input</td>
+</tr>
+<tr>
+  <td>Hidden</td>
+  <td>True corruption probability, mimic identity, other networks and internal states</td>
+</tr>
+<tr>
+  <td>Trainer only</td>
+  <td>Family membership for assigning transitions; full energy vector for the explicitly shaped reward control</td>
+</tr>
+</tbody>
+</table>
+<h2>2. One consistent model</h2>
+<p>A partially observed Markov game runs on a toroidal grid. Each living resident chooses stay (action 0), one of four cardinal moves (1-4), or a donation to an observed neighbour (5-12). Stay means no move and no donation; there is no separate request/refusal game. A donation is legal only when the donor has strictly more than C energy. Movements and donations are mutually exclusive. Recipients are resolved from the decision-time neighbourhood; movement conflicts are resolved before metabolic crowding is charged.</p>
+<p><code>Delta E_i = -c_base - c_density * |N_i(after movement)| - C * 1[give_i] + B * incoming_i</code></p>
+<p>The energy reward is recorded before mitosis. Death at energy &lt;= 0 terminates that individual. A parent with energy &gt;= 60 can place a child in a free adjacent cardinal cell if capacity and a free tensor slot exist. The parent and child each receive half the pre-split energy. If no legal cell exists, reproduction is skipped. The child receives a fresh persistent identity, a mutated eight-bit chromosome, the family policy, and history prior 0.5. Donation creates B-C net energy; only the reproduction split conserves parent-plus-child energy.</p>
+<p><code>h_ij = 1 - HammingDistance(c_i,c_j)/8</code></p>
+<p><code>r_tilde_ij = max(0, (h_ij - h_bar) / max(1-h_bar, 1e-6))</code></p>
+<p>Here h is <strong>similarity</strong>, and h_bar is the distinct-active-pair population mean. This baseline correction uses population information computed by the simulator; the actor receives its result locally. The true chromosome determines assortment measurements; corrupted visible chromosomes determine the observed cue. Recent behaviour is the fraction of the neighbour's last ten actions that were donations <strong>given</strong>. The chromosome is a tag proxy and may be copied by mimics; it is not pedigree relatedness.</p>
+<h3>Policy ownership and evolutionary selection</h3>
+<p>There are 24 independent founder networks and optimizers. Descendants share their founder family's network. PPO pools individual-return transitions within each family; unrelated founders never share optimizer updates. Individual returns terminate at death even if a newborn reuses the storage slot. At episode end, survivor restocking samples 24 living individuals with replacement and copies their genomes, networks, and optimizer states into independent next-generation founders. Thus selection weights families by surviving abundance. If all residents die, there is no winner; the last founder genomes and learned networks are retained for a new episode. Restocking reintroduces initial energy and is an explicit ecological intervention.</p>
+<p>This resolves the proposal's ambiguous use of &quot;independent PPO&quot; and &quot;shared parameters&quot;: the submitted formulation is <strong>independent across founders and shared within descendant families</strong>. The outer selection loop extends the proposal. Shared weights alone do not put a recipient's benefit in the donor's PPO return; selection and learning are distinct processes.</p>
+<h3>Architecture and algorithm</h3>
+<p>A contextual gate uses each neighbour's cues plus masked neighbourhood means and standard deviations. The gated affinity and raw cues enter a 32-dimensional encoder and two-head attention. Five movement/stay logits and eight targeted-donation logits are concatenated and normalized in <strong>one masked 13-action categorical distribution</strong>. A local critic predicts individual return. A decentralized critic matches the individual objective; variable population size does not itself preclude a centralized attention critic.</p>
+<pre><code class="language-text">Initialize 24 independent family networks and genomes.
+For each rollout:
+  Observe active identities; sample legal actions from their family policies.
+  Snapshot decision-time cues and identities; step movement, energy and demographics.
+  Assign terminal death credit to old identities; bind each child to its parent family.
+  Build individual-return GAE targets; update each family on its own samples.
+  At episode end, restock from living residents if any; record extinction otherwise.
+Freeze all policies for evaluation in fresh seeded worlds.
+</code></pre>
+<h2>3. Experimental design</h2>
+<table>
+<thead>
+<tr>
+  <th>Parameter</th>
+  <th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Grid / founders / capacity</td>
+  <td>18 x 18 torus / 24 / 45</td>
+</tr>
+<tr>
+  <td>Initial energy / mitosis threshold</td>
+  <td>30 / 60</td>
+</tr>
+<tr>
+  <td>Basal / per-neighbour drain</td>
+  <td>0.6 / 0.08 within Chebyshev radius 3</td>
+</tr>
+<tr>
+  <td>Donation C / default B</td>
+  <td>2 / 5</td>
+</tr>
+<tr>
+  <td>Neighbour limit / history / initial prior</td>
+  <td>8 / 10 / 0.5</td>
+</tr>
+<tr>
+  <td>Chromosome / mutation</td>
+  <td>8 bits / independent bit flips with probability 0.05</td>
+</tr>
+<tr>
+  <td>Episode / evaluation horizon</td>
+  <td>300 transitions</td>
+</tr>
+<tr>
+  <td>PPO rollout / epochs / minibatch</td>
+  <td>64 transitions / 3 / 64</td>
+</tr>
+<tr>
+  <td>Learning rate / gamma / GAE lambda</td>
+  <td>0.0003 / 0.99 / 0.95</td>
+</tr>
+<tr>
+  <td>Clip / value coefficient / entropy / gradient limit</td>
+  <td>0.2 / 0.5 / 0.01 / 0.5</td>
+</tr>
+<tr>
+  <td>New matched budget / seeds / worlds per seed</td>
+  <td>2048 environment transitions / [42, 101, 202, 303, 404] / 3</td>
+</tr>
+</tbody>
+</table>
+<p>The original 19-condition study includes architecture, noise, attack, selection, mutation, placement, optimizer and budget controls. Most use 2,048 transitions; the longer run uses 8,192. We complete its frozen evaluation without pretending it was retrained. Original training used PyTorch 2.5.1+cu121 and NumPy 2.3.2; evaluation and all new training use the separately recorded CPU runtime. All claims about reward changes use newly trained matched conditions on the same runtime. Original results and new results are displayed separately.</p>
+<p>The new factorial crosses two objectives with B/C in {1, 1.5, 2.5, 3, 4.5}, holding C=2 and setting B=C*(B/C). Three extra conditions complete learning x offspring-placement comparisons at B/C=2.5: selection without PPO under local and random placement, and private-reward PPO with random placement. Each uses the same five seed blocks and three fresh worlds per checkpoint. Paired seeds reduce initialization variation; differing trajectories need not consume identical RNG draws.</p>
+<p>The <strong>marker-weighted inclusive reward control</strong> is</p>
+<p><code>R_i = Delta E_i + sum_{j != i, acting at decision time} r_tilde_ij * Delta E_j</code>.</p>
+<p>This intentionally changes the objective and supplies privileged social reward information to training. It uses decision-time masks and cues, excluding diagonal self-credit and inactive slots; death or birth cannot redirect old-identity rewards. It is an incentive diagnostic, not biological inclusive fitness. The original ecology and pre-mitosis energy deltas remain unchanged. For an isolated donor-recipient intervention with all other actions fixed, the immediate shaped reward difference is <code>-C + r_tilde_ij*B</code>; its zero lies at <code>r_tilde=1/(B/C)</code>. Thresholds across the five ratios are 1, 0.6667, 0.4, 0.3333 and 0.2222. At B/C=1, strict rB&gt;C is impossible for r&lt;=1; that is an informative boundary condition.</p>
+<h3>Metrics and uncertainty</h3>
+<p>We report donations divided by acting-resident transitions, final resident count, full-horizon survival, late-window giving, donation share to mimics, recipient preference relative to available neighbours, and spatial similarity. World means are averaged <strong>within training seed</strong> before Student t intervals or paired contrasts. The effective sample size is five seed blocks, not fifteen worlds, 24 family networks, or thousands of recipient decisions. Survival events use Wilson intervals across seeds. Small-sample mean intervals can exceed physical bounds; these are exploratory intervals, not guaranteed coverage under all distributions.</p>
+<p>Reward contrasts use exact paired sign-flip tests with Holm adjustment across five ratios. Five pairs give a minimum two-sided p of 0.0625, so these runs cannot establish conventional 5% significance with that test. Sign-flip validity assumes exchangeable signs of paired effects under the null; seed matching alone does not guarantee this assumption. Effect sizes and intervals are reported without equating a nonsignificant p with no effect. All-condition evaluation proceeds even after the original cooperation screen fails.</p>
+<h2>4. Results: completed original study</h2>
+<p>Clean sustained-cooperation screen passed: <strong>False</strong>.</p>
+<table>
+<thead>
+<tr>
+  <th>Condition / control</th>
+  <th>Final residents (95% interval)</th>
+  <th>Donations / resident transition (95% interval)</th>
+  <th>All worlds survive (seed proportion, Wilson interval)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Bc150</td>
+  <td>0.0000 [0.0000, 0.0000]; n=5</td>
+  <td>0.2655 [0.2526, 0.2783]; n=5</td>
+  <td>0.0000 [0.0000, 0.4345]; n=5</td>
+</tr>
+<tr>
+  <td>Bc450</td>
+  <td>21.4000 [-5.1831, 47.9831]; n=5</td>
+  <td>0.1382 [0.0648, 0.2117]; n=5</td>
+  <td>0.4000 [0.1176, 0.7693]; n=5</td>
+</tr>
+<tr>
+  <td>Dyadic Tit For Tat (rule)</td>
+  <td>44.4000 [43.2894, 45.5106]; n=5</td>
+  <td>0.6477 [0.6267, 0.6686]; n=5</td>
+  <td>1.0000 [0.5655, 1.0000]; n=5</td>
+</tr>
+<tr>
+  <td>Fixed Threshold (rule)</td>
+  <td>27.0000 [-3.6039, 57.6039]; n=5</td>
+  <td>0.5928 [-0.0791, 1.2647]; n=5</td>
+  <td>0.6000 [0.2307, 0.8824]; n=5</td>
+</tr>
+<tr>
+  <td>Reputation (rule)</td>
+  <td>45.0000 [45.0000, 45.0000]; n=5</td>
+  <td>0.9855 [0.9829, 0.9881]; n=5</td>
+  <td>1.0000 [0.5655, 1.0000]; n=5</td>
+</tr>
+<tr>
+  <td>Selfish (rule)</td>
+  <td>0.0000 [0.0000, 0.0000]; n=5</td>
+  <td>0.0000 [0.0000, 0.0000]; n=5</td>
+  <td>0.0000 [0.0000, 0.4345]; n=5</td>
+</tr>
+<tr>
+  <td>Tag Trust (rule)</td>
+  <td>27.0000 [-3.6039, 57.6039]; n=5</td>
+  <td>0.5727 [-0.0766, 1.2220]; n=5</td>
+  <td>0.6000 [0.2307, 0.8824]; n=5</td>
+</tr>
+<tr>
+  <td>Clean PPO</td>
+  <td>0.0000 [0.0000, 0.0000]; n=5</td>
+  <td>0.1822 [0.1551, 0.2093]; n=5</td>
+  <td>0.0000 [0.0000, 0.4345]; n=5</td>
+</tr>
+<tr>
+  <td>Untrained Ancestors</td>
+  <td>45.0000 [45.0000, 45.0000]; n=5</td>
+  <td>0.5236 [0.5120, 0.5352]; n=5</td>
+  <td>1.0000 [0.5655, 1.0000]; n=5</td>
+</tr>
+<tr>
+  <td>Evolution Only</td>
+  <td>45.0000 [45.0000, 45.0000]; n=5</td>
+  <td>0.5056 [0.4827, 0.5285]; n=5</td>
+  <td>1.0000 [0.5655, 1.0000]; n=5</td>
+</tr>
+<tr>
+  <td>Fallback</td>
+  <td>24.0000 [24.0000, 24.0000]; n=5</td>
+  <td>0.3015 [0.2352, 0.3678]; n=5</td>
+  <td>1.0000 [0.5655, 1.0000]; n=5</td>
+</tr>
+<tr>
+  <td>Fixed Gate</td>
+  <td>0.0000 [0.0000, 0.0000]; n=5</td>
+  <td>0.1610 [0.1410, 0.1810]; n=5</td>
+  <td>0.0000 [0.0000, 0.4345]; n=5</td>
+</tr>
+<tr>
+  <td>Fixed Noise Mimics</td>
+  <td>38.1333 [26.4502, 49.8164]; n=5</td>
+  <td>0.3994 [0.3233, 0.4754]; n=5</td>
+  <td>1.0000 [0.5655, 1.0000]; n=5</td>
+</tr>
+<tr>
+  <td>High Entropy</td>
+  <td>0.0000 [0.0000, 0.0000]; n=5</td>
+  <td>0.1851 [0.1618, 0.2085]; n=5</td>
+  <td>0.0000 [0.0000, 0.4345]; n=5</td>
+</tr>
+<tr>
+  <td>Long Training</td>
+  <td>0.0000 [0.0000, 0.0000]; n=5</td>
+  <td>0.0745 [-0.0105, 0.1595]; n=5</td>
+  <td>0.0000 [0.0000, 0.4345]; n=5</td>
+</tr>
+<tr>
+  <td>Low Lr</td>
+  <td>45.0000 [45.0000, 45.0000]; n=5</td>
+  <td>0.5000 [0.4578, 0.5422]; n=5</td>
+  <td>1.0000 [0.5655, 1.0000]; n=5</td>
+</tr>
+<tr>
+  <td>Mlp</td>
+  <td>9.6000 [-8.5908, 27.7908]; n=5</td>
+  <td>0.2432 [0.1643, 0.3220]; n=5</td>
+  <td>0.4000 [0.1176, 0.7693]; n=5</td>
+</tr>
+<tr>
+  <td>Mutation000</td>
+  <td>1.3333 [-0.7153, 3.3820]; n=5</td>
+  <td>0.2138 [0.1714, 0.2562]; n=5</td>
+  <td>0.0000 [0.0000, 0.4345]; n=5</td>
+</tr>
+<tr>
+  <td>Mutation010</td>
+  <td>0.0000 [0.0000, 0.0000]; n=5</td>
+  <td>0.2075 [0.1986, 0.2164]; n=5</td>
+  <td>0.0000 [0.0000, 0.4345]; n=5</td>
+</tr>
+<tr>
+  <td>Mutation020</td>
+  <td>0.3333 [-0.5921, 1.2588]; n=5</td>
+  <td>0.1900 [0.1537, 0.2262]; n=5</td>
+  <td>0.0000 [0.0000, 0.4345]; n=5</td>
+</tr>
+<tr>
+  <td>No Selection</td>
+  <td>12.2667 [3.4897, 21.0436]; n=5</td>
+  <td>0.3013 [0.2534, 0.3492]; n=5</td>
+  <td>0.8000 [0.3755, 0.9638]; n=5</td>
+</tr>
+<tr>
+  <td>Noise025</td>
+  <td>0.0000 [0.0000, 0.0000]; n=5</td>
+  <td>0.1833 [0.1664, 0.2001]; n=5</td>
+  <td>0.0000 [0.0000, 0.4345]; n=5</td>
+</tr>
+<tr>
+  <td>Noise050</td>
+  <td>1.2667 [-2.2502, 4.7835]; n=5</td>
+  <td>0.1867 [0.1426, 0.2309]; n=5</td>
+  <td>0.0000 [0.0000, 0.4345]; n=5</td>
+</tr>
+<tr>
+  <td>Noise Mimics</td>
+  <td>32.5333 [9.4193, 55.6474]; n=5</td>
+  <td>0.3926 [0.2593, 0.5259]; n=5</td>
+  <td>0.8000 [0.3755, 0.9638]; n=5</td>
+</tr>
+<tr>
+  <td>Random Placement</td>
+  <td>0.0000 [0.0000, 0.0000]; n=5</td>
+  <td>0.2011 [0.1799, 0.2223]; n=5</td>
+  <td>0.0000 [0.0000, 0.4345]; n=5</td>
+</tr>
+</tbody>
+</table>
+<p>The fourfold training budget yields 0.0745 [-0.0105, 0.1595]; n=5 donations per resident transition and 0.0000 [0.0000, 0.0000]; n=5 final residents. The high-entropy control yields 0.1851 [0.1618, 0.2085]; n=5 and 0.0000 [0.0000, 0.0000]; n=5, respectively. These distinguish finite-budget and exploration effects; higher entropy can preserve diverse donation actions without demonstrating learned recipient discrimination.</p>
+<p>The rule baselines demonstrate feasibility under the matched ecology; they do not establish that the neural objective finds the same strategies. Dyadic Tit-for-tat remembers directed encounters, while public reputation uses an individual's public donation history. The untrained-ancestor comparator restores initial neural weights but retains the trained founder chromosomes and ancestry composition; the evolution-only condition is the separate selection-without-PPO control. The static fallback disables birth/death and forces persistence; its survival count is not ecological success.</p>
+<p><img src="../results/mechanism_study/figures/original_learning.png" alt="Original donation learning curves" /></p>
+<p>Curves are binned by actual environment transitions and weighted by resident exposure within each run; shaded regions are pointwise seed-level 95% t intervals. Rollout totals are apportioned to bins by temporal overlap, an approximation within each rollout. The dotted 0.2 line replaces basal drain only at B/C=2.5; crowding increases the required giving rate. It is not a learned decision threshold.</p>
+<h2>5. Results: matched reward x benefit/cost experiment</h2>
+<table>
+<thead>
+<tr>
+  <th>Objective / B:C</th>
+  <th>Final residents (95% interval)</th>
+  <th>Donations / resident transition (95% interval)</th>
+  <th>Seed fraction surviving every world</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>energy / 1</td>
+  <td>0.0000 [0.0000, 0.0000]; n=5</td>
+  <td>0.2243 [0.2138, 0.2348]; n=5</td>
+  <td>0.0000 [0.0000, 0.4345]; n=5</td>
+</tr>
+<tr>
+  <td>energy / 1.5</td>
+  <td>0.0000 [0.0000, 0.0000]; n=5</td>
+  <td>0.2731 [0.2528, 0.2934]; n=5</td>
+  <td>0.0000 [0.0000, 0.4345]; n=5</td>
+</tr>
+<tr>
+  <td>energy / 2.5</td>
+  <td>0.1333 [-0.2369, 0.5035]; n=5</td>
+  <td>0.1753 [0.1475, 0.2031]; n=5</td>
+  <td>0.0000 [0.0000, 0.4345]; n=5</td>
+</tr>
+<tr>
+  <td>energy / 3</td>
+  <td>0.0000 [0.0000, 0.0000]; n=5</td>
+  <td>0.1370 [0.1112, 0.1629]; n=5</td>
+  <td>0.0000 [0.0000, 0.4345]; n=5</td>
+</tr>
+<tr>
+  <td>energy / 4.5</td>
+  <td>39.0667 [22.5931, 55.5402]; n=5</td>
+  <td>0.2028 [0.1227, 0.2830]; n=5</td>
+  <td>0.8000 [0.3755, 0.9638]; n=5</td>
+</tr>
+<tr>
+  <td>inclusive / 1</td>
+  <td>0.0000 [0.0000, 0.0000]; n=5</td>
+  <td>0.3106 [0.2978, 0.3234]; n=5</td>
+  <td>0.0000 [0.0000, 0.4345]; n=5</td>
+</tr>
+<tr>
+  <td>inclusive / 1.5</td>
+  <td>0.0000 [0.0000, 0.0000]; n=5</td>
+  <td>0.2923 [0.2829, 0.3018]; n=5</td>
+  <td>0.0000 [0.0000, 0.4345]; n=5</td>
+</tr>
+<tr>
+  <td>inclusive / 2.5</td>
+  <td>0.6000 [-0.5106, 1.7106]; n=5</td>
+  <td>0.2025 [0.1576, 0.2475]; n=5</td>
+  <td>0.0000 [0.0000, 0.4345]; n=5</td>
+</tr>
+<tr>
+  <td>inclusive / 3</td>
+  <td>18.4000 [-11.7676, 48.5676]; n=5</td>
+  <td>0.2538 [-0.0000, 0.5076]; n=5</td>
+  <td>0.4000 [0.1176, 0.7693]; n=5</td>
+</tr>
+<tr>
+  <td>inclusive / 4.5</td>
+  <td>45.0000 [45.0000, 45.0000]; n=5</td>
+  <td>0.3070 [0.1235, 0.4906]; n=5</td>
+  <td>1.0000 [0.5655, 1.0000]; n=5</td>
+</tr>
+</tbody>
+</table>
+<p><img src="../results/mechanism_study/figures/reward_incentive.png" alt="Matched reward and incentive results" /></p>
+<table>
+<thead>
+<tr>
+  <th>B/C</th>
+  <th>Shaped minus private donation rate (paired 95% interval)</th>
+  <th>Exact paired p</th>
+  <th>Holm p</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>1</td>
+  <td>0.0863 [0.0717, 0.1009]; n=5</td>
+  <td>0.0625</td>
+  <td>0.3125</td>
+</tr>
+<tr>
+  <td>1.5</td>
+  <td>0.0193 [0.0041, 0.0345]; n=5</td>
+  <td>0.1250</td>
+  <td>0.5000</td>
+</tr>
+<tr>
+  <td>2.5</td>
+  <td>0.0272 [-0.0403, 0.0948]; n=5</td>
+  <td>0.1875</td>
+  <td>0.5000</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td>0.1167 [-0.1345, 0.3680]; n=5</td>
+  <td>0.3125</td>
+  <td>0.5000</td>
+</tr>
+<tr>
+  <td>4.5</td>
+  <td>0.1042 [-0.0253, 0.2337]; n=5</td>
+  <td>0.1250</td>
+  <td>0.5000</td>
+</tr>
+</tbody>
+</table>
+<p>At the default B/C=2.5, the shaped objective increases mean giving relative to matched private PPO: 0.0272 [-0.0403, 0.0948]; n=5. The proportion of seed blocks surviving every fresh world is 0.00 for shaped reward and 0.00 for private reward. This is a measured incentive-control result at the declared budget. It does not validate the proposal's claim that private-reward policy sharing inherently values kin. Giving more and sustaining a population are separate outcomes; neither establishes biological kin selection. The finite budget and coarse marker reward remain possible limits on what the optimizer can discover.</p>
+<p>At B/C=4.5, final resident counts are 39.0667 [22.5931, 55.5402]; n=5 under private reward and 45.0000 [45.0000, 45.0000]; n=5 under shaped reward. Their giving rates are 0.2028 [0.1227, 0.2830]; n=5 and 0.3070 [0.1235, 0.4906]; n=5, respectively. Survival is therefore sensitive to the resource benefit as well as the reward objective. Giving frequency need not increase monotonically with B/C. At B/C=1, donation creates no net energy, so positive giving alone cannot replace metabolic losses; both reward conditions become extinct. This boundary control separates the amount of giving from whether it is ecologically productive.</p>
+<p><img src="../results/mechanism_study/figures/reward_learning.png" alt="Matched reward learning curves" /></p>
+<h2>6. Results: spatial structure where survival is possible</h2>
+<table>
+<thead>
+<tr>
+  <th>Condition</th>
+  <th>Final residents</th>
+  <th>Late adjacent similarity</th>
+  <th>Late global similarity</th>
+  <th>Late adjacent minus global similarity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>evolution_local</td>
+  <td>45.0000 [45.0000, 45.0000]; n=5</td>
+  <td>0.6842 [0.6237, 0.7447]; n=5</td>
+  <td>0.6690 [0.6060, 0.7321]; n=5</td>
+  <td>0.0152 [0.0114, 0.0189]; n=5</td>
+</tr>
+<tr>
+  <td>evolution_random</td>
+  <td>45.0000 [45.0000, 45.0000]; n=5</td>
+  <td>0.6924 [0.6212, 0.7635]; n=5</td>
+  <td>0.6912 [0.6237, 0.7587]; n=5</td>
+  <td>0.0012 [-0.0054, 0.0078]; n=5</td>
+</tr>
+<tr>
+  <td>energy_bc250</td>
+  <td>0.1333 [-0.2369, 0.5035]; n=5</td>
+  <td>0.6462 [CI unavailable]; n=1</td>
+  <td>0.6246 [CI unavailable]; n=1</td>
+  <td>0.0216 [CI unavailable]; n=1</td>
+</tr>
+<tr>
+  <td>energy_random</td>
+  <td>0.0000 [0.0000, 0.0000]; n=5</td>
+  <td>undefined; n=0</td>
+  <td>undefined; n=0</td>
+  <td>undefined; n=0</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+  <th>Local minus random placement</th>
+  <th>Paired late excess similarity</th>
+  <th>Paired donation rate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>evolution_local vs evolution_random</td>
+  <td>0.0140 [0.0059, 0.0221]; n=5</td>
+  <td>0.0074 [-0.0072, 0.0219]; n=5</td>
+</tr>
+<tr>
+  <td>energy_bc250 vs energy_random</td>
+  <td>undefined; n=0</td>
+  <td>0.0165 [-0.0176, 0.0506]; n=5</td>
+</tr>
+</tbody>
+</table>
+<p>The learning-by-placement interaction in donation rate, <code>(PPO local - PPO random) - (evolution local - evolution random)</code>, is 0.0091 [-0.0158, 0.0341]; n=5.</p>
+<p>Late statistics use the final 100 transitions and are undefined after extinction. Their n therefore reports the available surviving seed means; a paired spatial comparison requires defined measurements in both placements. The excess over global similarity controls for population-wide tag homogenization. This is spatial marker assortment, not a pedigree coefficient or a demonstrated evolutionary fitness advantage. The no-PPO comparison prevents an extinct learned population from making the spatial question empty.</p>
+<h2>7. Cue reliability and mimicry</h2>
+<table>
+<thead>
+<tr>
+  <th>Original training condition</th>
+  <th>Genetic cue TV sensitivity</th>
+  <th>Behaviour cue TV sensitivity</th>
+  <th>Genetic gate weight</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>clean</td>
+  <td>0.0060 [0.0012, 0.0108]; n=5</td>
+  <td>0.0091 [0.0037, 0.0145]; n=5</td>
+  <td>0.4680 [0.3193, 0.6167]; n=5</td>
+</tr>
+<tr>
+  <td>fixed_noise_mimics</td>
+  <td>0.0039 [-0.0007, 0.0084]; n=5</td>
+  <td>0.0091 [-0.0029, 0.0212]; n=5</td>
+  <td>0.5000 [0.5000, 0.5000]; n=5</td>
+</tr>
+<tr>
+  <td>noise025</td>
+  <td>0.0040 [0.0015, 0.0064]; n=5</td>
+  <td>0.0086 [0.0048, 0.0124]; n=5</td>
+  <td>0.3080 [0.1707, 0.4452]; n=5</td>
+</tr>
+<tr>
+  <td>noise050</td>
+  <td>0.0043 [0.0037, 0.0049]; n=5</td>
+  <td>0.0081 [0.0045, 0.0118]; n=5</td>
+  <td>0.3645 [0.1956, 0.5334]; n=5</td>
+</tr>
+<tr>
+  <td>noise_mimics</td>
+  <td>0.0029 [0.0020, 0.0037]; n=5</td>
+  <td>0.0067 [0.0013, 0.0120]; n=5</td>
+  <td>0.3895 [0.1570, 0.6220]; n=5</td>
+</tr>
+</tbody>
+</table>
+<p>TV is total variation between the complete action distributions on identical synthetic inputs before and after permuting one cue. Raw cues also enter the encoder, so gate weights cannot identify reliance. These probes cover both paths but can leave the realistic observation manifold; they are descriptive sensitivity tests.</p>
+<table>
+<thead>
+<tr>
+  <th>Attacked condition</th>
+  <th>Donation share to mimics</th>
+  <th>Post-invasion donation count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>noise_mimics</td>
+  <td>0.2263 [0.1683, 0.2843]; n=5</td>
+  <td>13796</td>
+</tr>
+<tr>
+  <td>fixed_noise_mimics</td>
+  <td>0.2703 [0.2369, 0.3037]; n=5</td>
+  <td>10154</td>
+</tr>
+</tbody>
+</table>
+<p>Mimics enter at transition 10, copy the most common resident tag, remain stationary, and never donate. Mimic donation shares condition on actual post-invasion giving; no giving yields an undefined share, never successful defense. Because clean cooperation is a prerequisite, changes under noise or mimicry cannot be called successful adaptive trust when the learned ecology collapses.</p>
+<h2>8. Hamilton association and objective intervention</h2>
+<p><code>logit P(give to j) = beta0 + beta_r*r + beta_b*b + beta_q*(B/C) + beta_rq*r*(B/C) + beta_n*available_neighbors + beta_E*own_energy</code></p>
+<p>The corrected model includes the missing tag-by-incentive interaction and five independently trained incentive levels. It records only legal recipient opportunities, includes competition among available targets, and fits each objective separately. Uniform outcome-blind reservoirs retain at most 4,000 opportunities per world, followed by a cap of 12,000 per seed for fitting. Recipient decisions are dependent; cluster sandwich intervals use the five training-seed blocks. This small-cluster regression is exploratory and does not estimate causal pedigree fitness. B/C is a training condition, not an actor input, so coefficients cannot be read as an instantaneous actor response to an observed B/C value.</p>
+<table>
+<thead>
+<tr>
+  <th>Objective</th>
+  <th>Fit status</th>
+  <th>Tag x B/C coefficient and cluster interval</th>
+  <th>Pseudo-R2</th>
+  <th>Seed clusters / opportunities</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>energy</td>
+  <td>exploratory fit</td>
+  <td>-0.0809 [-0.4108, 0.2491]</td>
+  <td>0.0198</td>
+  <td>5 / 60000</td>
+</tr>
+<tr>
+  <td>inclusive</td>
+  <td>exploratory fit</td>
+  <td>0.0160 [-0.1193, 0.1513]</td>
+  <td>0.0228</td>
+  <td>5 / 60000</td>
+</tr>
+</tbody>
+</table>
+<p>The matched one-transition environment intervention gives donor reward difference -2.0000 and recipient difference 5.0000. Thus private reward immediately prices giving at -C; the shaped two-agent control prices it at -C+rB. This directly tests reward plumbing. It is separate from whether learned long-horizon actions follow that threshold, and neither test validates biological Hamilton's rule.</p>
+<h2>9. Interpretation and limitations</h2>
+<p>Individual PPO and evolutionary selection act on different signals. Giving's immediate private cost is assigned to the donor, while another resident's benefit is not directly in its return. Delayed reciprocity can still make giving privately beneficial, but it must be discovered under partial observations, moving neighbours, terminal death, and nonstationary family policies. The negative learning comparison is scientifically informative: ecological feasibility does not imply that a private-return optimizer learns a cooperative rule. Untrained policies have many possible donation actions, so their survival is not learned altruism. Selection without PPO is likewise not proof of kin discrimination.</p>
+<p>Summing pre-demographic energy changes yields <code>(B-C)*D - c_base*N - c_density*sum_i |N_i|</code>, where D is the donation count. At the default B-C=3, fewer than 0.2 donations per resident transition cannot replace even basal energy loss. Crowding raises that threshold. The plotted collapse in giving therefore has a concrete ecological consequence, but this energy balance alone cannot identify why PPO chose those actions.</p>
+<p>For a trajectory without reproduction, the private discounted energy sum telescopes to <code>sum_t gamma^t Delta E_t = -E_0 + (1-gamma)*sum_(t=1 to T-1) gamma^(t-1)*E_t + gamma^(T-1)*E_T</code>. At gamma=1 it reduces to terminal minus initial energy; at gamma=0.99 it also values earlier stored energy. There is no direct descendant-fitness term. Reproduction adds bookkeeping terms because reward precedes the split, so this identity is deliberately restricted to trajectories without reproduction. It does not prove that giving is privately suboptimal: later reciprocity can still improve individual return.</p>
+<p>The main limits are five seeds, short finite training budgets, one base ecology, eight-bit marker proxies, restocking energy, and a privileged shaped reward. The original one-factor controls and new reward/incentive factorial do not span all interactions. Noise/mimic effects are measured under trajectories that may go extinct; late assortment is reported only where defined. Pointwise learning intervals are not simultaneous bands. Regression samples are dependent and small-cluster intervals can be unreliable. Evaluation on a newer CPU runtime may alter sampled trajectories even with the same seed; the original training provenance and replay runtime are both retained. No finite negative experiment proves that cooperation is impossible, and a successful explicitly shaped reward would not establish spontaneous kin selection.</p>
+<p>The browser simulation still runs the earlier single shared-policy checkpoint; it is an illustration, not an execution or replay of the new inherited-family experiment. The report, raw world results, and saved policies are the evidence for the submission. Historical demographic and descendant-reward variants are retained separately and are not pooled into these results.</p>
+<h2>10. Reproducibility</h2>
+<p>We verify 95 original and 65 new checkpoint files against their recorded SHA256 values and original archived training sources. Actor and environment source must match the trained architecture/ecology byte for byte; evaluation versions and source hashes are recorded separately. Archive line endings are preserved in Git so Windows checkout cannot silently corrupt source hashes. Original checkpoint metadata and claimed training versions are never rewritten to pass a replay check.</p>
+<pre><code class="language-powershell">python -m pip install -r requirements.txt
+python experiments/mechanism_study.py --steps 2048 --workers 3
+python evaluation/complete_study.py --study-dir results/submission_study --workers 3
+python evaluation/complete_study.py --study-dir results/mechanism_study --workers 3
+python evaluation/submission_report.py
+python -m pytest -q
+node --test tests/web_simulation.test.cjs
+python -m pip install -r requirements-report.txt
+python evaluation/export_submission.py
+</code></pre>
+<p>New training refuses to overwrite incompatible files; matching completed runs are checked before reuse. Training and evaluation run in separate worker processes to isolate PyTorch RNG state. The full provenance manifest includes checkpoints, source archives, summaries, diagnostics, and figures. Exact package versions for this execution are recorded alongside each analysis.</p>
+<ul>
+<li><a href="../results/submission_study/results.md">Original study results</a> and <a href="../results/submission_study/analysis.json">raw worlds</a>.</li>
+<li><a href="../results/mechanism_study/results.md">New study results</a>, <a href="../results/mechanism_study/analysis.json">raw worlds</a>, and <a href="../results/mechanism_study/diagnostics.json">diagnostics</a>.</li>
+<li><a href="final_study_protocol.md">Complete model and execution protocol</a>.</li>
+</ul>
+<h2>11. Proposal corrections and scope</h2>
+<p>The final study replaces the unproven title claim of emergent kin selection with a testable cooperation question. It resolves independent versus shared PPO, specifies all parameters, fixes the free-slot rule, defines affordability and stay, normalizes all actions jointly, and separates donation energy creation from mitosis conservation. It measures full-policy cue sensitivity, uses a tag-by-B/C interaction, tests five incentive levels, and measures late assortment in surviving selection-only populations. The privileged reward control is explicitly outside the original private-energy objective. These changes make the mechanism and the scope of the conclusions reviewable.</p>
+<p>The project matches the course sequence: decision problem, model, algorithm, implementation, quantitative evaluation, and limitations. The rubric does not require a positive hypothesis result; the contribution is a reproducible investigation of when private learning and survivor selection diverge.</p>
+<h2>Team responsibilities and background</h2>
+<p>The proposal assigns environment and demographics to Vansh Barfiwala, cues and attention to Pratham Choksi, and PPO and evaluation to Shubham Chandak. These are the team's stated areas of responsibility.</p>
+<p>Biological background: Hamilton (1964), The genetical evolution of social behaviour, Parts I and II; Dawkins (1976), The Selfish Gene. MARL background from the proposal: Leibo et al. (2017), Multi-agent reinforcement learning in sequential social dilemmas; Hughes et al. (2018), Inequity aversion improves cooperation in intertemporal social dilemmas; Jaques et al. (2019), Social influence as intrinsic motivation for multi-agent deep reinforcement learning; Lupu and Precup (2020), Gifting in multi-agent reinforcement learning. Dawkins supplies biological context and is not cited as MARL research.</p>
+</body></html>

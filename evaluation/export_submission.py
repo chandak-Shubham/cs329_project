@@ -29,11 +29,12 @@ def main():
     p { margin: 9px 0; orphans: 3; widows: 3; }
     a { color: #075985; text-decoration: underline; overflow-wrap: anywhere; }
     code { font-family: Consolas, monospace; font-size: 8.5pt; overflow-wrap: anywhere; }
-    pre { padding: 12px; background: #f1f5f8; border: 1px solid #cbd5df; white-space: pre-wrap; }
+    pre { padding: 12px; background: #f1f5f8; border: 1px solid #cbd5df; white-space: pre-wrap; break-inside: avoid; }
     table { border-collapse: collapse; width: 100%; font-size: 8.2pt; line-height: 1.35; table-layout: fixed; margin: 12px 0; }
     th,td { border: 1px solid #c0cbd2; padding: 6px; vertical-align: top; overflow-wrap: anywhere; }
     th { text-align: left; background: #e9f0f4; }
     tr { break-inside: avoid; }
+    table:not(:has(tbody tr:nth-child(7))) { break-inside: avoid; }
     thead { display: table-header-group; }
     img { width: 100%; height: auto; break-inside: avoid; }
     @media print { body { margin: 0; padding: 0; max-width: none; } a { color: #172333; } }

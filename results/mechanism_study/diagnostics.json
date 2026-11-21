@@ -1,0 +1,899 @@
+{
+  "integrity": {
+    "submission_study": {
+      "verified_checkpoints": 95,
+      "analysis_sha256": "518c32ad4be6b611465ee6a0a9f2994e1c89b770edd479b7a69c1461b5bc50f7"
+    },
+    "mechanism_study": {
+      "verified_checkpoints": 65,
+      "analysis_sha256": "9fc6515963ca9cafb9f5807c59e554fdaf2de87d13a649a2620fab65316a070b"
+    }
+  },
+  "reward_contrasts": [
+    {
+      "seeds": [
+        42,
+        101,
+        202,
+        303,
+        404
+      ],
+      "differences": [
+        0.10608967687367857,
+        0.07872001948361204,
+        0.07943390719686316,
+        0.08809378919459182,
+        0.079032887046431
+      ],
+      "summary": {
+        "n": 5,
+        "mean": 0.08627405595903533,
+        "ci95": [
+          0.07168442616945347,
+          0.10086368574861718
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "ratio": 1.0,
+      "p_sign_flip": 0.0625,
+      "p_holm": 0.3125
+    },
+    {
+      "seeds": [
+        42,
+        101,
+        202,
+        303,
+        404
+      ],
+      "differences": [
+        -0.0015127259735578935,
+        0.02871385076472116,
+        0.027190650260237093,
+        0.01875937976464853,
+        0.023135664868929984
+      ],
+      "summary": {
+        "n": 5,
+        "mean": 0.019257363936995776,
+        "ci95": [
+          0.004062216773713967,
+          0.03445251110027758
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "ratio": 1.5,
+      "p_sign_flip": 0.125,
+      "p_holm": 0.5
+    },
+    {
+      "seeds": [
+        42,
+        101,
+        202,
+        303,
+        404
+      ],
+      "differences": [
+        -0.05843505483949368,
+        0.06289559998684707,
+        0.06164184177662832,
+        0.003986744769087669,
+        0.06602871669456759
+      ],
+      "summary": {
+        "n": 5,
+        "mean": 0.02722356967752739,
+        "ci95": [
+          -0.04033111293774035,
+          0.09477825229279513
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "ratio": 2.5,
+      "p_sign_flip": 0.1875,
+      "p_holm": 0.5
+    },
+    {
+      "seeds": [
+        42,
+        101,
+        202,
+        303,
+        404
+      ],
+      "differences": [
+        0.4436285409233305,
+        0.020593846377143316,
+        0.1695699996412834,
+        -0.07344948659856827,
+        0.023273362453335583
+      ],
+      "summary": {
+        "n": 5,
+        "mean": 0.1167232525593049,
+        "ci95": [
+          -0.13454062825858226,
+          0.367987133377192
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "ratio": 3.0,
+      "p_sign_flip": 0.3125,
+      "p_holm": 0.5
+    },
+    {
+      "seeds": [
+        42,
+        101,
+        202,
+        303,
+        404
+      ],
+      "differences": [
+        0.07419680739266257,
+        0.11608232596280846,
+        0.2645580203159675,
+        0.09066845930672487,
+        -0.024474011482011365
+      ],
+      "summary": {
+        "n": 5,
+        "mean": 0.10420632029923041,
+        "ci95": [
+          -0.02527277305085554,
+          0.23368541364931636
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "ratio": 4.5,
+      "p_sign_flip": 0.125,
+      "p_holm": 0.5
+    }
+  ],
+  "spatial_contrasts": {
+    "evolution_local_minus_evolution_random/late_adjacent_similarity": {
+      "seeds": [
+        42,
+        101,
+        202,
+        303,
+        404
+      ],
+      "differences": [
+        -0.021709975579007446,
+        -0.07910605735286613,
+        0.05158778377841822,
+        -0.005432206676007079,
+        0.013925834449368124
+      ],
+      "summary": {
+        "n": 5,
+        "mean": -0.008146924276018864,
+        "ci95": [
+          -0.06795971899356287,
+          0.05166587044152514
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "evolution_local_minus_evolution_random/late_global_similarity": {
+      "seeds": [
+        42,
+        101,
+        202,
+        303,
+        404
+      ],
+      "differences": [
+        -0.031069023569023635,
+        -0.08990488215488235,
+        0.031208754208754352,
+        -0.027150673400673453,
+        0.006192760942760667
+      ],
+      "summary": {
+        "n": 5,
+        "mean": -0.022144612794612883,
+        "ci95": [
+          -0.0788607620372925,
+          0.034571536448066736
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "evolution_local_minus_evolution_random/late_excess_similarity": {
+      "seeds": [
+        42,
+        101,
+        202,
+        303,
+        404
+      ],
+      "differences": [
+        0.00935904799001607,
+        0.01079882480201588,
+        0.020379029569664045,
+        0.0217184667246665,
+        0.0077330735066070055
+      ],
+      "summary": {
+        "n": 5,
+        "mean": 0.013997688518593898,
+        "ci95": [
+          0.005871496939909172,
+          0.022123880097278625
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "evolution_local_minus_evolution_random/donations_per_resident_step": {
+      "seeds": [
+        42,
+        101,
+        202,
+        303,
+        404
+      ],
+      "differences": [
+        0.014453398391451877,
+        -0.007005822610277768,
+        0.004059312161551809,
+        0.002029422862546537,
+        0.023301240628207487
+      ],
+      "summary": {
+        "n": 5,
+        "mean": 0.007367510286695989,
+        "ci95": [
+          -0.007193953358966346,
+          0.021928973932358323
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "evolution_local_minus_evolution_random/final_residents": {
+      "seeds": [
+        42,
+        101,
+        202,
+        303,
+        404
+      ],
+      "differences": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "summary": {
+        "n": 5,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "energy_bc250_minus_energy_random/late_adjacent_similarity": {
+      "seeds": [],
+      "differences": [],
+      "summary": {
+        "n": 0,
+        "mean": null,
+        "ci95": null
+      }
+    },
+    "energy_bc250_minus_energy_random/late_global_similarity": {
+      "seeds": [],
+      "differences": [],
+      "summary": {
+        "n": 0,
+        "mean": null,
+        "ci95": null
+      }
+    },
+    "energy_bc250_minus_energy_random/late_excess_similarity": {
+      "seeds": [],
+      "differences": [],
+      "summary": {
+        "n": 0,
+        "mean": null,
+        "ci95": null
+      }
+    },
+    "energy_bc250_minus_energy_random/donations_per_resident_step": {
+      "seeds": [
+        42,
+        101,
+        202,
+        303,
+        404
+      ],
+      "differences": [
+        0.03624054656861295,
+        0.013281493594423571,
+        -0.003182043382527311,
+        -0.015290349163091799,
+        0.051496712099571504
+      ],
+      "summary": {
+        "n": 5,
+        "mean": 0.016509271943397782,
+        "ci95": [
+          -0.01762421885046362,
+          0.050642762737259185
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "energy_bc250_minus_energy_random/final_residents": {
+      "seeds": [
+        42,
+        101,
+        202,
+        303,
+        404
+      ],
+      "differences": [
+        0.6666666666666666,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "summary": {
+        "n": 5,
+        "mean": 0.13333333333333333,
+        "ci95": [
+          -0.2368593473597058,
+          0.5035260140263724
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    }
+  },
+  "learning_placement_interaction": {
+    "n": 5,
+    "mean": 0.009141761656701794,
+    "ci95": [
+      -0.01581377224103383,
+      0.03409729555443741
+    ],
+    "method": "Student t interval across independent training-seed units"
+  },
+  "hamilton_regressions": {
+    "energy": {
+      "features": [
+        "intercept",
+        "tag_cue",
+        "donation_history",
+        "B_over_C",
+        "tag_x_B_over_C",
+        "available_neighbors",
+        "own_energy"
+      ],
+      "coefficients": [
+        -1.690757330399533,
+        0.03611439053056238,
+        0.08596700664161198,
+        -0.2285810792409148,
+        -0.08085446114979651,
+        -0.08812847276245867,
+        -0.03634545841490947
+      ],
+      "std_errors": [
+        0.08868650189930008,
+        0.28761894949471506,
+        0.1066814228538166,
+        0.03656593183254505,
+        0.1188515553977252,
+        0.006482077764815031,
+        0.0182288983884878
+      ],
+      "z_scores": [
+        -19.064426876587365,
+        0.12556332117201469,
+        0.8058292094529976,
+        -6.2512034504606575,
+        -0.6802978798150761,
+        -13.595713590605689,
+        -1.9938373477282052
+      ],
+      "p_values": [
+        4.4599690823318287e-05,
+        0.9061355546375587,
+        0.4655180586384911,
+        0.0033389771170409498,
+        0.5336539666114591,
+        0.00016944933476413277,
+        0.11693673862324086
+      ],
+      "pseudo_r2": 0.019839677926456356,
+      "log_likelihood": -14162.534969147877,
+      "num_samples": 60000,
+      "ci95": [
+        [
+          -1.9369905344949594,
+          -1.4445241263041064
+        ],
+        [
+          -0.7624438339561705,
+          0.8346726150172954
+        ],
+        [
+          -0.2102281076564031,
+          0.3821621209396271
+        ],
+        [
+          -0.3301043816943807,
+          -0.12705777678744892
+        ],
+        [
+          -0.410839280378955,
+          0.249130358079362
+        ],
+        [
+          -0.10612560584409081,
+          -0.07013133968082652
+        ],
+        [
+          -0.08695699411877438,
+          0.014266077288955431
+        ]
+      ],
+      "inference": "training-seed cluster robust sandwich covariance with t reference",
+      "num_clusters": 5,
+      "converged": true,
+      "optimizer_message": "Optimization terminated successfully.",
+      "max_abs_mean_gradient": 3.200970011960868e-10,
+      "status": "exploratory fit",
+      "ratios": [
+        1.0,
+        1.5,
+        2.5,
+        3.0,
+        4.5
+      ]
+    },
+    "inclusive": {
+      "features": [
+        "intercept",
+        "tag_cue",
+        "donation_history",
+        "B_over_C",
+        "tag_x_B_over_C",
+        "available_neighbors",
+        "own_energy"
+      ],
+      "coefficients": [
+        -1.622576823145407,
+        -0.13441226884525234,
+        0.4710270495761574,
+        -0.2784150954133955,
+        0.01598189288829356,
+        -0.07275032662757511,
+        0.020281885114177715
+      ],
+      "std_errors": [
+        0.039191082968509955,
+        0.14733361991431337,
+        0.09998955815872562,
+        0.03455708079418361,
+        0.04874159423540531,
+        0.014421471985103237,
+        0.006145670840801175
+      ],
+      "z_scores": [
+        -41.40168375671445,
+        -0.9122986927452413,
+        4.710762386092743,
+        -8.056672873255435,
+        0.3278902370551619,
+        -5.044583985790291,
+        3.300190595878657
+      ],
+      "p_values": [
+        2.034192341085361e-06,
+        0.41322184402271245,
+        0.009234472960980823,
+        0.001288812821971924,
+        0.7594393698807085,
+        0.0072586444238238405,
+        0.029928073921794803
+      ],
+      "pseudo_r2": 0.022822453381319607,
+      "log_likelihood": -15857.76203718736,
+      "num_samples": 60000,
+      "ci95": [
+        [
+          -1.731388713620727,
+          -1.5137649326700868
+        ],
+        [
+          -0.5434759766874199,
+          0.27465143899691513
+        ],
+        [
+          0.19341153025547353,
+          0.7486425688968412
+        ],
+        [
+          -0.3743609332343313,
+          -0.18246925759245972
+        ],
+        [
+          -0.1193464678461345,
+          0.1513102536227216
+        ],
+        [
+          -0.11279075193036209,
+          -0.03270990132478812
+        ],
+        [
+          0.0032187673900784843,
+          0.03734500283827695
+        ]
+      ],
+      "inference": "training-seed cluster robust sandwich covariance with t reference",
+      "num_clusters": 5,
+      "converged": true,
+      "optimizer_message": "Optimization terminated successfully.",
+      "max_abs_mean_gradient": 3.646589726486208e-10,
+      "status": "exploratory fit",
+      "ratios": [
+        1.0,
+        1.5,
+        2.5,
+        3.0,
+        4.5
+      ]
+    }
+  },
+  "common_input_probes": [
+    {
+      "condition": "clean",
+      "training_seed": 42,
+      "genetic_weight": 0.33668605610728264,
+      "genetic_tv": 0.0041520456337214755,
+      "behavior_tv": 0.015002872173984846
+    },
+    {
+      "condition": "clean",
+      "training_seed": 101,
+      "genetic_weight": 0.4180399129788081,
+      "genetic_tv": 0.006033602151243637,
+      "behavior_tv": 0.007216733574750833
+    },
+    {
+      "condition": "clean",
+      "training_seed": 202,
+      "genetic_weight": 0.6607013841470083,
+      "genetic_tv": 0.0020565060064351806,
+      "behavior_tv": 0.0039055003338338188
+    },
+    {
+      "condition": "clean",
+      "training_seed": 303,
+      "genetic_weight": 0.47714387997984886,
+      "genetic_tv": 0.005382982994584988,
+      "behavior_tv": 0.007495954807382077
+    },
+    {
+      "condition": "clean",
+      "training_seed": 404,
+      "genetic_weight": 0.4474489899973075,
+      "genetic_tv": 0.012338083858291308,
+      "behavior_tv": 0.011854585298957923
+    },
+    {
+      "condition": "noise025",
+      "training_seed": 42,
+      "genetic_weight": 0.19302890822291374,
+      "genetic_tv": 0.0035262570114961513,
+      "behavior_tv": 0.0128222107499217
+    },
+    {
+      "condition": "noise025",
+      "training_seed": 101,
+      "genetic_weight": 0.3997827048103015,
+      "genetic_tv": 0.007313564419746399,
+      "behavior_tv": 0.007640516261744779
+    },
+    {
+      "condition": "noise025",
+      "training_seed": 202,
+      "genetic_weight": 0.44258293757836026,
+      "genetic_tv": 0.0036471453786361963,
+      "behavior_tv": 0.005339236444948862
+    },
+    {
+      "condition": "noise025",
+      "training_seed": 303,
+      "genetic_weight": 0.2901697003593047,
+      "genetic_tv": 0.0032977205264614895,
+      "behavior_tv": 0.010499868343079774
+    },
+    {
+      "condition": "noise025",
+      "training_seed": 404,
+      "genetic_weight": 0.21425723284482956,
+      "genetic_tv": 0.0020730979692113274,
+      "behavior_tv": 0.006601926851241539
+    },
+    {
+      "condition": "noise050",
+      "training_seed": 42,
+      "genetic_weight": 0.4007156925896804,
+      "genetic_tv": 0.004710148627054878,
+      "behavior_tv": 0.0043445561702052755
+    },
+    {
+      "condition": "noise050",
+      "training_seed": 101,
+      "genetic_weight": 0.22318846359848976,
+      "genetic_tv": 0.004622557355711858,
+      "behavior_tv": 0.01026464932753394
+    },
+    {
+      "condition": "noise050",
+      "training_seed": 202,
+      "genetic_weight": 0.3805413953959942,
+      "genetic_tv": 0.0038905600376892835,
+      "behavior_tv": 0.006174111103367371
+    },
+    {
+      "condition": "noise050",
+      "training_seed": 303,
+      "genetic_weight": 0.5648010248939196,
+      "genetic_tv": 0.0037145133246667683,
+      "behavior_tv": 0.008189348872595778
+    },
+    {
+      "condition": "noise050",
+      "training_seed": 404,
+      "genetic_weight": 0.2532773731897275,
+      "genetic_tv": 0.004589957417920232,
+      "behavior_tv": 0.01158008398488164
+    },
+    {
+      "condition": "noise_mimics",
+      "training_seed": 42,
+      "genetic_weight": 0.3490882646292448,
+      "genetic_tv": 0.0031756910733141317,
+      "behavior_tv": 0.007843697860759372
+    },
+    {
+      "condition": "noise_mimics",
+      "training_seed": 101,
+      "genetic_weight": 0.47154252355297405,
+      "genetic_tv": 0.0016481843146417912,
+      "behavior_tv": 0.001407260950751758
+    },
+    {
+      "condition": "noise_mimics",
+      "training_seed": 202,
+      "genetic_weight": 0.47831952944397926,
+      "genetic_tv": 0.0028201721967586004,
+      "behavior_tv": 0.011068965470864592
+    },
+    {
+      "condition": "noise_mimics",
+      "training_seed": 303,
+      "genetic_weight": 0.5645917219420274,
+      "genetic_tv": 0.003239876651302135,
+      "behavior_tv": 0.0029418855823071985
+    },
+    {
+      "condition": "noise_mimics",
+      "training_seed": 404,
+      "genetic_weight": 0.08394089403251807,
+      "genetic_tv": 0.0033711956930346787,
+      "behavior_tv": 0.010121666147218397
+    },
+    {
+      "condition": "fixed_noise_mimics",
+      "training_seed": 42,
+      "genetic_weight": 0.5,
+      "genetic_tv": 0.0018828061438398436,
+      "behavior_tv": 0.008231649563337365
+    },
+    {
+      "condition": "fixed_noise_mimics",
+      "training_seed": 101,
+      "genetic_weight": 0.5,
+      "genetic_tv": 0.0018966194887373906,
+      "behavior_tv": 0.0014096733211772516
+    },
+    {
+      "condition": "fixed_noise_mimics",
+      "training_seed": 202,
+      "genetic_weight": 0.5,
+      "genetic_tv": 0.0034062779450323433,
+      "behavior_tv": 0.006295841226043801
+    },
+    {
+      "condition": "fixed_noise_mimics",
+      "training_seed": 303,
+      "genetic_weight": 0.5,
+      "genetic_tv": 0.001814508073342343,
+      "behavior_tv": 0.0038490265724249184
+    },
+    {
+      "condition": "fixed_noise_mimics",
+      "training_seed": 404,
+      "genetic_weight": 0.5,
+      "genetic_tv": 0.01031727275888746,
+      "behavior_tv": 0.02591995324473828
+    }
+  ],
+  "common_input_summary": {
+    "clean": {
+      "genetic_tv": {
+        "n": 5,
+        "mean": 0.005992644128855318,
+        "ci95": [
+          0.0012030165605135066,
+          0.01078227169719713
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "behavior_tv": {
+        "n": 5,
+        "mean": 0.0090951292377819,
+        "ci95": [
+          0.0036994597379385267,
+          0.014490798737625274
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "genetic_weight": {
+        "n": 5,
+        "mean": 0.46800404464205103,
+        "ci95": [
+          0.3192902994367185,
+          0.6167177898473836
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "fixed_noise_mimics": {
+      "genetic_tv": {
+        "n": 5,
+        "mean": 0.003863496881967876,
+        "ci95": [
+          -0.0006923428577482473,
+          0.008419336621683999
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "behavior_tv": {
+        "n": 5,
+        "mean": 0.009141228785544322,
+        "ci95": [
+          -0.0029328525413911313,
+          0.021215310112479777
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "genetic_weight": {
+        "n": 5,
+        "mean": 0.5,
+        "ci95": [
+          0.5,
+          0.5
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "noise025": {
+      "genetic_tv": {
+        "n": 5,
+        "mean": 0.003971557061110313,
+        "ci95": [
+          0.0015249156635307299,
+          0.006418198458689895
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "behavior_tv": {
+        "n": 5,
+        "mean": 0.00858075173018733,
+        "ci95": [
+          0.004805388925206609,
+          0.01235611453516805
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "genetic_weight": {
+        "n": 5,
+        "mean": 0.30796429676314196,
+        "ci95": [
+          0.17073289264570754,
+          0.44519570088057636
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "noise050": {
+      "genetic_tv": {
+        "n": 5,
+        "mean": 0.004305547352608604,
+        "ci95": [
+          0.003727599004832212,
+          0.004883495700384995
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "behavior_tv": {
+        "n": 5,
+        "mean": 0.008110549891716801,
+        "ci95": [
+          0.004457834590878532,
+          0.011763265192555071
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "genetic_weight": {
+        "n": 5,
+        "mean": 0.36450478993356233,
+        "ci95": [
+          0.19558733662640318,
+          0.5334222432407215
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    },
+    "noise_mimics": {
+      "genetic_tv": {
+        "n": 5,
+        "mean": 0.002851023985810267,
+        "ci95": [
+          0.0019785465263232015,
+          0.0037235014452973326
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "behavior_tv": {
+        "n": 5,
+        "mean": 0.0066766952023802634,
+        "ci95": [
+          0.001327533116872377,
+          0.01202585728788815
+        ],
+        "method": "Student t interval across independent training-seed units"
+      },
+      "genetic_weight": {
+        "n": 5,
+        "mean": 0.3894965867201487,
+        "ci95": [
+          0.15697326988675428,
+          0.6220199035535431
+        ],
+        "method": "Student t interval across independent training-seed units"
+      }
+    }
+  },
+  "immediate_reward_probe": {
+    "stay": [
+      -0.6800000071525574,
+      -0.6800000071525574
+    ],
+    "give": [
+      -2.680000066757202,
+      4.320000171661377
+    ],
+    "donor_reward_difference": -2.0000000596046448,
+    "recipient_reward_difference": 5.000000178813934,
+    "interpretation": "Holding the state and other action fixed, giving immediately costs the donor C and benefits the recipient B. This tests reward plumbing, not the long-term optimal action."
+  },
+  "packages": {
+    "numpy": "2.5.5",
+    "torch": "2.15.0",
+    "scipy": "1.18.1",
+    "matplotlib": "3.11.2",
+    "pytest": "9.2.0"
+  }
+}
