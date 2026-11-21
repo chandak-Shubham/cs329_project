@@ -17,6 +17,18 @@ import torch
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def text_artifact_matches(path, expected):
+    """Historical JSON hashes predate byte-preserving checkout attributes.
+
+    Accept only the exact recorded bytes or their LF/CRLF representation.
+    Checkpoint weights and current scientific archives still use exact hashes.
+    """
+    raw = Path(path).read_bytes()
+    lf = raw.replace(b'\r\n',b'\n')
+    return any(hashlib.sha256(candidate).hexdigest()==expected
+               for candidate in (raw,lf,lf.replace(b'\n',b'\r\n')))
+
+
 def interval(row, percent=False):
     if row['mean'] is None:
         return 'Not estimable (n=0)'
@@ -69,6 +81,18 @@ def results_html(data):
                   'Complete inherited-policy study: selected controls; all conditions are linked below'),
             '<p>These are exploratory finite-budget results. Full-policy cue sensitivity, spatial comparisons and a transient Hamilton association analysis are reported separately from claims of sustained cooperation. The live actor above remains the earlier shared-policy demonstration.</p>',
             '<p><a href="docs/final_report.md">Final submission report</a> · <a href="results/submission_study/results.md">All experimental conditions</a> · <a href="results/submission_study/analysis.json">Raw evaluations</a> · <a href="docs/final_study_protocol.md">Protocol and reproduction commands</a> · <a href="results/submission_study/submission_diagnostics.json">Source integrity and optimizer comparisons</a></p>']
+    if data.get('mechanism'):
+        study=data['mechanism']
+        rows=[[name.replace('_',' '),interval(row['final_residents']),
+               interval(row['donations_per_resident_step']),interval(row['all_worlds_survive'],True)]
+              for name,row in study['summary'].items()]
+        chunks[1:1]=[
+            '<h3>Matched reward, incentive and placement study</h3>',
+            '<p>65 new training runs cross private versus marker-weighted social reward with five benefit/cost ratios, plus learning and offspring-placement controls. Five independent seed blocks each receive three fresh evaluation worlds. The shaped reward deliberately changes the objective; it is not evidence of unshaped kin selection.</p>',
+            table(['Condition','Final residents [95% CI]','Donations / resident transition [95% CI]',
+                   'Seeds surviving every world [Wilson 95% CI]'],rows,'New matched mechanism experiment'),
+            '<div class="research-figures"><figure><img src="results/mechanism_study/figures/reward_incentive.png" width="1700" height="680" loading="lazy" alt="Matched private and shaped rewards across five benefit-cost ratios with seed uncertainty"><figcaption>Incentive alignment, giving and survival.</figcaption></figure></div>',
+            '<p><a href="docs/final_report.html">Read the final report</a> · <a href="docs/final_report.pdf">Printable report</a> · <a href="results/mechanism_study/results.md">All new results</a> · <a href="results/mechanism_study/diagnostics.json">Paired contrasts, spatial measures and interaction regression</a></p>']
     if data['lineage']:
         lineage = data['lineage']
         passed = lineage['feasibility']['passed']
@@ -108,7 +132,14 @@ def results_html(data):
                      [[name,f'{b:.4f}',f'[{ci[0]:.4f}, {ci[1]:.4f}]',f'{p:.4f}'] for name,b,ci,p in zip(regression['features'],regression['coefficients'],regression['ci95'],regression['p_values'])], 'Training-seed cluster regression'),
                '<h3>Interpretation and reproducibility</h3><p>Donation adds net energy B−C; mitosis conserves parent-plus-child energy. Behavioural history counts donations given. Mimics cannot donate and are excluded from PPO. The simulator and earlier studies share one resident policy. The separately labelled inherited-policy study uses family networks and explicit selection. Rule baselines can all reach capacity: compare donation frequency and exploitation, not the population cap alone.</p>',
                '<p><a href="results/revised_study/results.md">Revised results table</a> · <a href="results/revised_study/analysis.json">Raw revised data</a> · <a href="results/phase4_benchmarks.json">Historical benchmarks</a> · <a href="results/statistical_analysis.json">Regression data</a> · <a href="docs/review_response_2026-11-17.md">First review response</a> · <a href="docs/final_review_response_2026-11-18.md">Final review response</a> · <a href="README.md">Reproduce the experiments</a></p></section>']
-    return '\n'.join(chunks)
+    html='\n'.join(chunks)
+    for old in ('docs/inherited_policy_protocol.md','docs/review_response_2026-11-17.md',
+                'docs/final_review_response_2026-11-18.md'):
+        html=html.replace(old,'docs/final_study_protocol.md')
+    if data.get('mechanism'):
+        html=html.replace('results/submission_study/submission_diagnostics.json',
+                          'results/mechanism_study/diagnostics.json')
+    return html
 
 
 def build_payload() -> dict:
@@ -130,10 +161,22 @@ def build_payload() -> dict:
     inheritance = json.loads(inheritance_path.read_text(encoding='utf-8')) if inheritance_path.exists() else None
     diagnostics_path = ROOT/'results/inheritance_study/diagnostics.json'
     diagnostics_current = (inheritance is not None and diagnostics_path.exists()
-                           and json.loads(diagnostics_path.read_text(encoding='utf-8')).get('analysis_sha256')
-                           == hashlib.sha256(inheritance_path.read_bytes()).hexdigest())
+                           and text_artifact_matches(inheritance_path,
+                               json.loads(diagnostics_path.read_text(encoding='utf-8')).get('analysis_sha256')))
     submission_root = ROOT/'results/submission_study'
     submission = None
+    mechanism = None
+    mechanism_root=ROOT/'results/mechanism_study'
+    if (mechanism_root/'diagnostics.json').exists():
+        audit=json.loads((mechanism_root/'diagnostics.json').read_text(encoding='utf-8'))
+        for name,root in (('submission_study',submission_root),('mechanism_study',mechanism_root)):
+            if hashlib.sha256((root/'analysis.json').read_bytes()).hexdigest() != audit['integrity'][name]['analysis_sha256']:
+                raise ValueError('Final report is stale; run evaluation/submission_report.py')
+        final=json.loads((submission_root/'analysis.json').read_text(encoding='utf-8'))
+        submission=dict(summary=final['summary'],conditions=len(final['budgets_by_condition']),
+                        checkpoints=audit['integrity']['submission_study']['verified_checkpoints'],
+                        baseBudget=final['environment_steps_per_run'])
+        mechanism=dict(summary=json.loads((mechanism_root/'analysis.json').read_text(encoding='utf-8'))['summary'])
     if (submission_root/'submission_diagnostics.json').exists():
         audit = json.loads((submission_root/'submission_diagnostics.json').read_text(encoding='utf-8'))
         for filename, field in (('analysis.json','analysis_sha256'),('diagnostics.json','diagnostics_sha256')):
@@ -144,6 +187,7 @@ def build_payload() -> dict:
                           checkpoints=len(audit['integrity']['checkpoints']),baseBudget=final['environment_steps_per_run'])
     return {
         'submission': submission,
+        'mechanism': mechanism,
         "neural": {
             "architecture": "contextual_attention", "dModel": 32, "numHeads": 2,
             "checkpoint": checkpoint.relative_to(ROOT).as_posix(),
