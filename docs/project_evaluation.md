@@ -1,5 +1,7 @@
 # Strict Evaluation Against the CS329 Project Guidelines
 
+> Historical review before the completed evaluation and matched mechanism study. Its marks and missing-file observations describe that earlier state. See [the final report](final_report.md) and [protocol](final_study_protocol.md) for current evidence. This document does not award or predict a revised grade.
+
 Group 21 — *Emergent Kin Selection and Spatial Assortment in MARL*
 Assessed: ideation PDF (4 pages) and repository state on 21 Nov 2026.
 Scale: Project Idea Review **10** + Implementation & Report **28** = **38**.
