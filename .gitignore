@@ -18,6 +18,10 @@ results/lineage_study/checkpoints/*.log
 results/lineage_study/checkpoints/*.lock
 results/inheritance_study/checkpoints/*.log
 results/submission_study/checkpoints/*.log
+results/mechanism_study/checkpoints/*.log
+# Regenerable per-checkpoint evaluation caches and uncompressed decisions.
+results/*/evaluations/
+results/mechanism_study/decisions.json
 # Timing probe and interrupted source-archive batch; excluded from submission.
 results/runtime_probe/
 results/final_study/

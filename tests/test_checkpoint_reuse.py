@@ -23,6 +23,14 @@ def checkpoint(tmp_path, monkeypatch):
     record = json.loads(sidecar.read_text())
     record['torch_version'] = str(torch.__version__)
     record['numpy_version'] = np.__version__
+    # This fixture models a new run on the current sources/runtime. Historical
+    # training files have changed since this saved artifact was produced.
+    import hashlib
+    record['source_sha256'] = {
+        p.relative_to(root).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
+        for folder in ('environment', 'models', 'training')
+        for p in (root/folder).glob('*.py')
+    }
     sidecar.write_text(json.dumps(record))
     monkeypatch.setattr(study, 'OUT', tmp_path)
     monkeypatch.setattr(study, 'CONDITIONS', CONDITIONS)
