@@ -3,6 +3,8 @@
 **Authors:** Vansh Barfiwala, Pratham Choksi, Shubham Chandak (IIT Gandhinagar)  
 **Document Version:** 1.0 (Formal Specification for Task 1)
 
+The defaults below are constructor defaults, not the executed study configuration. Revised and lineage experiments use `experiments/config.py`: 18 x 18 cells, capacity 45, 24 founders, B=5, C=2, basal drain 0.6, density cost 0.08 and a 300-transition horizon. The original energy objective, revised survival/birth objective and descendant-fitness follow-up are separate experiments; see [README](../README.md).
+
 ---
 
 ## 1. System Overview & Formal Markov Game Formulation
@@ -37,7 +39,7 @@ where:
 
 ### 2.2 Exclusion Principle (Cell Occupancy)
 * Strictly **at most one agent** per cell: $\forall (x, y) \in \mathcal{G}$, $|\{i \in \mathcal{N}_t \mid p_i = (x, y)\}| \le 1$.
-* Simultaneous movement: moves into cells vacated in the same tick are permitted, including swaps and chains. Competing destination intents are cancelled. Moves blocked by stationary agents fail; rejection propagates through dependent chains. Occupancy is rebuilt after resolving all intents.
+* Simultaneous movement: moves into cells vacated in the same tick are permitted, including swaps and chains. When several agents request the same destination, one candidate is selected randomly and the other intents are cancelled. The selected move can still fail if its destination remains occupied. Moves blocked by stationary agents fail; rejection propagates through dependent chains. Occupancy is rebuilt after resolving all intents.
 
 ---
 
@@ -126,7 +128,7 @@ $$\Delta E_i^{(t)} = -c_{\text{base}} - c_{\text{density}} |\Omega_i| - C \cdot 
    Mean pairwise similarity across all active agent pairs:
    $$\bar{h} = \frac{2}{N_t(N_t - 1)} \sum_{m < n, \; \text{mask}_m=\text{mask}_n=1} h_{mn}$$
 3. **Baseline-Corrected Relatedness ($\tilde{r}_{ij}$):**
-   $$\tilde{r}_{ij} = \max\left(0, \frac{h_{ij} - \bar{h}}{1 - \bar{h} + \epsilon}\right)$$
+   $$\tilde{r}_{ij} = \max\left(0, \frac{h_{ij} - \bar{h}}{\max(1 - \bar{h}, \epsilon)}\right)$$
    where $\epsilon = 10^{-6}$ prevents division by zero. If $N_t \le 1$, $\tilde{r}_{ij} = 0.0$.
 
 ### 6.2 Behavioral History Cue ($b_j$)
