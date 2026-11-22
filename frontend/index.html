@@ -1313,11 +1313,12 @@
     $("model-condition").value = defaultCondition; $("reproduce-condition").value = defaultCondition; $("model-seed").value = defaultSeed;
     async function selectModel() {
       const id = `${$("model-condition").value}_seed_${$("model-seed").value}`;
-      $("model-status").textContent = "Loading model…";
+      $("model-status").textContent = `Loading ${M.checkpoints[id].path}…`;
       for (const el of ["model-condition", "model-seed"]) $(el).disabled = true;
       try {
         model = await fetchModel(id);
-        $("model-status").textContent = model.verified ? `${model.policies.length} family networks loaded and verified.` : `${model.policies.length} family networks loaded; integrity could not be checked in this browser.`;
+        $("model-status").textContent = `${model.entry.path} · ${model.policies.length} family networks · ` +
+          (model.verified ? "SHA-256 matches the training record." : "SHA-256 not checked (this browser offers no Web Crypto here).");
         $("scenario").value = "learned"; $("scenario").dispatchEvent(new Event("change"));
       } catch (error) {
         model = null; console.error(error);
