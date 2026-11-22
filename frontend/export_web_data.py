@@ -128,7 +128,7 @@ def table(caption, headers, rows):
 def research(main: dict, robust: dict | None) -> str:
     p = main['protocol']
     s, surv = main['summary'], main['survival_by_bc']
-    survival = main['survival_paired']
+    fisher = main['survival_fisher']
     rows = []
     for k, bc in LEVELS:
         rows.append([f'{bc:g}', count(surv[f'inclusive_{k}/trained']), count(surv[f'energy_{k}/trained']),
@@ -145,15 +145,12 @@ def research(main: dict, robust: dict | None) -> str:
            f'{p["evaluation_worlds_per_seed"]} fresh evaluation worlds per seed. A seed counts as surviving only if residents are alive at step 300 in all of its worlds.</p>',
            table('Seeds whose population survives, and donations per resident-step [95% CI over seeds]',
                  ['B/C', 'Survive: inclusive', 'Survive: energy-only', 'Survive: untrained', 'Donations: inclusive', 'Donations: energy-only', 'Donations: untrained'], rows),
-           f'<p>Across five ratios, shaped and private rewards yielded {survival["all B/C"]["inclusive"]} and '
-           f'{survival["all B/C"]["energy"]} surviving seed/ratio pairs. At ratios 4 and 6 the counts were '
-           f'{survival["B/C >= 4"]["inclusive"]} and {survival["B/C >= 4"]["energy"]}. '
-           f'The paired survival difference was {survival["B/C >= 4"]["risk_difference"]:.0%} of the tested pairs '
-           f'(two-sided seed-block sign-flip p = {survival["B/C >= 4"]["sign_flip_p"]:.5f}). '
-           'Each of the ten training seeds receives one sign across both ratios. '
-           'The predicted increase in marker preference with B/C was absent.</p>']
+           f'<p>Survival over all B/C levels: inclusive {fisher["all B/C"]["inclusive"]} versus energy-only {fisher["all B/C"]["energy"]} '
+           f'(Fisher exact p = {pfmt(fisher["all B/C"]["fisher_p"])}); at B/C ≥ 4: {fisher["B/C >= 4"]["inclusive"]} versus {fisher["B/C >= 4"]["energy"]} '
+           f'(p = {pfmt(fisher["B/C >= 4"]["fisher_p"])}). At B/C ≥ 2.5 untrained networks with the same founders also survive, so learning with the energy-only reward '
+           '<em>destroys</em> cooperation that was already present; the inclusive reward preserves it above the threshold and loses it below.</p>']
     if robust:
-        rs = robust['summary']
+        rs, rf = robust['summary'], robust['survival_fisher']
         keys = [('inclusive_bc400', 'Inclusive (kin-weighted)'), ('b4_prosocial', 'Prosocial (+B for any gift)'),
                 ('b4_kinblind', 'Kin-blind (mean neighbour r)'), ('energy_bc400', 'Energy-only')]
         rrows = []

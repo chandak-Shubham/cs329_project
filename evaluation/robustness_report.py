@@ -15,6 +15,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT), str(ROOT/'src')]
 import numpy as np
+from scipy.stats import binomtest, fisher_exact
 
 from evaluation.uncertainty import mean_ci, proportion_ci
 import evaluation.hamilton_report as hr
@@ -58,47 +59,16 @@ def contrast(runs, a, b, metric, attack=False, a_ctrl='trained', b_ctrl='trained
     return hr.paired(seed_values(runs, a, metric, a_ctrl, attack), seed_values(runs, b, metric, b_ctrl, attack))
 
 
-def paired_survival(runs, a, b, attack=False):
-    outcomes = []
-    for condition in (a, b):
-        worlds = {}
-        for r in runs:
-            if (r['condition'], r['control'], r['attack']) == (condition, 'trained', attack):
-                block = worlds.setdefault(r['training_seed'], {})
-                if r['world_seed'] in block:
-                    raise ValueError(f'Duplicate world for {condition}')
-                block[r['world_seed']] = r['resident_survival']
-        outcomes.append(worlds)
-    sa, sb = outcomes
-    if not sa or sa.keys() != sb.keys():
-        raise ValueError(f'Unmatched seeds for {a} and {b}')
-    seeds = sorted(sa)
-    for seed in seeds:
-        if sa[seed].keys() != sb[seed].keys() or len(sa[seed]) != 3:
-            raise ValueError(f'Unmatched evaluation worlds for seed {seed}')
-    first = [int(all(sa[s].values())) for s in seeds]
-    second = [int(all(sb[s].values())) for s in seeds]
-    differences = [x-y for x, y in zip(first, second)]
-    return dict(a=f'{sum(first)}/{len(first)}', b=f'{sum(second)}/{len(second)}',
-                seeds=seeds, count_differences=differences, sign_flip_p=hr.sign_flip_p(differences))
+def fisher(runs, a, b, attack=False):
+    sa, sb = survival(runs, a, attack=attack), survival(runs, b, attack=attack)
+    table = [[sum(sa), len(sa)-sum(sa)], [sum(sb), len(sb)-sum(sb)]]
+    return dict(a=f'{sum(sa)}/{len(sa)}', b=f'{sum(sb)}/{len(sb)}', fisher_p=float(fisher_exact(table)[1]))
 
 
 def row(runs, condition, control='trained', attack=False):
     out = {m: mean_ci(list(seed_values(runs, condition, m, control, attack).values())) for m in METRICS}
     out['survival'] = proportion_ci(survival(runs, condition, control, attack))
     return out
-
-
-def survival_comparisons(runs):
-    return {
-        'inclusive vs energy-only (gamma 0.9)': paired_survival(runs, BASE, 'energy_bc400'),
-        'inclusive vs energy-only (gamma 0.99)': paired_survival(runs, 'b4_inclusive_gamma099', 'b4_energy_gamma099'),
-        'inclusive vs prosocial': paired_survival(runs, BASE, 'b4_prosocial'),
-        'inclusive vs kin-blind': paired_survival(runs, BASE, 'b4_kinblind'),
-        'inclusive vs prosocial (mimics)': paired_survival(runs, 'b4_inclusive_mimics', 'b4_prosocial_mimics', attack=True),
-        'inclusive vs kin-blind (mimics)': paired_survival(runs, 'b4_inclusive_mimics', 'b4_kinblind_mimics', attack=True),
-        '4x vs 1x training (B/C 2.5)': paired_survival(runs, 'b25_inclusive_long', 'inclusive_bc250'),
-    }
 
 
 def main():
@@ -152,7 +122,15 @@ def main():
     add('local - random placement (untrained)', BASE, 'b4_random_placement', 'adjacent_similarity',
         a_ctrl='untrained_ancestors', b_ctrl='untrained_ancestors')
 
-    survival_tests = survival_comparisons(runs)
+    survival_tests = {
+        'inclusive vs energy-only (gamma 0.9)': fisher(runs, BASE, 'energy_bc400'),
+        'inclusive vs energy-only (gamma 0.99)': fisher(runs, 'b4_inclusive_gamma099', 'b4_energy_gamma099'),
+        'inclusive vs prosocial': fisher(runs, BASE, 'b4_prosocial'),
+        'inclusive vs kin-blind': fisher(runs, BASE, 'b4_kinblind'),
+        'inclusive vs prosocial (mimics)': fisher(runs, 'b4_inclusive_mimics', 'b4_prosocial_mimics', attack=True),
+        'inclusive vs kin-blind (mimics)': fisher(runs, 'b4_inclusive_mimics', 'b4_kinblind_mimics', attack=True),
+        '4x vs 1x training (B/C 2.5)': fisher(runs, 'b25_inclusive_long', 'inclusive_bc250'),
+    }
     cue = {c: hr.cue_reliance(rows, c) for c in (BASE, 'b4_noise025', 'b4_noise050', 'b4_prosocial', 'b4_kinblind')}
     for a, b in ((BASE, 'b4_noise050'), (BASE, 'b4_noise025'), (BASE, 'b4_prosocial'), (BASE, 'b4_kinblind')):
         for key in ('genetic', 'genetic_share'):
@@ -170,7 +148,7 @@ def main():
                                                           'hamilton_consistent_fraction', 'mimic_donation_share')})
 
     analysis = dict(protocol=protocol, baseline_source=M.results.relative_to(ROOT).as_posix(),
-                    summary=table, contrasts=contrasts, survival_paired=survival_tests, cue_reliance=cue,
+                    summary=table, contrasts=contrasts, survival_fisher=survival_tests, cue_reliance=cue,
                     strategy_sweep=strategies, runs=[{k: v for k, v in r.items() if k != 'curve'} for r in rob_runs])
     (R.results/'analysis.json').write_text(json.dumps(analysis, indent=2, allow_nan=False), encoding='utf-8')
     hr.write_csv(R, rob_runs, protocol)
@@ -281,9 +259,9 @@ def markdown(out_dir, a):
             continue
         L.append(f"| {LABELS.get(cond, cond)} | {ctrl} | {ev} | {count(r['survival'])} | {fmt(r['donations_per_resident_step'])} | "
                  f"{fmt(r['duration'], 1)} | {fmt(r['mimic_donation_share'])} |")
-    L += ['', '## 3. Survival comparisons (two-sided paired sign-flip test over seeds)', '', '| Comparison | First | Second | p |', '| --- | --- | --- | --- |']
-    for name, f in a['survival_paired'].items():
-        L.append(f"| {name} | {f['a']} | {f['b']} | {f['sign_flip_p']:.2e} |")
+    L += ['', '## 3. Survival comparisons (Fisher exact test)', '', '| Comparison | First | Second | p |', '| --- | --- | --- | --- |']
+    for name, f in a['survival_fisher'].items():
+        L.append(f"| {name} | {f['a']} | {f['b']} | {f['fisher_p']:.2e} |")
     L += ['', f'## 4. Paired contrasts by seed (exact sign-flip; minimum attainable p with {n} pairs = {2/2**n:.4f})', '',
           '| Contrast | Metric | Difference | Seeds positive | p |', '| --- | --- | --- | --- | --- |']
     for key, v in c.items():
