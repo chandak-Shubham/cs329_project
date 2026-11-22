@@ -1,5 +1,7 @@
 # Publishes the project page with the trained checkpoints it loads.
 # One-time setup: Settings -> Pages -> Build and deployment -> Source: GitHub Actions.
+# Build and deploy are separate jobs (GitHub's recommended layout): the deploy job
+# starts only after the uploaded site artifact has been fully registered.
 name: Deploy project page
 
 on:
@@ -14,14 +16,11 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -35,5 +34,13 @@ jobs:
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - id: deployment
         uses: actions/deploy-pages@v4
