@@ -90,7 +90,7 @@ python evaluation/report_figures.py                        # extra report figure
 python frontend/export_web_data.py                         # refresh the project page (--check to verify)
 ```
 
-The report is compiled from `report/final_report.tex` with the PRIMEarxiv template (for example on Overleaf; `PRIMEarxiv.sty` comes with the template).
+The submitted report is [`report/final_report.pdf`](report/final_report.pdf). It is compiled from `report/final_report.tex` with the PRIMEarxiv template (for example on Overleaf; `PRIMEarxiv.sty` comes with the template); after editing the source, recompile and replace the PDF.
 
 ## Project page
 
