@@ -658,7 +658,7 @@
     fixed: "Combine genetic and behavioral cues: donate if 0.5r + 0.5b > 0.35.",
     kin: "Trust the strongest genetic match if corrected relatedness r > 0.3.",
     selfish: "Never donate. Randomly stay or move to one of four adjacent cells.",
-    neural: "Frozen model; no online learning."
+    neural: "Founders use separate family networks, which their offspring inherit. The model is frozen during simulation."
   };
   class NeuralActor {
     constructor(data) {
@@ -1040,7 +1040,7 @@
     if (matchMedia("(max-width:620px)").matches) $("settings-panel").open = false;
     function markCustom() {
       currentScenario = "custom"; $("scenario").value = "custom";
-      $("scenario-note").textContent = `Custom settings.${sim.autoInvasion ? ` ${sim.invasionCount} mimics are added after step ${sim.invasionStep}.` : ""}`;
+      $("scenario-note").textContent = `Custom settings · ${sim.L} × ${sim.L} grid · starting energy ${sim.initialEnergy} · crowding cost ${sim.cDensity}.${sim.autoInvasion ? ` ${sim.invasionCount} mimics are added after step ${sim.invasionStep}.` : ""}`;
     }
     function reportFault(error) {
       faulted = true; running = false; accumulator = 0;
@@ -1074,7 +1074,7 @@
         ? `Condition failed for all pairs: B = ${sim.B}, C = ${sim.C}; no relatedness r between 0 and 1 can satisfy rB > C. Donations will be blocked.`
         : `Donations require r > ${(sim.C / sim.B).toPrecision(6)} and donor energy > C. r is calculated separately for each pair. Equality fails; checks use full precision.`;
       $("strategy-note").textContent = sim.strategy === "neural"
-        ? (model ? `${Kinship.STRATEGIES.neural}${sim.B !== model.info.B || sim.C !== model.info.C ? ` Training used B = ${model.info.B}, C = ${model.info.C}.` : ""}` : "Waiting for the trained checkpoint to load.")
+        ? (model ? `${model.info.label}, seed ${model.entry.seed}: trained for ${model.info.trainingSteps.toLocaleString()} transitions. ${Kinship.STRATEGIES.neural}${sim.B !== model.info.B || sim.C !== model.info.C ? ` Training used B = ${model.info.B}, C = ${model.info.C}.` : ""}` : "Waiting for the trained checkpoint to load.")
         : `${Kinship.STRATEGIES[sim.strategy]} Hand-written baseline, not learned.`;
     }
 
@@ -1220,7 +1220,7 @@
       $("intervention-status").textContent = "";
       $("play").textContent = "Play";
       $("play").setAttribute("aria-pressed", "false");
-      $("scenario-note").textContent = sim.autoInvasion ? `${sim.invasionCount} mimics are added after step ${sim.invasionStep} if residents survive and space is available.` : "Choosing an experiment starts a fresh run.";
+      $("scenario-note").textContent = `${sim.L} × ${sim.L} grid · starting energy ${sim.initialEnergy} · crowding cost ${sim.cDensity.toFixed(2)}. ${sim.autoInvasion ? `${sim.invasionCount} mimics are added after step ${sim.invasionStep} if residents survive and space is available.` : "Choosing an experiment starts a fresh run."}`;
       refresh();
       announce(`Reset to seed ${sim.seed}.`);
     }
@@ -1317,7 +1317,7 @@
       for (const el of ["model-condition", "model-seed"]) $(el).disabled = true;
       try {
         model = await fetchModel(id);
-        $("model-status").textContent = model.verified ? "Model loaded and verified." : "Model loaded; integrity could not be checked in this browser.";
+        $("model-status").textContent = model.verified ? `${model.policies.length} family networks loaded and verified.` : `${model.policies.length} family networks loaded; integrity could not be checked in this browser.`;
         $("scenario").value = "learned"; $("scenario").dispatchEvent(new Event("change"));
       } catch (error) {
         model = null; console.error(error);
