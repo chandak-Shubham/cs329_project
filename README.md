@@ -1,54 +1,100 @@
 # Emergent Kin Selection and Spatial Assortment in Multi-Agent Reinforcement Learning
 
-CS329 Multi-Agent Systems, Group 21, IIT Gandhinagar
-Vansh Barfiwala, Pratham Choksi, Shubham Chandak
+**CS329 Multi-Agent Systems · Group 21 · IIT Gandhinagar**
+Vansh Barfiwala · Pratham Choksi · Shubham Chandak
 
 | | |
 | --- | --- |
 | **Report** | [final_report.pdf](report/final_report.pdf) (LaTeX source: [final_report.tex](report/final_report.tex)) |
 | **Live demo, no installation** | <https://chandak-shubham.github.io/cs329_project/> |
-| **Result tables** | [Study A](results/study_a_energy/results.md), [Study B](results/study_b_hamilton/results.md), [Study C](results/study_c_robustness/results.md) |
+| **Result tables** | [Study A](results/study_a_energy/results.md) · [Study B](results/study_b_hamilton/results.md) · [Study C](results/study_c_robustness/results.md) |
+| **Check it yourself** | [In the browser](#option-1-in-the-browser-no-installation-recommended) · [Verify locally in about 5 minutes](#option-2-verify-locally-without-retraining-about-5-minutes) |
+
+## Contents
+
+1. [Overview](#overview)
+2. [The model at a glance](#the-model-at-a-glance)
+3. [The three studies](#the-three-studies)
+4. [Key results](#key-results)
+5. [How to check this project](#how-to-check-this-project)
+6. [Repository layout](#repository-layout)
+7. [Tests](#tests)
+8. [Live demo guide: every dropdown and control](#live-demo-guide-every-dropdown-and-control)
 
 ---
 
-## The project in one paragraph
+## Overview
 
-Agents on an 18 x 18 grid lose energy every step. An agent can donate energy to a neighbour: the donor pays a cost $C$ and the neighbour receives $B > C$. Donations are the only source of new energy, so without cooperation the population starves, yet each gift costs its donor. Each of 24 founder families owns its own gated-attention network trained with PPO; children inherit their family's network, and surviving families are selected between episodes. Agents see each neighbour's genetic tag, which may be corrupted or copied by non-donating mimics, and its recent giving.
+### The problem
+
+Agents on an 18 x 18 grid lose energy every step. An agent can donate energy to a neighbour: the donor pays a cost $C$ and the neighbour receives $B > C$. Donations are the only source of new energy, so without cooperation the population starves, yet each gift costs its donor. This is a social dilemma: giving helps the population but hurts the giver.
+
+### The question
 
 **Can self-interested learners sustain cooperation, and does rewarding the recipient's relatedness (Hamilton's rule $rB > C$) change whom they help?**
 
-## The three studies (A, B, C)
+Our proposal also asked whether agents learn to stop trusting a genetic tag when it is corrupted or copied by non-donating mimics, and whether relatives cluster in space.
+
+### What we built
+
+- A spatial donation game with energy, starvation, reproduction (mitosis), mutation and genetic mimics.
+- A gated-attention policy that sees each neighbour's genetic tag and recent giving, and decides whether and to whom to give.
+- 24 founder families, each with its own network trained by PPO. Children inherit their family's network, and surviving families are selected between episodes.
+- Four reward signals (energy-only, inclusive fitness, prosocial and kin-blind), all compared in identical worlds against untrained networks, evolution without learning and hand-written rules.
+- 475 trained models, three studies, a verification script that re-simulates saved models exactly, and a live demo that runs the trained models in your browser.
+
+### The answer in short
+
+- **A purely selfish (energy-only) reward destroys cooperation.** PPO learns to stop giving and every population dies (0/50 runs), even where untrained networks survive.
+- **Adding Hamilton's kin term to the reward preserves it** where $rB > C$ can be met: 17/20 populations survive at $B/C \ge 4$. This shows learners respond to a kin-weighted incentive; it does not show Hamilton's rule emerging on its own.
+- **Kin recognition is the weak link.** Learners stop using a corrupted genetic cue but never switch to behavioural history, and none of them learns to use behaviour to exclude mimics.
+
+## The model at a glance
+
+| Part | Definition |
+| --- | --- |
+| World | 18 x 18 torus, at most 45 residents, 24 founders, 300 steps per episode |
+| Energy | Start 30; every step costs 0.6 plus 0.08 per nearby agent; a gift costs the donor $C = 2$ and gives the recipient $B$ (2, 3, 5, 8 or 12) |
+| Life cycle | Energy at or below 0: death. Energy of 60 or more: the agent splits in two, and the child gets a mutated copy of the 8-bit chromosome (5% per bit) and the family network |
+| Observation | Own energy and age; for the 8 nearest neighbours within distance 3: position, energy, genetic cue $\tilde r$ and giving record $b$ (share of its last 10 actions that were gifts) |
+| Actions (13) | Stay, four moves, or give to one of the 8 neighbours |
+| Mimics | 6 non-donating agents carrying the most common resident chromosome, arriving at step 10 |
+| Rewards | Energy-only $\Delta E$; inclusive $\Delta E + rB$ per gift; prosocial $\Delta E + B$ per gift; kin-blind $\Delta E$ + mean neighbour $r$ x $B$ per gift |
+| Learning | One gated-attention network per founder family, PPO on that family's members only; survivors seed the next episode |
+
+## The three studies
 
 The project ran three studies, one after another. Each answers a question raised by the previous one.
 
 | | Study A: energy-only robustness | Study B: does learning need kinship? (main study) | Study C: kin information or any reward for giving? |
 | --- | --- | --- | --- |
-| **Question** | Does the selfish reward of our proposal sustain cooperation, under any reasonable setting? | Does adding Hamilton's kin term r x B to the reward sustain cooperation, and does giving follow Hamilton's threshold rB > C? | Is it the *kin* information in the reward that matters, or any reward for giving? How robust are the results? |
+| **Question** | Does the selfish reward of our proposal sustain cooperation under any reasonable setting? | Does adding Hamilton's kin term r x B to the reward sustain cooperation, and does giving follow Hamilton's threshold rB > C? | Is it the *kin* information in the reward that matters, or any reward for giving? How robust are the results? |
 | **Rewards** | Energy only | Energy only vs inclusive (energy + r x B per gift) | Inclusive vs prosocial (B for any gift) vs kin-blind (same expected credit, any recipient) |
 | **Setup** | 19 conditions: gate, MLP, cue noise, mimics, B/C, mutation, placement, selection, learning rate, entropy, 4x training; 5 seeds; 2,048 steps per run | 5 B/C levels (1, 1.5, 2.5, 4, 6) for both rewards, plus noise, mimics, gate, MLP, placement and discount checks; 20 conditions; 10 seeds; 8,192 steps per run | B/C = 4; reward controls, noise, mimics, gate, MLP, placement, mutation, discount 0.99 for both rewards, 4x training; 18 conditions; 10 seeds; plus a sweep of scripted strategies |
 | **Trained models** | 95 | 200 | 180 |
 | **Folder name** | `study_a_energy` | `study_b_hamilton` | `study_c_robustness` |
 | **Results** | [results.md](results/study_a_energy/results.md) | [results.md](results/study_b_hamilton/results.md) | [results.md](results/study_c_robustness/results.md) |
 
-### What we observed
+### Study A: energy-only robustness
 
-**Study A: energy-only robustness**
 - In all 90 of 90 learning runs (18 conditions x 5 seeds), the trained population gave less than the same founders with untrained networks.
 - This held with or without the gate or attention, under cue noise and mimics, at other B/C values and mutation rates, without selection, and with 4x training.
 - Selection without learning kept every population at capacity, so it is the learning that removes cooperation.
 
-**Study B: does learning need kinship? (main study)**
+### Study B: does learning need kinship? (main study)
+
 - With the energy-only reward, no population survived at any B/C (0/50 seed and ratio runs), although untrained networks with the same founders survived at B/C of 2.5 and above.
 - With the inclusive reward, 18/50 runs survived, and 17/20 at B/C of 4 and 6 (Fisher p = 2.6e-8).
 - Giving was almost absent at B/C = 1 (rB > C impossible) and 1.5 (needs r > 2/3), and highest at B/C = 6, where inclusive learners gave more than untrained networks in 9/10 seeds.
 - Learners chose more related recipients, but the predicted increase of this preference with B/C was not found.
 - Learners kept feeding genetic mimics (20 to 25% of gifts), and no spatial clustering of relatives was detected.
 
-**Study C: kin information or any reward for giving? (B/C = 4)**
-- Paying for every gift kept 10/10 populations alive, the inclusive reward 7/10 and the kin-blind reward 6/10; no significant survival difference was detected.
+### Study C: kin information or any reward for giving? (B/C = 4)
+
+- In clean worlds, paying for every gift kept 10/10 populations alive, the inclusive reward 7/10 and the kin-blind reward 6/10; no significant survival difference was detected. Under mimic attack, prosocial learners survived more often than inclusive learners (10/10 vs 5/10, p = 0.032).
 - The kin-weighted reward improved *whom* agents help: 0.10 more of its gifts went to recipients with rB > C than under the kin-blind reward (8/10 seeds, p = 0.010).
-- Corrupting the genetic cue removed its influence on recipient choice (10/10 seeds at noise 0.25), but agents did not switch to behavioural history.
-- No learner avoided mimics, while a simple reputation rule gave them nothing.
+- At B/C = 4, corrupting the genetic cue removed its influence on recipient choice (10/10 seeds at noise 0.25), but agents did not switch to behavioural history. (At B/C = 2.5 in Study B, learners did not use the genetic cue even when it was clean.)
+- No learner used behaviour to exclude mimics. Inclusive and kin-blind learners kept feeding them (17% and 25% of gifts), while a simple reputation rule gave them nothing.
 - With discount 0.99 both rewards survived equally rarely (2/10 each), and 4x training at B/C = 2.5 did not help.
 
 ## Key results
@@ -67,9 +113,9 @@ The project ran three studies, one after another. Each answers a question raised
 
 1. **Individual reward destroys cooperation.** With the energy-only reward from our proposal, PPO learns to stop giving and no population survives (0/50 runs). Untrained networks with the same founders do survive, so learning removes cooperation that was already there. Study A confirms this in 18 robustness conditions: in all 90/90 runs, trained populations gave less than untrained ones.
 2. **An explicit kin-weighted reward preserves it.** Adding $r_{ij}B$ to the donor's reward: 18/50 runs survive versus 0/50 (Fisher $p = 1.2\times10^{-6}$), and 17/20 versus 0/20 at $B/C \ge 4$ ($p = 2.6\times10^{-8}$). This shows that learners respond to a kin-weighted incentive; it does not show Hamilton's rule emerging from purely individual rewards.
-3. **Giving tracks the Hamilton threshold at population level.** Learned donation rates were low at the two lowest ratios ($B/C = 1$ makes $rB > C$ impossible; $B/C = 1.5$ requires $r > 2/3$); at $B/C = 6$ inclusive learners gave more than untrained networks in 9/10 seeds. The predicted increase of recipient preference with $B/C$ was not found.
-4. **Kin-weighted rewards improve targeting** (Study C, $B/C = 4$). Paying for every gift (prosocial) kept 10/10 populations alive and the kin-weighted reward 7/10; no significant survival difference was detected. Compared with a kin-blind reward of the same expected size, the kin-weighted reward raised the share of gifts with $rB > C$ by 0.10 (8/10 seeds, $p = 0.010$).
-5. **Kin recognition is the weak link.** Learners rely less on a corrupted genetic cue but never switch to behavioural history, and they keep feeding genetic mimics, which a simple reputation rule ignores completely.
+3. **Giving tracks the Hamilton threshold at population level.** Learned donation rates were low at the two lowest ratios ($B/C = 1$ makes $rB > C$ impossible; $B/C = 1.5$ requires $r > 2/3$); at $B/C = 6$ inclusive learners gave more than untrained networks in 9/10 seeds. A scripted Hamilton rule already survives from $B/C = 2$, so learners need a larger margin. The predicted increase of recipient preference with $B/C$ was not found.
+4. **Kin-weighted rewards improve targeting** (Study C, $B/C = 4$). Paying for every gift (prosocial) kept 10/10 populations alive and the kin-weighted reward 7/10; no significant survival difference was detected in clean worlds, but under mimic attack prosocial survived more often (10/10 vs 5/10, $p = 0.032$). Compared with a kin-blind reward of the same expected size, the kin-weighted reward raised the share of gifts with $rB > C$ by 0.10 (8/10 seeds, $p = 0.010$).
+5. **Kin recognition is the weak link.** At $B/C = 4$ learners rely less on a corrupted genetic cue, but they never switch to behavioural history, and no learner uses behaviour to exclude mimics, which a simple reputation rule ignores completely.
 6. **Limits.** At $\gamma = 0.99$ both rewards survive equally rarely (2/10 each); 4x more training at $B/C = 2.5$ did not help.
 
 ## How to check this project
@@ -109,19 +155,21 @@ Then open <http://localhost:8000/frontend/>. Opening `frontend/index.html` direc
 Completed runs are reused, so an interrupted run can be restarted.
 
 ```powershell
-python src/training/inheritance_study.py --complete --steps 2048 --workers 3   # Study A
+python src/training/inheritance_study.py --complete --steps 2048 --workers 3   # Study A (5 seeds)
 python evaluation/inheritance_report.py
-python src/training/hamilton_study.py --workers 14         # Study B, about 2 hours on 14 cores
+python src/training/hamilton_study.py --workers 14 --seeds 42 101 202 303 404 505 606 707 808 909   # Study B (10 seeds), about 2 hours on 14 cores
 python evaluation/hamilton_report.py
-python src/training/hamilton_robustness.py --workers 14    # Study C, about 2.5 hours
+python src/training/hamilton_robustness.py --workers 14    # Study C (10 seeds by default), about 2.5 hours
 python evaluation/robustness_report.py
 python evaluation/report_figures.py                        # extra report figure
 python frontend/export_web_data.py                         # refresh the website (--check to verify)
 ```
 
+Study B needs the `--seeds` list: without it the script uses the 5 default seeds of Study A.
+
 The report is compiled from `report/final_report.tex` with the PRIMEarxiv template (for example on Overleaf, where `PRIMEarxiv.sty` comes with the template).
 
-## What is in the repository
+## Repository layout
 
 ```
 report/          final_report.tex, final_report.pdf and the figures they use
@@ -138,8 +186,6 @@ tests/           Python and browser-engine tests
 .github/         workflow that publishes the live demo
 ```
 
-The three studies and their folder names are described in [The three studies](#the-three-studies-a-b-c).
-
 ## Tests
 
 ```powershell
@@ -150,7 +196,7 @@ python frontend/check_web_demo.py --browsers msedge   # optional, needs Playwrig
 
 The browser engine is tested against the Python environment for identical observations, transitions and action probabilities. The live demo is published by `.github/workflows/pages.yml` (in the repository settings: Pages, Source: GitHub Actions).
 
-## Using the live demo: every dropdown and control
+## Live demo guide: every dropdown and control
 
 Each control on the page has a question mark beside it; hover over it or focus it for a short explanation. The tables below explain every option in full.
 

@@ -1,8 +1,8 @@
-# Inherited neural policy study
+# Study A: energy-only robustness (inherited neural policies)
 
 Original energy-only PPO with independent founder networks, inherited family policies and explicit survivor-based restocking. No relatedness or donation bonus enters PPO.
 
-Clean feasibility passed: **False**. This screen is not a kin-selection or convergence test.
+Clean feasibility passed: **False** (the clean energy-only populations did not survive). This screen is not a kin-selection or convergence test; every condition below was still run. Study A is summarised in the [README](../../README.md) and Section 6 of the [report](../../report/final_report.pdf).
 
 Evaluation worlds are averaged within independent training seeds. Intervals below are exploratory Student t intervals; bounded metrics can have out-of-range intervals. Null mimic shares mean no post-invasion donations, not successful defense.
 

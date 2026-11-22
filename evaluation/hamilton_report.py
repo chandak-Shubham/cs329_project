@@ -458,7 +458,7 @@ def write_markdown(study, a):
          f"(averaged within seed). Brackets: 95% Student-t interval over training seeds (n = {len(a['protocol']['training_seeds'])}). "
          'Bounded metrics can have intervals outside their range.', '',
          '## 1. B/C sweep (trained policies, clean worlds)', '',
-         '| B/C | Reward | Donations / resident step | Lifetime (of 300) | Final residents | Hamilton gap | Hamilton-consistent gifts |',
+         '| B/C | Reward | Donations / resident step | Lifetime (of 300) | Final residents | Raw Hamilton gap (not neighbourhood-adjusted; see 3b) | Hamilton-consistent gifts |',
          '| --- | --- | --- | --- | --- | --- | --- |']
     for k in BC:
         for reward in ('energy', 'inclusive'):
@@ -541,7 +541,7 @@ def write_markdown(study, a):
         L.append(f"| {key[:-7]} | {fmt(r['mimic_donation_share'])} | {fmt(r['donations_per_resident_step'])} | {fmt(r['duration'],1)} | {fmt(r['final_residents'],1)} |")
     L += ['', 'A mimic share is undefined when no post-invasion donations occurred; low shares without survival are not successful defence.', '',
           '## 6. Ablations, controls and assortment (clean worlds)', '',
-          '| Condition / actor | Donations / step | Lifetime | Final residents | Hamilton gap | Adjacent chromosome similarity |', '| --- | --- | --- | --- | --- | --- |']
+          '| Condition / actor | Donations / step | Lifetime | Final residents | Raw Hamilton gap (not neighbourhood-adjusted; see 3b) | Adjacent chromosome similarity |', '| --- | --- | --- | --- | --- | --- |']
     for key in sorted(k for k in s if k.endswith('/clean') and not any(k.startswith(f'{r}_{b}/trained') for r in ('energy', 'inclusive') for b in BC)):
         r = s[key]
         L.append(f"| {key[:-6]} | {fmt(r['donations_per_resident_step'])} | {fmt(r['duration'],1)} | {fmt(r['final_residents'],1)} | "
