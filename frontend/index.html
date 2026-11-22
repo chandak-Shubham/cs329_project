@@ -359,11 +359,15 @@
       .stats-deck { grid-template-columns: 1fr 1fr; }
       .research-figures { grid-template-columns: 1fr; }
     }
-   .help-wrap{position:relative;display:inline-flex;margin-left:6px;vertical-align:middle}
-.help-icon{border:1px solid #718096;border-radius:50%;background:white;color:#334155;width:20px;height:20px;padding:0;line-height:18px;font-size:12px;font-weight:700}
-.help-icon:focus-visible{outline:2px solid #2563eb;outline-offset:2px}
-.help-text{display:none;position:absolute;z-index:100;top:calc(100% + 5px);left:0;width:230px;max-width:75vw;padding:9px;border-radius:5px;background:#172333;color:white;font-size:12px;line-height:1.4}
-.help-wrap:hover .help-text,.help-wrap:focus-within .help-text{display:block}
+    .help-wrap { position:relative; display:inline-flex; align-items:center; margin-left:4px; vertical-align:middle; }
+    .help-icon { display:inline-flex; align-items:center; justify-content:center; width:15px; height:15px; min-width:15px; padding:0; border:1px solid #c2c8ce; border-radius:50%; background:transparent; color:#808891; font-size:10px; font-weight:600; line-height:1; }
+    .help-icon:hover, .help-icon:focus-visible { color:#4b5563; border-color:#89929b; background:#f3f4f5; }
+    .help-icon:focus-visible { outline:2px solid #8b98a5; outline-offset:2px; }
+    .help-text { display:none; position:absolute; z-index:100; top:calc(100% + 8px); left:-8px; width:220px; max-width:70vw; padding:10px 12px; border:1px solid #e1e4e7; border-radius:7px; background:#fff; color:#4b5563; font-size:12px; font-weight:400; line-height:1.45; box-shadow:0 5px 18px #1f29371f; }
+    .help-wrap:hover .help-text, .help-wrap:focus-within .help-text { display:block; }
+    .control-label { display:inline-flex; align-items:center; min-width:0; }
+    .slider-head .control-label label { margin:0; }
+    .reproduce-controls .help-text { left:auto; right:-8px; }
 </style>
 </head>
 <body>
@@ -418,19 +422,19 @@
         <section class="sidebar-section">
           <h3>Parameters</h3>
           <div class="field">
-            <div class="slider-head"><label for="benefit">Benefit (B)</label><span class="help-wrap"><button type="button" class="help-icon" aria-label="About Benefit B" aria-describedby="help-benefit">?</button><span class="help-text" role="tooltip" id="help-benefit">Energy added to the recipient of a gift.</span></span><output id="benefit-value" for="benefit">8.0</output></div>
+            <div class="slider-head"><span class="control-label"><label for="benefit">Benefit (B)</label><span class="help-wrap"><button type="button" class="help-icon" aria-label="About Benefit B" aria-describedby="help-benefit">?</button><span class="help-text" role="tooltip" id="help-benefit">Energy added to the recipient of a gift.</span></span></span><output id="benefit-value" for="benefit">8.0</output></div>
             <input id="benefit" type="range" min="0" max="12" step="0.1" value="8">
           </div>
           <div class="field">
-            <div class="slider-head"><label for="cost">Cost (C)</label><span class="help-wrap"><button type="button" class="help-icon" aria-label="About Cost C" aria-describedby="help-cost">?</button><span class="help-text" role="tooltip" id="help-cost">Energy spent by the donor on a gift.</span></span><output id="cost-value" for="cost">2.0</output></div>
+            <div class="slider-head"><span class="control-label"><label for="cost">Cost (C)</label><span class="help-wrap"><button type="button" class="help-icon" aria-label="About Cost C" aria-describedby="help-cost">?</button><span class="help-text" role="tooltip" id="help-cost">Energy spent by the donor on a gift.</span></span></span><output id="cost-value" for="cost">2.0</output></div>
             <input id="cost" type="range" min="0.5" max="5" step="0.1" value="2">
           </div>
           <div class="field">
-            <div class="slider-head"><label for="drain">Drain</label><span class="help-wrap"><button type="button" class="help-icon" aria-label="About Drain" aria-describedby="help-drain">?</button><span class="help-text" role="tooltip" id="help-drain">Base energy consumed by each resident per step, before density costs.</span></span><output id="drain-value" for="drain">0.60</output></div>
+            <div class="slider-head"><span class="control-label"><label for="drain">Drain</label><span class="help-wrap"><button type="button" class="help-icon" aria-label="About Drain" aria-describedby="help-drain">?</button><span class="help-text" role="tooltip" id="help-drain">Base energy consumed by each resident per step, before density costs.</span></span></span><output id="drain-value" for="drain">0.60</output></div>
             <input id="drain" type="range" min="0" max="2" step="0.05" value="0.6">
           </div>
           <div class="field" style="margin-top:10px;">
-            <div class="slider-head"><label for="speed">Speed</label><span class="help-wrap"><button type="button" class="help-icon" aria-label="About Speed" aria-describedby="help-speed">?</button><span class="help-text" role="tooltip" id="help-speed">Number of simulation steps played per second.</span></span><output id="speed-value" for="speed">8 steps/s</output></div>
+            <div class="slider-head"><span class="control-label"><label for="speed">Speed</label><span class="help-wrap"><button type="button" class="help-icon" aria-label="About Speed" aria-describedby="help-speed">?</button><span class="help-text" role="tooltip" id="help-speed">Number of simulation steps played per second.</span></span></span><output id="speed-value" for="speed">8 steps/s</output></div>
             <input id="speed" type="range" min="1" max="30" value="8">
           </div>
           <div class="field" style="margin-top:10px;">
