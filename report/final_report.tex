@@ -382,23 +382,24 @@ We asked whether PPO agents can learn whom to help from genetic and behavioural 
 \section{Contribution}
 % ======================================================================
 \begin{itemize}
-    \item \textbf{Vansh Barfiwala:} Spatial Donation Game environment: energy dynamics, metabolic and density costs, starvation and mitosis, the corrected agent-pooling algorithm with capacity tracking and the mimic slot reserve, and the environment tests.
-    \item \textbf{Pratham Choksi:} Gated-attention policy: contextual gating network ($w^g, w^b$) with neighbourhood statistics, baseline-corrected relatedness $\tilde r_{ij}$, cue noise and mimics, the joint masked action distribution, and the gate, attention and MLP ablations.
-    \item \textbf{Shubham Chandak:} Per-family PPO training with inheritance and survivor selection, the reward variants (inclusive, prosocial, kin-blind), the experiment pipeline for Studies A--C, statistical analysis (sign-flip tests, conditional logit, Hamilton gap, assortment), the verification script and the interactive project page.
+    \item \textbf{Vansh Barfiwala:} Formulate Spatial Donation Game physics, metabolic/density costs, mitosis dynamics, and the custom Agent Pooling algorithm with strict capacity tracking.
+    \item \textbf{Pratham Choksi:} Design the parameterized gating network ($w^g, w^b$), baseline-corrected metrics ($\tilde{r}_{ij}$), and the end-to-end attention-based targeted donation policy.
+    \item \textbf{Shubham Chandak:} Implemented the shared-parameter PPO training loop, managed cue-corruption experiments, and implemented the Hamiltonian consistency and Hamming-assortment analyses.
 \end{itemize}
+Each member completed the work assigned to them in the project proposal, as listed above, and every member contributed substantially to the final implementation, experiments and report.
 
 \textbf{Check everything online, without running anything locally.} The project page \url{https://chandak-shubham.github.io/cs329_project/} runs the committed trained models in the browser: choose one of the supported training conditions (16 conditions of Studies B and C, 10 seeds each), watch the population, add mimics or change $B$ and $C$, and press \emph{Reproduce a result} to rerun all 10 seeds and compare them with the recorded Python evaluation. Its research section, all figures, tables (\texttt{results/}) and the 475 trained models (\texttt{models/}) are in the repository \url{https://github.com/chandak-Shubham/cs329_project}, together with \texttt{evaluation/verify\_hamilton.py}, which verifies the integrity (SHA-256 and training settings) of every Study B and C checkpoint and replays selected checkpoints exactly by default, or all of them with \texttt{-{}-all}.
 
 \begin{thebibliography}{99}
 \bibitem{veritasium2025} Muller, D. [Veritasium]. (2025). \textit{The Most Controversial Idea In Biology}. YouTube.
-\bibitem{hamilton1964} Hamilton, W. D. (1964). \textit{The genetical evolution of social behaviour. I \& II}. J. Theor. Biol., 7(1), 1-52.
+\bibitem{hamilton1964} Hamilton, W. D. (1964). \textit{The genetical evolution of social behaviour. I \& II}. J. Theor. Biol., 7(1), 1--52.
 \bibitem{dawkins1976} Dawkins, R. (1976). \textit{The Selfish Gene}. Oxford University Press.
 \bibitem{leibo2017} Leibo, J. Z., et al. (2017). \textit{Multi-agent reinforcement learning in sequential social dilemmas}. AAMAS.
 \bibitem{hughes2018} Hughes, E., et al. (2018). \textit{Inequity aversion improves cooperation in intertemporal social dilemmas}. NeurIPS.
-\bibitem{jaques2019} Jaques, N., et al. (2019). \textit{Social influence as intrinsic motivation for multi-agent deep RL}. ICML.
+\bibitem{jaques2019} Jaques, N., et al. (2019). \textit{Social influence as intrinsic motivation for multi-agent deep reinforcement learning}. ICML.
 \bibitem{eccles2019} Eccles, T., et al. (2019). \textit{Learning reciprocity in complex sequential social dilemmas}. arXiv:1903.08082.
 \bibitem{lupu2020} Lupu, A., \& Precup, D. (2020). \textit{Gifting in multi-agent reinforcement learning}. AAMAS.
-\bibitem{perolat2017} Perolat, J., et al. (2017). \textit{A multi-agent RL model of common-pool resource appropriation}. NeurIPS.
+\bibitem{perolat2017} Perolat, J., et al. (2017). \textit{A multi-agent reinforcement learning model of common-pool resource appropriation}. NeurIPS.
 \bibitem{schulman2017} Schulman, J., et al. (2017). \textit{Proximal policy optimization algorithms}. arXiv:1707.06347.
 \end{thebibliography}
 
