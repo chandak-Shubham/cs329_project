@@ -367,7 +367,12 @@
     .help-wrap:hover .help-text, .help-wrap:focus-within .help-text { display:block; }
     .control-label { display:inline-flex; align-items:center; min-width:0; }
     .control-label label { margin:0; }
-    .field > .control-label { display:flex; width:max-content; max-width:100%; margin-bottom:3px; }
+    .field > .control-label { display:flex; width:100%; margin-bottom:3px; }
+    .field > .control-label .help-wrap { margin-left:auto; }
+    .slider-head .control-label { display:contents; }
+    .slider-head output { margin-left:auto; }
+    .slider-head .help-wrap { order:2; margin-left:0; }
+    .help-text { left:auto; right:-8px; }
     .reproduce-controls .help-text { left:auto; right:-8px; }
 </style>
 </head>
