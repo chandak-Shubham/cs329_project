@@ -366,7 +366,8 @@
     .help-text { display:none; position:absolute; z-index:100; top:calc(100% + 8px); left:-8px; width:220px; max-width:70vw; padding:10px 12px; border:1px solid #e1e4e7; border-radius:7px; background:#fff; color:#4b5563; font-size:12px; font-weight:400; line-height:1.45; box-shadow:0 5px 18px #1f29371f; }
     .help-wrap:hover .help-text, .help-wrap:focus-within .help-text { display:block; }
     .control-label { display:inline-flex; align-items:center; min-width:0; }
-    .slider-head .control-label label { margin:0; }
+    .control-label label { margin:0; }
+    .field > .control-label { display:flex; width:max-content; max-width:100%; margin-bottom:3px; }
     .reproduce-controls .help-text { left:auto; right:-8px; }
 </style>
 </head>
@@ -398,16 +399,16 @@
 
         <section class="sidebar-section" aria-labelledby="model-heading">
           <h3 id="model-heading">Trained Model</h3>
-          <div class="field"><label for="model-condition">Condition</label><span class="help-wrap"><button type="button" class="help-icon" aria-label="About Training condition" aria-describedby="help-model-condition">?</button><span class="help-text" role="tooltip" id="help-model-condition">Chooses the experimental setup used to train the checkpoint.</span></span><select id="model-condition"></select></div>
-          <div class="field"><label for="model-seed">Seed</label><span class="help-wrap"><button type="button" class="help-icon" aria-label="About Training seed" aria-describedby="help-model-seed">?</button><span class="help-text" role="tooltip" id="help-model-seed">Chooses an independently trained checkpoint.</span></span><select id="model-seed"></select></div>
+          <div class="field"><span class="control-label"><label for="model-condition">Condition</label><span class="help-wrap"><button type="button" class="help-icon" aria-label="About Training condition" aria-describedby="help-model-condition">?</button><span class="help-text" role="tooltip" id="help-model-condition">Chooses the experimental setup used to train the checkpoint.</span></span></span><select id="model-condition"></select></div>
+          <div class="field"><span class="control-label"><label for="model-seed">Seed</label><span class="help-wrap"><button type="button" class="help-icon" aria-label="About Training seed" aria-describedby="help-model-seed">?</button><span class="help-text" role="tooltip" id="help-model-seed">Chooses an independently trained checkpoint.</span></span></span><select id="model-seed"></select></div>
           <p class="fineprint" id="model-status" role="status" aria-live="polite" style="font-size:11px; margin-top:4px;">Ready</p>
         </section>
 
         <section class="sidebar-section">
           <h3>Strategy</h3>
-          <div class="field"><label for="scenario">Experiment</label><span class="help-wrap"><button type="button" class="help-icon" aria-label="About Experiment" aria-describedby="help-scenario">?</button><span class="help-text" role="tooltip" id="help-scenario">Loads a preset of agent behaviour and environment settings.</span></span><select id="scenario"><option value="custom" disabled>Custom settings</option><option value="learned" selected>Trained model: its training ecology</option><option value="cooperation">Rule baseline: recent donors</option><option value="selfish">Rule baseline: never donate</option><option value="kin">Rule baseline: genetic matching</option><option value="invasion">Mimics at step 40</option><option value="stress">Mimics in stress ecology</option></select><p class="fineprint" id="scenario-note"></p></div>
+          <div class="field"><span class="control-label"><label for="scenario">Experiment</label><span class="help-wrap"><button type="button" class="help-icon" aria-label="About Experiment" aria-describedby="help-scenario">?</button><span class="help-text" role="tooltip" id="help-scenario">Loads a preset of agent behaviour and environment settings.</span></span></span><select id="scenario"><option value="custom" disabled>Custom settings</option><option value="learned" selected>Trained model: its training ecology</option><option value="cooperation">Rule baseline: recent donors</option><option value="selfish">Rule baseline: never donate</option><option value="kin">Rule baseline: genetic matching</option><option value="invasion">Mimics at step 40</option><option value="stress">Mimics in stress ecology</option></select><p class="fineprint" id="scenario-note"></p></div>
           <div class="field">
-            <label for="strategy">Agent behaviour</label><span class="help-wrap"><button type="button" class="help-icon" aria-label="About Agent behaviour" aria-describedby="help-strategy">?</button><span class="help-text" role="tooltip" id="help-strategy">Chooses a trained population or a hand-written rule.</span></span>
+            <span class="control-label"><label for="strategy">Agent behaviour</label><span class="help-wrap"><button type="button" class="help-icon" aria-label="About Agent behaviour" aria-describedby="help-strategy">?</button><span class="help-text" role="tooltip" id="help-strategy">Chooses a trained population or a hand-written rule.</span></span></span>
             <select id="strategy">
               <option value="neural" selected>Trained PPO Population</option>
               <option value="reputation">Recent Donors Baseline</option>
@@ -438,7 +439,7 @@
             <input id="speed" type="range" min="1" max="30" value="8">
           </div>
           <div class="field" style="margin-top:10px;">
-            <label for="seed">World Seed</label><span class="help-wrap"><button type="button" class="help-icon" aria-label="About World seed" aria-describedby="help-seed">?</button><span class="help-text" role="tooltip" id="help-seed">Sets the random sequence for the simulated world.</span></span>
+            <span class="control-label"><label for="seed">World Seed</label><span class="help-wrap"><button type="button" class="help-icon" aria-label="About World seed" aria-describedby="help-seed">?</button><span class="help-text" role="tooltip" id="help-seed">Sets the random sequence for the simulated world.</span></span></span>
             <input id="seed" type="number" min="0" max="4294967295" value="42" step="1" required>
           </div>
         </section>
@@ -514,9 +515,9 @@
                 <div><span class="muted">Threshold r*</span><div class="hamilton-metric-val" id="threshold">0.40</div></div>
               </div>
 
-              <label for="enforce-hamilton" style="display:flex; align-items:center; gap:6px; margin:8px 0; font-size:12px;">
+              <span class="control-label"><label for="enforce-hamilton" style="display:flex; align-items:center; gap:6px; margin:8px 0; font-size:12px;">
                 <input id="enforce-hamilton" type="checkbox"> Enforce rB &gt; C rule
-              </label><span class="help-wrap"><button type="button" class="help-icon" aria-label="About Enforce Hamilton rule" aria-describedby="help-enforce-hamilton">?</button><span class="help-text" role="tooltip" id="help-enforce-hamilton">Blocks gifts unless observed relatedness times B exceeds C. This forces the rule.</span></span>
+              </label><span class="help-wrap"><button type="button" class="help-icon" aria-label="About Enforce Hamilton rule" aria-describedby="help-enforce-hamilton">?</button><span class="help-text" role="tooltip" id="help-enforce-hamilton">Blocks gifts unless observed relatedness times B exceeds C. This forces the rule.</span></span></span>
               <p class="fineprint" id="hamilton-note"></p>
               <p class="condition-status" id="condition-status" role="status" aria-live="polite"></p>
 
@@ -580,8 +581,8 @@
               <h4 id="reproduce-heading" style="margin:0 0 6px 0; font-size:12px;">Reproduce a result from the saved models</h4>
               <p class="fineprint">Reruns all 10 saved checkpoints of a condition in fresh worlds and shows the outcome next to what the Python evaluation recorded. The browser draws its own random numbers, so single worlds can differ; per-seed behaviour and totals should agree.</p>
               <div class="reproduce-controls">
-                <label for="reproduce-condition">Condition</label><span class="help-wrap"><button type="button" class="help-icon" aria-label="About Reproduction condition" aria-describedby="help-reproduce-condition">?</button><span class="help-text" role="tooltip" id="help-reproduce-condition">Chooses the saved experimental condition to replay across its training seeds.</span></span><select id="reproduce-condition"></select>
-                <label for="reproduce-worlds">Worlds</label><span class="help-wrap"><button type="button" class="help-icon" aria-label="About Worlds per seed" aria-describedby="help-reproduce-worlds">?</button><span class="help-text" role="tooltip" id="help-reproduce-worlds">Sets how many evaluation worlds to replay per training seed.</span></span>
+                <span class="control-label"><label for="reproduce-condition">Condition</label><span class="help-wrap"><button type="button" class="help-icon" aria-label="About Reproduction condition" aria-describedby="help-reproduce-condition">?</button><span class="help-text" role="tooltip" id="help-reproduce-condition">Chooses the saved experimental condition to replay across its training seeds.</span></span></span><select id="reproduce-condition"></select>
+                <span class="control-label"><label for="reproduce-worlds">Worlds</label><span class="help-wrap"><button type="button" class="help-icon" aria-label="About Worlds per seed" aria-describedby="help-reproduce-worlds">?</button><span class="help-text" role="tooltip" id="help-reproduce-worlds">Sets how many evaluation worlds to replay per training seed.</span></span></span>
                 <select id="reproduce-worlds"><option value="1">1 world</option><option value="3" selected>3 worlds</option></select>
                 <button type="button" id="reproduce-run" class="primary">Run 10 seeds</button>
               </div>
