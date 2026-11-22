@@ -1,6 +1,9 @@
 # Tested with Python 3.12. CPU PyTorch is sufficient.
-numpy>=1.26,<3
-torch>=2.5,<3
+# torch and numpy are pinned to the versions the models were trained and
+# evaluated with: exact re-simulation (evaluation/verify_hamilton.py) depends
+# on PyTorch's random sampling, which can change between versions.
+numpy==2.3.2
+torch==2.5.1
 scipy>=1.11,<2
 matplotlib>=3.8,<4
 pillow>=10,<13

@@ -918,7 +918,7 @@
       this.updateCues(); this.capture(); return true;
     }
     // With a reserve, residents compete for maxCapacity - mimicReserve places and
-    // mimics never block a birth (experiments/hamilton_robustness.py).
+    // mimics never block a birth (src/training/hamilton_robustness.py).
     birthRoom() {
       if (!this.slots.includes(null)) return false;
       return !this.mimicReserve || this.agents.filter(a => !a.mimic).length < this.maxCapacity - this.mimicReserve;

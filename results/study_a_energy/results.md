@@ -62,4 +62,4 @@ The untrained-ancestor control uses the same evolved founder chromosomes and anc
 
 Fallback survival is forced when starvation is disabled. Adjacent Hamming similarity needs its matched random-placement comparison before it supports assortment; tag preference is descriptive, not Hamiltonian or pedigree evidence.
 
-See [raw analysis](analysis.json) and [protocol](../../docs/final_report.md).
+See [raw analysis](analysis.json) and the [final report](../../report/final_report.pdf).

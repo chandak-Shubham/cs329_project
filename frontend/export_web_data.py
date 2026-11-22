@@ -28,7 +28,7 @@ MAIN = 'study_b_hamilton'      # folder name under models/, results/ and plots/
 ROBUST = 'study_c_robustness'
 UP = '../'  # the page is frontend/index.html; links and checkpoint URLs are relative to it
 SEEDS = (42, 101, 202, 303, 404, 505, 606, 707, 808, 909)
-MIMICS = dict(invasionStep=10, invasionCount=6)   # experiments/inherited_policies.py, hamilton_study.evaluate_world
+MIMICS = dict(invasionStep=10, invasionCount=6)   # src/training/inherited_policies.py, hamilton_study.evaluate_world
 LEVELS = (('bc100', 1.0), ('bc150', 1.5), ('bc250', 2.5), ('bc400', 4.0), ('bc600', 6.0))
 
 # (group, study, condition, label). Attention networks in ecologies the browser

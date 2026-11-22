@@ -1,7 +1,7 @@
 """Hamilton's-rule study: energy-only versus inclusive-fitness PPO.
 
 Final submission experiment. Every condition uses independent founder networks,
-family policy inheritance and survivor selection (experiments/inherited_policies.py).
+family policy inheritance and survivor selection (src/training/inherited_policies.py).
 The only manipulated factors are the reward, B/C, cue noise, mimics, the gate,
 the architecture and offspring placement.
 

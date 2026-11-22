@@ -1,7 +1,7 @@
 """Robustness and reward-control study at B/C = 4 (Study C).
 
 Same environment, architecture, per-family PPO, inheritance, selection and
-evaluation as experiments/hamilton_study.py (imported, unchanged). It adds:
+evaluation as src/training/hamilton_study.py (imported, unchanged). It adds:
 
 Reward controls (is KIN information what matters, or any prosocial credit?)
   prosocial  R_i = dE_i + B * #gifts                 (credit for helping anyone)
@@ -116,7 +116,7 @@ B4 = 8.0   # B/C = 4 with C = 2
 GAMMA = dict(gamma=.9)
 
 
-MIMICS = 6  # injected at step 10 (experiments/inherited_policies.py, hamilton_study.evaluate_world)
+MIMICS = 6  # injected at step 10 (src/training/inherited_policies.py, hamilton_study.evaluate_world)
 RESERVE = dict(max_capacity=environment_config()['max_capacity'] + MIMICS, mimic_reserve=MIMICS)
 
 
