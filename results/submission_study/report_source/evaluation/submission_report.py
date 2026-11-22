@@ -17,6 +17,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
+from evaluation import study_comparison
 from evaluation.complete_study import digest, verify_checkpoint
 from evaluation.uncertainty import mean_ci
 from evaluation.final_report import interval as format_interval, immediate_reward_probe
@@ -468,6 +469,7 @@ def main():
               'No finite negative experiment proves that cooperation is impossible, and a successful explicitly shaped reward would not establish spontaneous kin selection.', '',
               'The browser simulation still runs the earlier single shared-policy checkpoint; it is an illustration, not an execution or replay of the new inherited-family experiment. '
               'The report, raw world results, and saved policies are the evidence for the submission. Historical demographic and descendant-reward variants are retained separately and are not pooled into these results.', '',
+              study_comparison.markdown(), '',
               '## 10. Reproducibility', '',
               f'We verify {audits["submission_study"]["verified_checkpoints"]} original and {audits["mechanism_study"]["verified_checkpoints"]} new checkpoint files against their recorded SHA256 values and original archived training sources. '
               'Actor and environment source must match the trained architecture/ecology byte for byte; evaluation versions and source hashes are recorded separately. '
@@ -511,7 +513,7 @@ def main():
     for root in (BASE,MECH):
         archive=root/'report_source/evaluation'
         archive.mkdir(parents=True,exist_ok=True)
-        for name in ('complete_study.py','submission_report.py','analysis.py','uncertainty.py','inheritance_report.py','final_report.py'):
+        for name in ('complete_study.py','submission_report.py','study_comparison.py','analysis.py','uncertainty.py','inheritance_report.py','final_report.py'):
             (archive/name).write_bytes((ROOT/'evaluation'/name).read_bytes())
         manifest={p.relative_to(root).as_posix():digest(p) for p in root.rglob('*')
                   if p.is_file() and p.suffix not in ('.log','.pyc') and p.name not in ('manifest.json','decisions.json')

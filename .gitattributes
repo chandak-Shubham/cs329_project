@@ -5,3 +5,5 @@ results/lineage_study/** -text whitespace=blank-at-eol,blank-at-eof,space-before
 results/submission_study/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 results/mechanism_study/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 docs/final_report* -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+results/main_comparison/*.csv -text

@@ -598,6 +598,104 @@ Freeze all policies for evaluation in fresh seeded worlds.
 <p>For a trajectory without reproduction, the private discounted energy sum telescopes to <code>sum_t gamma^t Delta E_t = -E_0 + (1-gamma)*sum_(t=1 to T-1) gamma^(t-1)*E_t + gamma^(T-1)*E_T</code>. At gamma=1 it reduces to terminal minus initial energy; at gamma=0.99 it also values earlier stored energy. There is no direct descendant-fitness term. Reproduction adds bookkeeping terms because reward precedes the split, so this identity is deliberately restricted to trajectories without reproduction. It does not prove that giving is privately suboptimal: later reciprocity can still improve individual return.</p>
 <p>The main limits are five seeds, short finite training budgets, one base ecology, eight-bit marker proxies, restocking energy, and a privileged shaped reward. The original one-factor controls and new reward/incentive factorial do not span all interactions. Noise/mimic effects are measured under trajectories that may go extinct; late assortment is reported only where defined. Pointwise learning intervals are not simultaneous bands. Regression samples are dependent and small-cluster intervals can be unreliable. Evaluation on a newer CPU runtime may alter sampled trajectories even with the same seed; the original training provenance and replay runtime are both retained. No finite negative experiment proves that cooperation is impossible, and a successful explicitly shaped reward would not establish spontaneous kin selection.</p>
 <p>The browser simulation still runs the earlier single shared-policy checkpoint; it is an illustration, not an execution or replay of the new inherited-family experiment. The report, raw world results, and saved policies are the evidence for the submission. Historical demographic and descendant-reward variants are retained separately and are not pooled into these results.</p>
+<h3>What changed with longer training?</h3>
+<p>Each row uses frozen trained policies in three fresh worlds per training seed. We average worlds within seeds. Survival requires residents at step 300 in every world. The five-seed study uses a discount of 0.99 and weights changes in neighbours' energy. The ten-seed study uses 0.90 and credits the donor for the recipient of its own gift. Only the two ten-seed shaped runs at B/C 2.5 isolate the training budget.</p>
+<table>
+<thead>
+<tr>
+  <th>Study and reward</th>
+  <th>B/C</th>
+  <th>Training steps</th>
+  <th>Donations per resident step</th>
+  <th>Mean final residents</th>
+  <th>Seeds surviving all 3 worlds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Five-seed / private</td>
+  <td>2.5</td>
+  <td>2,048</td>
+  <td>0.1753</td>
+  <td>0.13</td>
+  <td>0/5</td>
+</tr>
+<tr>
+  <td>Five-seed / shaped</td>
+  <td>2.5</td>
+  <td>2,048</td>
+  <td>0.2025</td>
+  <td>0.60</td>
+  <td>0/5</td>
+</tr>
+<tr>
+  <td>Ten-seed / private</td>
+  <td>2.5</td>
+  <td>8,192</td>
+  <td>0.0049</td>
+  <td>0.00</td>
+  <td>0/10</td>
+</tr>
+<tr>
+  <td>Ten-seed / shaped</td>
+  <td>2.5</td>
+  <td>8,192</td>
+  <td>0.2418</td>
+  <td>4.67</td>
+  <td>1/10</td>
+</tr>
+<tr>
+  <td>Ten-seed / shaped</td>
+  <td>2.5</td>
+  <td>32,768</td>
+  <td>0.1816</td>
+  <td>12.00</td>
+  <td>2/10</td>
+</tr>
+<tr>
+  <td>Ten-seed / private</td>
+  <td>4</td>
+  <td>8,192</td>
+  <td>0.0164</td>
+  <td>0.00</td>
+  <td>0/10</td>
+</tr>
+<tr>
+  <td>Ten-seed / shaped</td>
+  <td>4</td>
+  <td>8,192</td>
+  <td>0.4049</td>
+  <td>32.00</td>
+  <td>7/10</td>
+</tr>
+<tr>
+  <td>Ten-seed / equal gift credit</td>
+  <td>4</td>
+  <td>8,192</td>
+  <td>0.9943</td>
+  <td>45.00</td>
+  <td>10/10</td>
+</tr>
+<tr>
+  <td>Ten-seed / private</td>
+  <td>6</td>
+  <td>8,192</td>
+  <td>0.0322</td>
+  <td>0.00</td>
+  <td>0/10</td>
+</tr>
+<tr>
+  <td>Ten-seed / shaped</td>
+  <td>6</td>
+  <td>8,192</td>
+  <td>0.8029</td>
+  <td>45.00</td>
+  <td>10/10</td>
+</tr>
+</tbody>
+</table>
+<p>At B/C 2.5, quadrupling the ten-seed training budget lowered average giving while more seeds survived all three worlds. The clearest survival gain came at higher benefits under donor-specific reward shaping. These experiments support a response to an explicit incentive. They leave spontaneous kin selection unproven.</p>
+<p><a href="https://github.com/chandak-Shubham/cs329_project/tree/7b591fa5e7b88127b899ef85c2c8bbf1b1a7d545">Ten-seed study, checkpoints and protocols</a>.</p>
 <h2>10. Reproducibility</h2>
 <p>We verify 95 original and 65 new checkpoint files against their recorded SHA256 values and original archived training sources. Actor and environment source must match the trained architecture/ecology byte for byte; evaluation versions and source hashes are recorded separately. Archive line endings are preserved in Git so Windows checkout cannot silently corrupt source hashes. Original checkpoint metadata and claimed training versions are never rewritten to pass a replay check.</p>
 <pre><code class="language-powershell">python -m pip install -r requirements.txt

@@ -17,6 +17,11 @@ import torch
 ROOT = Path(__file__).resolve().parents[1]
 
 
+import sys
+sys.path.insert(0, str(ROOT))
+from evaluation import study_comparison
+
+
 def text_artifact_matches(path, expected):
     """Historical JSON hashes predate byte-preserving checkout attributes.
 
@@ -132,6 +137,12 @@ def results_html(data):
                      [[name,f'{b:.4f}',f'[{ci[0]:.4f}, {ci[1]:.4f}]',f'{p:.4f}'] for name,b,ci,p in zip(regression['features'],regression['coefficients'],regression['ci95'],regression['p_values'])], 'Training-seed cluster regression'),
                '<h3>Interpretation and reproducibility</h3><p>Donation adds net energy B−C; mitosis conserves parent-plus-child energy. Behavioural history counts donations given. Mimics cannot donate and are excluded from PPO. The simulator and earlier studies share one resident policy. The separately labelled inherited-policy study uses family networks and explicit selection. Rule baselines can all reach capacity: compare donation frequency and exploitation, not the population cap alone.</p>',
                '<p><a href="results/revised_study/results.md">Revised results table</a> · <a href="results/revised_study/analysis.json">Raw revised data</a> · <a href="results/phase4_benchmarks.json">Historical benchmarks</a> · <a href="results/statistical_analysis.json">Regression data</a> · <a href="docs/review_response_2026-11-17.md">First review response</a> · <a href="docs/final_review_response_2026-11-18.md">Final review response</a> · <a href="README.md">Reproduce the experiments</a></p></section>']
+    if data.get('mechanism'):
+        chunks[1:1] = ['<h3>'+study_comparison.TITLE+'</h3>', '<p>'+escape(study_comparison.CONTEXT)+'</p>',
+                       table(study_comparison.HEADERS, study_comparison.comparison(), 'Frozen-policy evaluations'),
+                       '<p>'+escape(study_comparison.INTERPRETATION)+'</p>',
+                       '<p><a href="docs/final_report.html">Read the full report</a> &middot; '
+                       f'<a href="{study_comparison.SOURCE}">Ten-seed study and protocols</a></p>']
     html='\n'.join(chunks)
     for old in ('docs/inherited_policy_protocol.md','docs/review_response_2026-11-17.md',
                 'docs/final_review_response_2026-11-18.md'):

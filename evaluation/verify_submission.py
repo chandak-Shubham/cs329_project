@@ -9,12 +9,15 @@ import sys
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
+from evaluation import study_comparison
 from evaluation.complete_study import digest,verify_checkpoint
 from evaluation.submission_report import validate_analysis
 
 
 def main():
     diagnostics=json.loads((ROOT/'results/mechanism_study/diagnostics.json').read_text(encoding='utf-8'))
+    if study_comparison.markdown() not in (ROOT/'docs/final_report.md').read_text(encoding='utf-8'):
+        raise ValueError('Report comparison differs from the saved evaluation worlds')
     count=worlds=0
     for name,expected in (('submission_study',95),('mechanism_study',65)):
         root=ROOT/'results'/name

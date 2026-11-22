@@ -29,4 +29,6 @@ jobs:
         run: node --test tests/web_simulation.test.cjs
       - name: Verify delivered study and report artifacts
         if: ${{ hashFiles('docs/final_report_exports.json') != '' }}
-        run: python evaluation/verify_submission.py
+        run: |
+          python evaluation/verify_submission.py
+          python visualizer/export_web_data.py --check

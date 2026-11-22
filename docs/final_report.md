@@ -226,6 +226,27 @@ The main limits are five seeds, short finite training budgets, one base ecology,
 
 The browser simulation still runs the earlier single shared-policy checkpoint; it is an illustration, not an execution or replay of the new inherited-family experiment. The report, raw world results, and saved policies are the evidence for the submission. Historical demographic and descendant-reward variants are retained separately and are not pooled into these results.
 
+### What changed with longer training?
+
+Each row uses frozen trained policies in three fresh worlds per training seed. We average worlds within seeds. Survival requires residents at step 300 in every world. The five-seed study uses a discount of 0.99 and weights changes in neighbours' energy. The ten-seed study uses 0.90 and credits the donor for the recipient of its own gift. Only the two ten-seed shaped runs at B/C 2.5 isolate the training budget.
+
+| Study and reward | B/C | Training steps | Donations per resident step | Mean final residents | Seeds surviving all 3 worlds |
+| --- | --- | --- | --- | --- | --- |
+| Five-seed / private | 2.5 | 2,048 | 0.1753 | 0.13 | 0/5 |
+| Five-seed / shaped | 2.5 | 2,048 | 0.2025 | 0.60 | 0/5 |
+| Ten-seed / private | 2.5 | 8,192 | 0.0049 | 0.00 | 0/10 |
+| Ten-seed / shaped | 2.5 | 8,192 | 0.2418 | 4.67 | 1/10 |
+| Ten-seed / shaped | 2.5 | 32,768 | 0.1816 | 12.00 | 2/10 |
+| Ten-seed / private | 4 | 8,192 | 0.0164 | 0.00 | 0/10 |
+| Ten-seed / shaped | 4 | 8,192 | 0.4049 | 32.00 | 7/10 |
+| Ten-seed / equal gift credit | 4 | 8,192 | 0.9943 | 45.00 | 10/10 |
+| Ten-seed / private | 6 | 8,192 | 0.0322 | 0.00 | 0/10 |
+| Ten-seed / shaped | 6 | 8,192 | 0.8029 | 45.00 | 10/10 |
+
+At B/C 2.5, quadrupling the ten-seed training budget lowered average giving while more seeds survived all three worlds. The clearest survival gain came at higher benefits under donor-specific reward shaping. These experiments support a response to an explicit incentive. They leave spontaneous kin selection unproven.
+
+[Ten-seed study, checkpoints and protocols](https://github.com/chandak-Shubham/cs329_project/tree/7b591fa5e7b88127b899ef85c2c8bbf1b1a7d545).
+
 ## 10. Reproducibility
 
 We verify 95 original and 65 new checkpoint files against their recorded SHA256 values and original archived training sources. Actor and environment source must match the trained architecture/ecology byte for byte; evaluation versions and source hashes are recorded separately. Archive line endings are preserved in Git so Windows checkout cannot silently corrupt source hashes. Original checkpoint metadata and claimed training versions are never rewritten to pass a replay check.

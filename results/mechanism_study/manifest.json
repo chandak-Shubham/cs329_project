@@ -152,6 +152,7 @@
   "report_source/evaluation/complete_study.py": "24714de1af827091e9d8cbf01223f9f2a8a54be8f1e4e7edc6d76a2c5bd63495",
   "report_source/evaluation/final_report.py": "f3de5853f6080f9d5582e6f006414eff85150558d576f00db7d61e84328bf43e",
   "report_source/evaluation/inheritance_report.py": "7df1cef69a0038442d72f3b589dac3c4eda020610729456e9b7a0d485674ed22",
-  "report_source/evaluation/submission_report.py": "a0bf4094e095be44655d37b6ce2586f9698bac497a51fae4fe1a10b2bb144bbb",
+  "report_source/evaluation/study_comparison.py": "7a07a43aae6f8147a14ff191de47f3c913a3740cfcb2243dd562c6ff5e33c1e4",
+  "report_source/evaluation/submission_report.py": "d00ae054fd48c464eb869ae32163e919198d1e074c5cd1b707f7e109f1008f13",
   "report_source/evaluation/uncertainty.py": "af57d86b939e2b5e3466dd3ec4b491edbe80da3de9dcf854399d173573b07ffb"
 }

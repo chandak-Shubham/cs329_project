@@ -7,6 +7,7 @@ We investigate a spatial donation game: does private energy-reward PPO preserve 
 ## Read the submission
 
 - [Final report](docs/final_report.md), [PDF](docs/final_report.pdf), and [HTML](docs/final_report.html).
+- [Five-seed and ten-seed comparison](docs/final_report.md#what-changed-with-longer-training) with [saved evaluation worlds](results/main_comparison).
 - [Complete model and experimental protocol](docs/final_study_protocol.md).
 - [Original 19-condition results](results/submission_study/results.md) and [raw worlds](results/submission_study/analysis.json).
 - [New reward and placement results](results/mechanism_study/results.md), [raw worlds](results/mechanism_study/analysis.json), and [statistical diagnostics](results/mechanism_study/diagnostics.json).
