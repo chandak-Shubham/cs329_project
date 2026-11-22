@@ -8,7 +8,10 @@ const html = readFileSync(join(__dirname,'../index.html'),'utf8');
 vm.runInThisContext(html.match(/<script id="simulation-engine">([\s\S]*?)<\/script>/)[1]);
 const {SimulationEngine:Engine, NeuralActor, SeededRandom} = globalThis.Kinship;
 const data = JSON.parse(html.match(/<script id="research-data" type="application\/json">([\s\S]*?)<\/script>/)[1]);
-const actor = new NeuralActor(data.neural);
+// The default trained checkpoint, read from the committed .pt file exactly as the page does.
+const checkpoint = readFileSync(join(__dirname,'..',data.models.checkpoints[data.models.default].path));
+const model = Kinship.loadCheckpoint(checkpoint.buffer.slice(checkpoint.byteOffset,checkpoint.byteOffset+checkpoint.byteLength),data.models.layout);
+const actor = model.policies[0];
 
 test('paired browser comparison uses actual trajectories and preserves its options',()=>{
   const options={seed:5,maxSteps:40,neuralActor:actor};
@@ -224,7 +227,8 @@ test('neural action sampling respects masks and matches seed replay',()=>{
   const a=new Engine({strategy:'neural',neuralActor:actor}),b=new Engine({strategy:'neural',neuralActor:actor});
   for(let i=0;i<50;i++){a.step();b.step();occupancy(a);}assert.deepEqual(a.history,b.history);
   const w=empty({strategy:'neural',neuralActor:actor});const mimic=place(w,4,4,{mimic:true});place(w,4,5);
-  const sampled=Array.from({length:30},()=>w.chooseAction(mimic));assert.ok(sampled.every(action=>action<5));assert.ok(sampled.some(action=>action>0));
+  // Mimics own no network: they stay, as in Python (LineagePopulation gives them action 0).
+  const sampled=Array.from({length:30},()=>w.chooseAction(mimic));assert.ok(sampled.every(action=>action===0));
   w.strategy='selfish';assert.ok(Array.from({length:30},()=>w.chooseAction(mimic)).some(action=>action>0));
 });
 test('all five strategies preserve ecological invariants over multi-seed runs',()=>{

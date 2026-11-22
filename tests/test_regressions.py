@@ -10,7 +10,6 @@ from environment.grid_world import (
     ACTION_WEST,
     ACTION_GIVE_BASE,
 )
-from experiments.cooperation_feasibility import run_single_simulation
 
 def test_cell_swap_movement_integrity():
     """
@@ -95,32 +94,6 @@ def test_action_mask_in_observations():
         assert mask[0, a] == True
         assert mask[1, a] == True
 
-def test_cooperation_feasibility_runner_mitosis_no_index_error():
-    """
-    Regression Test: Feasibility runner with dynamic offspring must not raise IndexError
-    when newborns exceed the initial policy assignment length.
-    """
-    env = GridWorld(
-        grid_size=10,
-        initial_population=10,
-        max_capacity=30,
-        initial_energy=50.0,
-        e_mitosis=55.0,
-        enable_mitosis=True,
-        seed=99,
-    )
-    policy_assignment = ["recip"] * 10
-    result = run_single_simulation(
-        env=env,
-        policy_assignment=policy_assignment,
-        max_steps=30,
-        seed=99,
-    )
-    assert "mean_lifespan" in result
-    assert "total_donations" in result
-    assert result["final_step"] > 0
-
-
 def test_mimic_unique_ids_and_ancestry():
     """
     Regression Test: Injected mimics must receive valid non-negative unique IDs,
@@ -143,58 +116,4 @@ def test_mimic_unique_ids_and_ancestry():
         assert uid in env.ancestry_records
         assert env.ancestry_records[uid]["is_parasite"] == True
 
-
-def test_policy_inheritance_on_slot_reuse():
-    """
-    Regression Test: When a founder with 'defect' policy in slot 0 dies,
-    and a 'recip' cooperator in slot 1 reproduces into slot 0,
-    the newborn occupying slot 0 must inherit 'recip', NOT retain 'defect'.
-    """
-    env = GridWorld(grid_size=10, initial_population=2, max_capacity=5, seed=42)
-    env.reset()
-    # Place agents far apart initially so Agent 1 does not feed Agent 0 before it starves
-    env.grid.fill(-1)
-    env.positions[0] = np.array([0, 0])
-    env.positions[1] = np.array([5, 5])
-    env.grid[0, 0] = 0
-    env.grid[5, 5] = 1
-
-    # Agent 0 starves at step 1; Agent 1 reproduces
-    env.energy[0] = 0.001
-    env.energy[1] = 70.0
-
-    policy_assignment = ["defect", "recip"]
-    # Run 3 steps to observe inheritance and donation between parent & offspring
-    res = run_single_simulation(env, policy_assignment, max_steps=3, seed=None)
-    assert res["final_step"] == 3
-    # If child in slot 0 had retained 'defect', total donations would be 0 or 1.
-    # Because child inherited 'recip', mutual donations occur!
-    assert res["total_donations"] > 0
-
-
-def test_lifespan_and_founder_accounting_with_slot_reuse():
-    """
-    Regression Test: Lifespan accounting must capture the exact pre-reuse age of dying agents,
-    and founder lifespans must not be overwritten by offspring occupying their recycled slots.
-    """
-    env = GridWorld(grid_size=10, initial_population=2, max_capacity=5, seed=42)
-    env.reset()
-    # Place agents far apart so Agent 1 does not feed Agent 0
-    env.grid.fill(-1)
-    env.positions[0] = np.array([0, 0])
-    env.positions[1] = np.array([5, 5])
-    env.grid[0, 0] = 0
-    env.grid[5, 5] = 1
-
-    # Founder 0 dies at step 1 (age 1)
-    # Founder 1 survives and reproduces into slot 0
-    env.energy[0] = 0.001
-    env.energy[1] = 70.0
-
-    res = run_single_simulation(env, ["defect", "recip"], max_steps=3, seed=None)
-    # Founder 0 died at step 1 with age 1
-    assert res["founder_lifespans"][0] == 1
-    assert res["founder_lifespans"][1] == 3
-    # Founder 0's completed age 1 is in completed_lifespans
-    assert 1 in res["completed_lifespans"]
 

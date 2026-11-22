@@ -21,9 +21,8 @@ results/*/evaluations/*.log
 # Logs of local command-line runs (historical tracked logs are unaffected)
 results/*_run*.log
 
-# Timing probe and interrupted source-archive batch; excluded from submission.
-results/runtime_probe/
-results/final_study/
+# Locally built GitHub Pages site (visualizer/build_site.py; CI builds its own)
+_site/
 
 # IDE
 .vscode/

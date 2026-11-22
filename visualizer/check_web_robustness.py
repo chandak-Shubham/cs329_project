@@ -9,7 +9,7 @@ from pathlib import Path
 
 from playwright.sync_api import expect, sync_playwright
 
-from check_web_demo import click_steps, set_range
+from check_web_demo import click_steps, serve, set_range, wait_for_model
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -19,7 +19,9 @@ def check(p, channel):
     page = browser.new_page(viewport={"width": 1366, "height": 768})
     errors = []
     page.on("pageerror", lambda e: errors.append(str(e)))
-    page.goto((ROOT / "index.html").as_uri())
+    server, url = serve()
+    page.goto(url)
+    wait_for_model(page)
     play = page.locator("#play").bounding_box()
     grid = page.locator("#world").bounding_box()
     assert play["y"] + play["height"] < 768
@@ -97,6 +99,7 @@ def check(p, channel):
 
     page.set_viewport_size({"width": 390, "height": 844})
     page.reload()
+    wait_for_model(page)
     assert not page.locator("#settings-panel").evaluate("el=>el.open")
     assert page.locator("#world").bounding_box()["y"] < 844
     page.locator("#step").click()
@@ -105,6 +108,7 @@ def check(p, channel):
     assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
     page.screenshot(path=str(ROOT / f".browser_checks/enforced-{channel}-mobile.png"), full_page=True)
     browser.close()
+    server.shutdown()
     print(f"{channel}: strict inequality, failure details, decision CSV, seeds, visible controls, slow playback, error recovery, mobile: PASS")
 
 

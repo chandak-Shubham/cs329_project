@@ -6,7 +6,12 @@
     101,
     202,
     303,
-    404
+    404,
+    505,
+    606,
+    707,
+    808,
+    909
   ],
   "evaluation_worlds_per_seed": 3,
   "base_environment": {

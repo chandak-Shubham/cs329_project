@@ -260,7 +260,7 @@ def main(root):
     report = root/'final_report.md'
     text = '\n'.join(lines)
     # Freeze report and analysis sources separately from training provenance.
-    for path in (Path(__file__), ROOT/'evaluation/inheritance_report.py', ROOT/'evaluation/analysis.py'):
+    for path in (Path(__file__), ROOT/'evaluation/inheritance_report.py', ROOT/'evaluation/regression.py'):
         target = root/'report_source'/path.relative_to(ROOT)
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(path.read_bytes())

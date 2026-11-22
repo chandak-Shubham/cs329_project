@@ -4,7 +4,7 @@
 CS329 Multi-Agent Systems · Group 21 · IIT Gandhinagar
 Vansh Barfiwala · Pratham Choksi · Shubham Chandak
 
-📄 **[Final report](docs/final_report.md)** · 📊 **[All results and statistics](results/hamilton_study/results.md)** · 📋 **Spreadsheets: [per trained model](results/hamilton_study/seed_summary.csv), [per evaluation episode](results/hamilton_study/evaluation_runs.csv)** · 🌐 **[Interactive simulation](https://chandak-shubham.github.io/cs329_project/)**
+📄 **[Final report (PDF)](docs/final_report.pdf)** ([Markdown](docs/final_report.md)) · 🌐 **[Project page: run the trained models in your browser](https://chandak-shubham.github.io/cs329_project/)** · 📊 Results: [Study B](results/hamilton_study/results.md), [Study C](results/hamilton_robustness/results.md) · 📋 Spreadsheets: [per trained model](results/hamilton_study/seed_summary.csv), [per evaluation episode](results/hamilton_study/evaluation_runs.csv)
 
 ---
 
@@ -12,87 +12,109 @@ Vansh Barfiwala · Pratham Choksi · Shubham Chandak
 
 Agents on an 18 × 18 grid lose energy every step. They can donate energy to a neighbour at a cost $C$, and the neighbour receives $B > C$. Donations are the only source of new energy, so without cooperation the population starves, yet each individual is better off not giving.
 
-Founder families own independent gated-attention neural policies trained with PPO. Children inherit their family's policy, and surviving families are selected between episodes. Agents see each neighbour's genetic tag, which may be corrupted, and its recent giving.
+Each of 24 founder families owns its own gated-attention network trained with PPO. Children inherit their family's network, and surviving families are selected between episodes. Agents see each neighbour's genetic tag, which may be corrupted, and its recent giving.
 
 **Can self-interested learners discover cooperation, and does what they learn follow Hamilton's rule $rB > C$?**
 
 ## Main results
 
+All numbers come from [`results/hamilton_study/analysis.json`](results/hamilton_study/analysis.json) and [`results/hamilton_robustness/analysis.json`](results/hamilton_robustness/analysis.json): 10 independent training seeds per condition, 3 fresh evaluation worlds per seed.
+
 ![Survival, donations, lifetime and Hamilton gap across B/C](results/hamilton_study/figures/bc_sweep.png)
 
-| B/C | Inclusive-fitness PPO: donations / step | Energy-only PPO: donations / step | Untrained networks | Seeds surviving (inclusive / energy) |
-| --- | --- | --- | --- | --- |
-| 1.0 | 0.010 | 0.007 | 0.320 | 0/5 · 0/5 |
-| 1.5 | 0.012 | 0.007 | 0.316 | 0/5 · 0/5 |
-| 2.5 | 0.333 | 0.005 | 0.514 | 1/5 · 0/5 |
-| 4.0 | 0.526 | 0.021 | 0.584 | **5/5** · 0/5 |
-| 6.0 | **0.894** | 0.037 | 0.510 | **5/5** · 0/5 |
+| B/C | Seeds surviving: inclusive reward | Seeds surviving: energy-only reward | Seeds surviving: untrained networks | Donations / resident-step: inclusive | Donations / resident-step: energy-only |
+| --- | --- | --- | --- | --- | --- |
+| 1.0 | 0/10 | 0/10 | 0/10 | 0.009 | 0.006 |
+| 1.5 | 0/10 | 0/10 | 0/10 | 0.011 | 0.007 |
+| 2.5 | 1/10 | 0/10 | 10/10 | 0.242 | 0.005 |
+| 4.0 | **7/10** | 0/10 | 10/10 | 0.405 | 0.016 |
+| 6.0 | **10/10** | 0/10 | 10/10 | **0.803** | 0.032 |
 
-1. **Individual reward destroys cooperation.** With the energy-only reward from our proposal, PPO learns to stop giving. In all **90/90** robustness runs (18 conditions × 5 seeds), trained populations gave less than untrained ones, and no energy-only population survived the $B/C$ sweep (0/25).
-2. **Hamilton's kin term fixes it.** Adding $r_{ij}B$ to the donor's reward makes inclusive learners give more in **24/25** paired runs ($p = 1.6\times10^{-6}$). They survive in **10/10** runs at $B/C \ge 4$, against 0/10 for energy-only ($p = 1.1\times10^{-5}$).
-3. **Learned giving follows Hamilton's threshold.** Below it ($B/C \le 1.5$), inclusive learners also abandon giving. Above it ($B/C = 6$), they give more than untrained networks in 5/5 seeds.
-4. **Kin recognition is the weak link.** Learners prefer related recipients, and their reliance on a corrupted genetic cue falls in every seed. But they never learn to use behavioural history, and they keep feeding genetic mimics, which a simple reputation rule ignores completely.
+1. **Individual reward destroys cooperation.** With the energy-only reward from our proposal, PPO learns to stop giving and no population survives (0/50 runs over five $B/C$ levels). Untrained networks with the same founders do survive, so learning removes cooperation that was already there. Study A confirms this in 18 robustness conditions: in all 90/90 runs, trained populations gave less than untrained ones.
+2. **Hamilton's kin term preserves it.** Adding $r_{ij}B$ to the donor's reward keeps populations alive: 18/50 runs versus 0/50 (Fisher $p = 1.2\times10^{-6}$), and 17/20 versus 0/20 at $B/C \ge 4$ ($p = 2.6\times10^{-8}$). Inclusive learners gave more in all 10 seeds at every $B/C \ge 1.5$ (sign-flip $p = 0.002$, Holm $p = 0.02$).
+3. **Learned giving follows Hamilton's threshold.** Below it ($B/C \le 1.5$) inclusive learners also abandon giving; at $B/C = 6$ they give more than untrained networks.
+4. **Kin information decides *whom* agents help, not whether they survive** (Study C, $B/C = 4$). A *prosocial* reward that credits every gift keeps all populations alive (10/10) by giving to everyone. A *kin-blind* reward of the same expected size survives 6/10. The kin-weighted reward directs more gifts to relatives than the kin-blind one (share of gifts with $rB > C$: +0.10, 8/10 seeds, $p = 0.010$) and relies more on the genetic cue than either control.
+5. **Kin recognition is the weak link.** When the genetic cue is corrupted, learners rely on it less, but they never learn to use behavioural history instead, and they keep feeding genetic mimics, which a simple public-reputation rule ignores completely.
+6. **Limits we found and report.** The advantage depends on the discount: at $\gamma = 0.99$ inclusive and energy-only learners survive equally rarely (2/10 each). Four times more training at $B/C = 2.5$ did not help.
 
-The full analysis is in the [report](docs/final_report.md). It includes the conditional-logit recipient model, the stratified Hamilton gap, cue reliability, mimicry, ablations, a corrected version of every error found in the ideation document, and limitations.
+The [report](docs/final_report.pdf) has the full analysis: the recipient-choice model, the stratified Hamilton gap, cue reliability, mimicry, ablations, the corrections we made to our ideation document, and limitations.
+
+## Check the results without retraining
+
+All trained models (`results/*/checkpoints/*.pt`) and their raw evaluation logs (`results/*/evaluations/`) are committed.
+
+* **In the browser.** The [project page](https://chandak-shubham.github.io/cs329_project/) downloads the committed checkpoint files, checks each one's SHA-256 against its training record, and runs all 24 family networks with the saved founder genomes. *Reproduce a result* reruns all 10 seeds of a condition and puts the outcome next to what the Python evaluation recorded. Nothing on the page is typed in by hand: its data and research section are generated by `visualizer/export_web_data.py`.
+* **In Python** (about 3 minutes per study):
+
+```powershell
+python -m pip install -r requirements.txt
+python evaluation/verify_hamilton.py                      # Study B
+python evaluation/verify_hamilton.py --study robustness   # Study C
+```
+
+The verifier (1) checks every model's SHA-256 and training settings, (2) recomputes the headline numbers directly from the raw evaluation logs (Study B) or checks that every attacked episode received its mimics (Study C), and (3) re-simulates saved models in the same seeded worlds, where every recorded metric must match exactly. Add `--all` to re-simulate every model.
 
 ## Repository layout
 
 ```
-docs/final_report.md        Final report (submission)
+docs/                       Final report (Markdown, PDF, and HTML for the web page)
 environment/                Spatial donation game: energy, starvation, mitosis, cues, mimics
 models/                     Gated-attention policy, MLP ablation, scripted strategies
 experiments/
-  hamilton_study.py         Final study (Study B): energy vs inclusive-fitness reward, 20 conditions
   inherited_policies.py     Per-family PPO, policy inheritance, survivor selection
-  inheritance_study.py      Energy-only robustness study (Study A), 19 conditions
-  dyadic_baseline.py        Tit-for-tat and scripted-strategy adapters
+  hamilton_study.py         Study B: energy-only vs inclusive-fitness reward, 20 conditions
+  hamilton_robustness.py    Study C: reward controls and robustness at B/C = 4, 18 conditions, strategy sweep
+  inheritance_study.py      Study A: energy-only robustness, 19 conditions
+  dyadic_baseline.py, config.py
 evaluation/
-  hamilton_report.py        Statistics, regressions, figures -> results/hamilton_study/
-  verify_hamilton.py        Independent verification of the final study (no retraining)
-  inheritance_report.py, final_report.py   Study A analysis and integrity audit
+  hamilton_report.py        Study B statistics, regressions, figures, tables
+  robustness_report.py      Study C statistics, figures, tables
+  verify_hamilton.py        Verification without retraining (both studies)
+  inheritance_report.py, final_report.py, regression.py   Study A analysis and integrity audit
+  export_submission.py      Report PDF and HTML (KaTeX)
 results/
-  hamilton_study/           Final study: results.md, analysis.json, figures/, 100 trained models, raw evaluations,
-                            seed_summary.csv and evaluation_runs.csv (open in Excel / Google Sheets)
-  submission_study/         Study A: results, diagnostics, checkpoints, archived source
-  revised_study/, lineage_study/, inheritance_study/, ...   Earlier studies (historical evidence)
-tests/                      Python and browser-engine test suites
-index.html                  Interactive browser simulation (GitHub Pages)
-visualizer/                 Exporter that embeds results into index.html, browser checks
+  hamilton_study/           Study B: results.md, analysis.json, CSV spreadsheets, figures, models, evaluation logs, archived source
+  hamilton_robustness/      Study C: the same
+  submission_study/         Study A: results, diagnostics, models, archived source
+visualizer/                 Web data exporter, checkpoint reader, Pages site builder, browser checks
+tests/                      Python and browser-engine tests
+index.html                  Project page (simulation, reproduce panel, research results)
 ```
 
-## Reproduce
+## Reproduce from scratch
 
-Python 3.12, CPU only.
+Python 3.12, CPU only. Completed runs are reused, so an interrupted run can be restarted.
 
 ```powershell
 python -m pip install -r requirements.txt
-python -m pytest -q                                          # Python test suite
-node --test tests/web_simulation.test.cjs                    # browser-engine tests
+python -m pytest -q                                   # Python tests
+node --test tests/web_simulation.test.cjs             # browser-engine tests
 
-# Verify the committed final-study results without retraining (~2 minutes):
-# model integrity, independent recomputation of the headline numbers, and exact re-simulation
-python evaluation/verify_hamilton.py            # add --all to re-simulate all 100 models
-
-# Retrain the final study from scratch (~1 hour on 12 cores), then analysis (~5 minutes)
-python experiments/hamilton_study.py --steps 8192 --workers 12
+# Study B: about 2 hours on 14 cores, then analysis (about 5 minutes)
+python experiments/hamilton_study.py --steps 8192 --workers 14
 python evaluation/hamilton_report.py
+
+# Study C: about 2.5 hours on 14 cores
+python experiments/hamilton_robustness.py --workers 14
+python evaluation/robustness_report.py
 
 # Study A: energy-only robustness
 python experiments/inheritance_study.py --complete --steps 2048 --workers 3 --worlds 3 --out results/submission_study
 python evaluation/inheritance_report.py --study-dir results/submission_study
 python evaluation/final_report.py --study-dir results/submission_study
 
-# Refresh the web page's embedded results
-python visualizer/export_web_data.py
-python visualizer/export_web_data.py --check
+# Project page and report
+python visualizer/export_web_data.py                  # refresh index.html from the results (--check to verify)
+python -m pip install -r requirements-report.txt
+python evaluation/export_submission.py                # docs/final_report.pdf and .html
 ```
 
-All 100 trained models of the final study (`results/hamilton_study/checkpoints/`) and their raw evaluation logs (`results/hamilton_study/evaluations/`) are committed, so the results can be checked **without retraining**. Every checkpoint sidecar records its configuration, learning curve, library versions and SHA-256 hash, and completed runs are reused on re-execution.
+Every checkpoint sidecar records its configuration, learning curve, library versions, source hashes and SHA-256. The exact training sources are archived in each study's `source/` folder.
 
-## Interactive simulation
+## Project page
 
-Open [`index.html`](index.html) locally (it works offline) or visit the [GitHub Pages site](https://chandak-shubham.github.io/cs329_project/). You can run scripted strategies (never donate, genetic relatives, recent donors, both cues equally) or an earlier learned shared-policy checkpoint, inject mimics, and change $B$, $C$ and other parameters. The page's research section summarises the final study. Hamilton enforcement is off by default; turning it on forces the rule rather than learning it.
+The page runs entirely in the browser. Pick a training condition and seed to load that checkpoint, play it, change $B$ and $C$, add mimics, or switch to a scripted rule (never donate, genetic relatives, recent donors, both cues). The browser engine is tested against the Python environment: identical observations, transitions and action probabilities (`tests/test_web_simulation.py`). It draws its own random numbers, so single worlds differ from the Python evaluation while per-seed behaviour agrees.
 
-## Earlier studies
+Opening `index.html` directly from disk cannot load checkpoints, because browsers block file access from `file://` pages. Use the project page, or run `python -m http.server` in this folder and open <http://localhost:8000>.
 
-The folders `results/revised_study`, `results/lineage_study`, `results/inheritance_study` and the top-level historical files in `results/` come from earlier iterations: a shared policy, demographic and descendant rewards, and a 1,024-step pilot. All used individual rewards and all failed to sustain learned cooperation. That failure motivated the final inclusive-fitness study. They are kept as evidence and are not part of the final claims.
+The page is published by `.github/workflows/pages.yml` (Settings → Pages → Source: GitHub Actions). The repository is larger than a Pages site may be, so the workflow publishes the page, report, results and the checkpoints the page offers.

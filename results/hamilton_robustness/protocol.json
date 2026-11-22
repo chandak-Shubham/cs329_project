@@ -1,0 +1,421 @@
+{
+  "protocol": "hamilton-robustness-v2",
+  "mimic_reserve": {
+    "max_capacity": 51,
+    "mimic_reserve": 6
+  },
+  "environment_steps_per_run": 8192,
+  "training_seeds": [
+    42,
+    101,
+    202,
+    303,
+    404,
+    505,
+    606,
+    707,
+    808,
+    909
+  ],
+  "evaluation_worlds_per_seed": 3,
+  "base_environment": {
+    "grid_size": 18,
+    "max_capacity": 45,
+    "initial_population": 24,
+    "initial_energy": 30.0,
+    "e_mitosis": 60.0,
+    "mutation_rate": 0.05,
+    "c_base": 0.6,
+    "c_density": 0.08,
+    "donation_cost": 2.0,
+    "donation_benefit": 5.0,
+    "max_steps": 300
+  },
+  "donation_cost": 2.0,
+  "ppo": {
+    "rollout_length": 64,
+    "num_epochs": 3,
+    "batch_size": 64,
+    "lr": 0.0003,
+    "gamma": 0.99,
+    "gae_lambda": 0.95,
+    "clip_eps": 0.2,
+    "vf_coef": 0.5,
+    "ent_coef": 0.01,
+    "max_grad_norm": 0.5
+  },
+  "conditions": {
+    "b4_prosocial": {
+      "config": {
+        "inclusive_fitness": true,
+        "reward_variant": "prosocial",
+        "donation_cost": 2.0,
+        "donation_benefit": 8.0
+      },
+      "ppo": {
+        "gamma": 0.9
+      }
+    },
+    "b4_kinblind": {
+      "config": {
+        "inclusive_fitness": true,
+        "reward_variant": "kinblind",
+        "donation_cost": 2.0,
+        "donation_benefit": 8.0
+      },
+      "ppo": {
+        "gamma": 0.9
+      }
+    },
+    "b4_inclusive_mimics": {
+      "config": {
+        "inclusive_fitness": true,
+        "reward_variant": "inclusive",
+        "donation_cost": 2.0,
+        "donation_benefit": 8.0,
+        "max_capacity": 51,
+        "mimic_reserve": 6
+      },
+      "invasion": true,
+      "ppo": {
+        "gamma": 0.9
+      }
+    },
+    "b4_prosocial_mimics": {
+      "config": {
+        "inclusive_fitness": true,
+        "reward_variant": "prosocial",
+        "donation_cost": 2.0,
+        "donation_benefit": 8.0,
+        "max_capacity": 51,
+        "mimic_reserve": 6
+      },
+      "invasion": true,
+      "ppo": {
+        "gamma": 0.9
+      }
+    },
+    "b4_kinblind_mimics": {
+      "config": {
+        "inclusive_fitness": true,
+        "reward_variant": "kinblind",
+        "donation_cost": 2.0,
+        "donation_benefit": 8.0,
+        "max_capacity": 51,
+        "mimic_reserve": 6
+      },
+      "invasion": true,
+      "ppo": {
+        "gamma": 0.9
+      }
+    },
+    "b4_noise025": {
+      "config": {
+        "inclusive_fitness": true,
+        "reward_variant": "inclusive",
+        "donation_cost": 2.0,
+        "donation_benefit": 8.0,
+        "cue_noise": 0.25
+      },
+      "ppo": {
+        "gamma": 0.9
+      }
+    },
+    "b4_noise050": {
+      "config": {
+        "inclusive_fitness": true,
+        "reward_variant": "inclusive",
+        "donation_cost": 2.0,
+        "donation_benefit": 8.0,
+        "cue_noise": 0.5
+      },
+      "ppo": {
+        "gamma": 0.9
+      }
+    },
+    "b4_noise050_mimics": {
+      "config": {
+        "inclusive_fitness": true,
+        "reward_variant": "inclusive",
+        "donation_cost": 2.0,
+        "donation_benefit": 8.0,
+        "cue_noise": 0.5,
+        "max_capacity": 51,
+        "mimic_reserve": 6
+      },
+      "invasion": true,
+      "ppo": {
+        "gamma": 0.9
+      }
+    },
+    "b4_fixedgate_noise050_mimics": {
+      "config": {
+        "inclusive_fitness": true,
+        "reward_variant": "inclusive",
+        "donation_cost": 2.0,
+        "donation_benefit": 8.0,
+        "cue_noise": 0.5,
+        "max_capacity": 51,
+        "mimic_reserve": 6
+      },
+      "architecture": "fixed_attention",
+      "invasion": true,
+      "ppo": {
+        "gamma": 0.9
+      }
+    },
+    "b4_fixed_gate": {
+      "config": {
+        "inclusive_fitness": true,
+        "reward_variant": "inclusive",
+        "donation_cost": 2.0,
+        "donation_benefit": 8.0
+      },
+      "architecture": "fixed_attention",
+      "ppo": {
+        "gamma": 0.9
+      }
+    },
+    "b4_mlp": {
+      "config": {
+        "inclusive_fitness": true,
+        "reward_variant": "inclusive",
+        "donation_cost": 2.0,
+        "donation_benefit": 8.0
+      },
+      "architecture": "mlp",
+      "ppo": {
+        "gamma": 0.9
+      }
+    },
+    "b4_random_placement": {
+      "config": {
+        "inclusive_fitness": true,
+        "reward_variant": "inclusive",
+        "donation_cost": 2.0,
+        "donation_benefit": 8.0,
+        "offspring_placement": "random"
+      },
+      "ppo": {
+        "gamma": 0.9
+      }
+    },
+    "b4_mutation000": {
+      "config": {
+        "inclusive_fitness": true,
+        "reward_variant": "inclusive",
+        "donation_cost": 2.0,
+        "donation_benefit": 8.0,
+        "mutation_rate": 0.0
+      },
+      "ppo": {
+        "gamma": 0.9
+      }
+    },
+    "b4_mutation020": {
+      "config": {
+        "inclusive_fitness": true,
+        "reward_variant": "inclusive",
+        "donation_cost": 2.0,
+        "donation_benefit": 8.0,
+        "mutation_rate": 0.2
+      },
+      "ppo": {
+        "gamma": 0.9
+      }
+    },
+    "b4_inclusive_gamma099": {
+      "config": {
+        "inclusive_fitness": true,
+        "reward_variant": "inclusive",
+        "donation_cost": 2.0,
+        "donation_benefit": 8.0
+      },
+      "ppo": {
+        "gamma": 0.99
+      }
+    },
+    "b4_energy_gamma099": {
+      "config": {
+        "inclusive_fitness": false,
+        "reward_variant": "inclusive",
+        "donation_cost": 2.0,
+        "donation_benefit": 8.0
+      },
+      "ppo": {
+        "gamma": 0.99
+      }
+    },
+    "b4_evolution_only": {
+      "config": {
+        "inclusive_fitness": false,
+        "reward_variant": "inclusive",
+        "donation_cost": 2.0,
+        "donation_benefit": 8.0
+      },
+      "learning": false,
+      "ppo": {
+        "gamma": 0.9
+      }
+    },
+    "b25_inclusive_long": {
+      "config": {
+        "inclusive_fitness": true,
+        "reward_variant": "inclusive",
+        "donation_cost": 2.0,
+        "donation_benefit": 5.0
+      },
+      "budget_multiplier": 4,
+      "ppo": {
+        "gamma": 0.9
+      }
+    }
+  },
+  "rule_conditions": [
+    "b4_noise050_mimics",
+    "b4_inclusive_mimics"
+  ],
+  "rules": [
+    "selfish",
+    "tag_trust",
+    "reputation",
+    "dyadic_tit_for_tat",
+    "hamilton_rule"
+  ],
+  "sweep_ecologies": {
+    "bc100": {
+      "config": {
+        "inclusive_fitness": false,
+        "reward_variant": "inclusive",
+        "donation_cost": 2.0,
+        "donation_benefit": 2.0
+      },
+      "attack": false
+    },
+    "bc150": {
+      "config": {
+        "inclusive_fitness": false,
+        "reward_variant": "inclusive",
+        "donation_cost": 2.0,
+        "donation_benefit": 3.0
+      },
+      "attack": false
+    },
+    "bc200": {
+      "config": {
+        "inclusive_fitness": false,
+        "reward_variant": "inclusive",
+        "donation_cost": 2.0,
+        "donation_benefit": 4.0
+      },
+      "attack": false
+    },
+    "bc250": {
+      "config": {
+        "inclusive_fitness": false,
+        "reward_variant": "inclusive",
+        "donation_cost": 2.0,
+        "donation_benefit": 5.0
+      },
+      "attack": false
+    },
+    "bc300": {
+      "config": {
+        "inclusive_fitness": false,
+        "reward_variant": "inclusive",
+        "donation_cost": 2.0,
+        "donation_benefit": 6.0
+      },
+      "attack": false
+    },
+    "bc400": {
+      "config": {
+        "inclusive_fitness": false,
+        "reward_variant": "inclusive",
+        "donation_cost": 2.0,
+        "donation_benefit": 8.0
+      },
+      "attack": false
+    },
+    "bc600": {
+      "config": {
+        "inclusive_fitness": false,
+        "reward_variant": "inclusive",
+        "donation_cost": 2.0,
+        "donation_benefit": 12.0
+      },
+      "attack": false
+    },
+    "bc400_noise050": {
+      "config": {
+        "inclusive_fitness": false,
+        "reward_variant": "inclusive",
+        "donation_cost": 2.0,
+        "donation_benefit": 8.0,
+        "cue_noise": 0.5
+      },
+      "attack": false
+    },
+    "bc400_mimics": {
+      "config": {
+        "inclusive_fitness": false,
+        "reward_variant": "inclusive",
+        "donation_cost": 2.0,
+        "donation_benefit": 8.0,
+        "max_capacity": 51,
+        "mimic_reserve": 6
+      },
+      "attack": true
+    },
+    "bc400_noise050_mimics": {
+      "config": {
+        "inclusive_fitness": false,
+        "reward_variant": "inclusive",
+        "donation_cost": 2.0,
+        "donation_benefit": 8.0,
+        "cue_noise": 0.5,
+        "max_capacity": 51,
+        "mimic_reserve": 6
+      },
+      "attack": true
+    }
+  },
+  "sweep_worlds": [
+    50000,
+    51000,
+    52000,
+    53000,
+    54000,
+    55000,
+    56000,
+    57000,
+    58000,
+    59000
+  ],
+  "row_columns": [
+    "r_obs",
+    "r_true",
+    "b",
+    "energy_j",
+    "is_mimic",
+    "chosen",
+    "gave_any",
+    "n_neighbors",
+    "bc"
+  ],
+  "source_sha256": {
+    "environment/cues.py": "d1f00f125ff91fdae29b7be47db29033b70bb80b29b27cc9524e49c90a0a5507",
+    "environment/grid_world.py": "9114bd656c922a42667d5a71ef881dbebea79190a7325eaf63e5c3d162545a54",
+    "evaluation/uncertainty.py": "af57d86b939e2b5e3466dd3ec4b491edbe80da3de9dcf854399d173573b07ffb",
+    "experiments/config.py": "ef53e28483e5c88b9cbb29b94c61803ec9cd6d71a20506531601511767397f35",
+    "experiments/dyadic_baseline.py": "6a442f6f209250aa1be580575628c2944d3bb7d939f83029c2b8ababc1f72982",
+    "experiments/inheritance_study.py": "fb2579a8c86ae82291b91d1656e93aae9e4c412c15f36ed61d5a419242a0330f",
+    "experiments/inherited_policies.py": "116c37380ff113a306915d2d4512bb57e6ba5f49d3a9a62b9593b415df720df1",
+    "models/attention_policy.py": "348d2e8e83426a2e5b5b6198d925764da41f1f24936abdbfce58041e7cc01080",
+    "models/gating_policy.py": "64ff19adbf2c8d9865d4cb0f7d057b7ba6591a74efcd7b333f4a1e12846be4d9",
+    "models/mlp_policy.py": "48941d42d4aad827f17eee38f49ce13804af6a82a2eda0924bb5eaf7086b99f1",
+    "models/rule_based.py": "2bbd0a550dff75d7dc70f392325526f786389fbce72b9bdc7b6c99879ab88854",
+    "experiments/hamilton_study.py": "9da2bf276b2a6aca14284555f4846f9c59d8530805f92f55a6a1f260f4d45af6",
+    "experiments/hamilton_robustness.py": "11cd2943355d930686e790b6c864a11fc8547dd756bfa3bb030af6fdf3b9c093"
+  }
+}

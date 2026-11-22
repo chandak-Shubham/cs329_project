@@ -74,7 +74,7 @@ def hamilton_regression(root, analysis):
     present = {r['condition'] for r in analysis['runs']}
     if not required <= present:
         return dict(status='not fitted',reason='Independently trained matched B/C conditions are required. No historical regression is substituted.')
-    from evaluation.analysis import fit_logistic_regression
+    from evaluation.regression import fit_logistic_regression
     rows = []
     class Recorder:
         def __init__(self, population, seed):

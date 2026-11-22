@@ -409,7 +409,13 @@ CSV_METRICS = ('duration', 'final_residents', 'resident_survival', 'donations_pe
 def write_csv(study, runs, protocol):
     """Spreadsheet copies of the raw evaluations: one row per episode, and one per seed (the inference unit)."""
     import csv
-    reward = lambda c: 'none (no learning)' if c == 'evolution_only' else ('energy' if c.startswith('energy') else 'inclusive')
+    def reward(c):
+        spec = protocol['conditions'][c]
+        if spec.get('learning', True) is False:
+            return 'none (no learning)'
+        if not spec['config'].get('inclusive_fitness'):
+            return 'energy'
+        return spec['config'].get('reward_variant', 'inclusive')
     bc = lambda c: protocol['conditions'][c]['config']['donation_benefit']/protocol['conditions'][c]['config'].get('donation_cost', 2.0)
     ordered = sorted(runs, key=lambda r: (r['condition'], r['control'], r['training_seed'], r['world_seed'], r['attack']))
     with (study/'evaluation_runs.csv').open('w', newline='', encoding='utf-8') as f:
@@ -480,7 +486,7 @@ def write_markdown(study, a):
     L += [f"Pooled over B/C (per-seed mean of the five levels): donation difference {fmt(pc['difference'])}, "
           f"{pc['positive_seeds']}/{len(pc['seeds'])} seeds positive, sign-flip p = {pc['sign_flip_p']:.4f}.", '',
           '### 2b. Stacked tests over all independently trained runs', '',
-          'Each (B/C, seed) training run is independent, so the 25 inclusive-minus-energy pairs can be stacked.', '',
+          f"Each (B/C, seed) training run is independent, so the {a['stacked_sign_test']['donations_per_resident_step']['pairs']} inclusive-minus-energy pairs can be stacked.", '',
           '| Metric | Pairs with inclusive > energy | Exact binomial sign test p |', '| --- | --- | --- |']
     for metric, t in a['stacked_sign_test'].items():
         L.append(f"| {metric} | {t['positive']}/{t['pairs']} | {t['sign_test_p']:.2e} |")
@@ -603,11 +609,11 @@ def main():
                                sign_test_p=float(binomtest(sum(d > 0 for d in nonzero), len(nonzero), .5).pvalue))
     survival_tests = {}
     for label, levels in (('all B/C', BC), ('B/C >= 4', ('bc400', 'bc600'))):
-        inc = sum(sum(seed_survival(runs, f'inclusive_{k}')) for k in levels)
-        ene = sum(sum(seed_survival(runs, f'energy_{k}')) for k in levels)
-        n = 5*len(levels)
-        survival_tests[label] = dict(inclusive=f'{inc}/{n}', energy=f'{ene}/{n}',
-                                     fisher_p=float(fisher_exact([[inc, n-inc], [ene, n-ene]])[1]))
+        si = [x for k in levels for x in seed_survival(runs, f'inclusive_{k}')]
+        se = [x for k in levels for x in seed_survival(runs, f'energy_{k}')]
+        inc, ene = sum(si), sum(se)
+        survival_tests[label] = dict(inclusive=f'{inc}/{len(si)}', energy=f'{ene}/{len(se)}',
+                                     fisher_p=float(fisher_exact([[inc, len(si)-inc], [ene, len(se)-ene]])[1]))
     cue = {c: cue_reliance(rows, c) for c in ('inclusive_bc250', 'inclusive_noise025', 'inclusive_noise050')}
     g0, g5 = cue['inclusive_bc250']['per_seed'], cue['inclusive_noise050']['per_seed']
     secondary['noise 0.5 - noise 0|genetic_choice_coefficient'] = paired(

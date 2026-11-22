@@ -1,11 +1,15 @@
 """Optional browser acceptance checks. Requires Playwright and installed Chrome/Edge.
+The page is served from a local HTTP server, because it loads checkpoint files.
 
 python visualizer/check_web_demo.py --browsers chrome msedge
 Screenshots and downloaded CSVs are saved to the ignored .browser_checks directory.
 """
 import argparse
 import csv
+from functools import partial
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+import threading
 
 from playwright.sync_api import expect, sync_playwright
 
@@ -16,6 +20,22 @@ def set_range(page, control, value):
     page.locator(f"#{control}").evaluate(
         "(el, value) => {el.value=value;el.dispatchEvent(new Event('input',{bubbles:true}));}", str(value)
     )
+
+
+def serve():
+    """Serve the repository over local HTTP: the page fetches checkpoints, which file:// forbids."""
+    class Quiet(SimpleHTTPRequestHandler):
+        def log_message(self, *args):
+            pass
+    server = ThreadingHTTPServer(("127.0.0.1", 0), partial(Quiet, directory=str(ROOT)))
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    return server, f"http://127.0.0.1:{server.server_address[1]}/index.html"
+
+
+def wait_for_model(page, checkpoint="inclusive_bc400_seed_42.pt"):
+    """Wait until this checkpoint has loaded (the loading message also names it)."""
+    page.wait_for_function("name => { const t = document.getElementById('model-status').textContent; return t.includes(name) && t.includes('SHA-256 matches'); }",
+                           arg=checkpoint, timeout=60000)
 
 
 def click_steps(page, count):
@@ -34,12 +54,29 @@ def check_browser(playwright, channel, firefox_executable=None):
     errors, requests = [], []
     page.on("pageerror", lambda error: errors.append(str(error)))
     page.on("request", lambda request: requests.append(request.url))
-    page.goto((ROOT / "index.html").as_uri())
+    server, url = serve()
+    page.goto(url)
+    wait_for_model(page)
     expect(page.locator('#strategy')).to_have_value('neural')
     assert page.evaluate('kinshipApp.engine.strategy') == 'neural'
-    expect(page.locator('.research-verdict')).to_contain_text('unlearns cooperation')
-    expect(page.locator('#research-results')).to_contain_text('Historical regression')
-    assert page.locator('#research-results tbody tr').count() >= 35
+    assert page.evaluate('kinshipApp.engine.policies.length') == 24
+    expect(page.locator('#model-status')).to_contain_text('inclusive_bc400_seed_42.pt')
+    expect(page.locator('#research-results')).to_contain_text('Study B')
+    assert page.locator('#research-results tbody tr').count() >= 5
+    # Another trained checkpoint: energy-only reward, seed 101; its population dies out.
+    page.locator('#model-condition').select_option('energy_bc400')
+    page.locator('#model-seed').select_option('101')
+    wait_for_model(page, 'energy_bc400_seed_101.pt')
+    final = page.evaluate("() => { const w = kinshipApp.engine; while (!w.finished) w.step(); return [w.stepCount, w.metrics().residents, w.B, w.policies === null]; }")
+    assert final[1] == 0, final
+    page.locator('#model-condition').select_option('inclusive_bc400')
+    page.locator('#model-seed').select_option('42')
+    wait_for_model(page)
+    # Reproduce: all ten saved checkpoints, one world each, next to the Python record.
+    page.locator('#reproduce-worlds').select_option('1')
+    page.locator('#reproduce-run').click()
+    expect(page.locator('#reproduce-status')).to_contain_text('computed in', timeout=300000)
+    expect(page.locator('#reproduce-table tbody tr')).to_have_count(11)
     page.locator('#research-results img').evaluate_all("images=>images.forEach(img=>img.loading='eager')")
     page.wait_for_function("Array.from(document.querySelectorAll('#research-results img')).every(img=>img.complete&&img.naturalWidth>0)")
     page.locator('#compare-strategies').click()
@@ -158,10 +195,11 @@ def check_browser(playwright, channel, firefox_executable=None):
         assert page.locator("#world").bounding_box()["width"] > 200
         page.screenshot(path=str(ROOT / f".browser_checks/web-{channel}-{width}.png"), full_page=True)
     assert not errors, errors
-    assert not [url for url in requests if url.startswith(("http:", "https:"))], requests
+    assert not [u for u in requests if u.startswith(("http:", "https:")) and not u.startswith("http://127.0.0.1:")], requests
     context.close()
     browser.close()
-    print(f"{channel}: sidebar, Hamilton counts, controls, five strategies, seeded reset, keyboard, interventions, inspection, CSV, extinction, six responsive widths, offline requests: PASS")
+    server.shutdown()
+    print(f"{channel}: sidebar, Hamilton counts, controls, five strategies, seeded reset, keyboard, interventions, inspection, CSV, extinction, six responsive widths, checkpoint loading and SHA-256, model switching, reproduce panel, no external requests: PASS")
 
 
 def main():
