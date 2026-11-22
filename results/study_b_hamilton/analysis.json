@@ -8049,30 +8049,6 @@
     "bc100|donations_per_resident_step": 0.08203125,
     "bc100|duration": 0.08203125
   },
-  "stacked_sign_test": {
-    "donations_per_resident_step": {
-      "pairs": 50,
-      "positive": 47,
-      "sign_test_p": 3.708322537931963e-11
-    },
-    "duration": {
-      "pairs": 50,
-      "positive": 45,
-      "sign_test_p": 1.3358203432289883e-12
-    }
-  },
-  "survival_fisher": {
-    "all B/C": {
-      "inclusive": "18/50",
-      "energy": "0/50",
-      "fisher_p": 1.1774868348472536e-06
-    },
-    "B/C >= 4": {
-      "inclusive": "17/20",
-      "energy": "0/20",
-      "fisher_p": 2.5695242602917798e-08
-    }
-  },
   "pooled_contrast": {
     "seeds": [
       42,
@@ -70783,5 +70759,78 @@
       "post_invasion_donations": 0,
       "mimic_donation_share": null
     }
-  ]
+  ],
+  "survival_paired": {
+    "all B/C": {
+      "inclusive": "18/50",
+      "energy": "0/50",
+      "seeds": [
+        42,
+        101,
+        202,
+        303,
+        404,
+        505,
+        606,
+        707,
+        808,
+        909
+      ],
+      "levels": [
+        "bc100",
+        "bc150",
+        "bc250",
+        "bc400",
+        "bc600"
+      ],
+      "count_differences": [
+        3,
+        2,
+        2,
+        2,
+        2,
+        1,
+        1,
+        2,
+        1,
+        2
+      ],
+      "risk_difference": 0.36,
+      "sign_flip_p": 0.001953125
+    },
+    "B/C >= 4": {
+      "inclusive": "17/20",
+      "energy": "0/20",
+      "seeds": [
+        42,
+        101,
+        202,
+        303,
+        404,
+        505,
+        606,
+        707,
+        808,
+        909
+      ],
+      "levels": [
+        "bc400",
+        "bc600"
+      ],
+      "count_differences": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        1,
+        1,
+        2,
+        1,
+        2
+      ],
+      "risk_difference": 0.85,
+      "sign_flip_p": 0.001953125
+    }
+  }
 }

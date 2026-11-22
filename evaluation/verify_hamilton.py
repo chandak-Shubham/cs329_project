@@ -91,9 +91,21 @@ def recompute(analysis):
             ok &= row['n'] == n and round(row['mean']*row['n']) == count
         positives += sum(inc[s] > ene[s] for s in inc)
         pairs += len(inc)
-    stacked = analysis['stacked_sign_test']['donations_per_resident_step']
-    ok &= (positives, pairs) == (stacked['positive'], stacked['pairs'])
-    print(f'   Inclusive > energy-only in {positives}/{pairs} paired runs (stored: {stacked["positive"]}/{stacked["pairs"]})')
+    from itertools import product
+    for label, levels in [('all B/C', LEVELS), ('B/C >= 4', ('bc400', 'bc600'))]:
+        differences = {}
+        for level in levels:
+            inc = seed_mean(f'inclusive_{level}', 'resident_survival')
+            ene = seed_mean(f'energy_{level}', 'resident_survival')
+            for seed in inc:
+                differences[seed] = differences.get(seed, 0) + int(inc[seed] == 1) - int(ene[seed] == 1)
+        ds = list(differences.values())
+        extreme = sum(abs(sum(x*y for x,y in zip(ds, signs))) >= abs(sum(ds))
+                      for signs in product((-1,1), repeat=len(ds)))
+        expected = analysis['survival_paired'][label]
+        ok &= extreme / 2**len(ds) == expected['sign_flip_p']
+        ok &= [differences[s] for s in expected['seeds']] == expected['count_differences']
+    print(f'   Inclusive > energy-only giving in {positives}/{pairs} seed/ratio pairs')
     print(f'   Recomputed values match analysis.json: {"yes" if ok else "NO"}')
     return ok
 

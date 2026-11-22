@@ -132,3 +132,21 @@ def test_conditional_logit_recovers_recipient_weights():
     rows = synthetic_rows(np.random.default_rng(2), 6000, lambda n: 1.0, lambda r, b: 2.0*r - 1.0*b)
     beta = conditional_logit(opportunity_blocks(rows), lambda blk: blk[:, [0, 2]])
     assert np.allclose(beta, [2.0, -1.0], atol=.2)
+
+def test_survival_inference_flips_once_per_seed_across_ratios():
+    from evaluation.hamilton_report import BC, survival_contrasts
+    import pytest
+
+    seeds = [10, 20]
+    runs = [dict(condition=f'{reward}_{level}', control='trained', attack=False,
+                 training_seed=seed, world_seed=seed+10000, resident_survival=reward=='inclusive')
+            for seed in seeds for level in BC for reward in ('energy','inclusive')]
+    protocol = dict(training_seeds=seeds, evaluation_worlds_per_seed=1)
+    high = survival_contrasts(runs, protocol)['B/C >= 4']
+    assert high['count_differences'] == [2, 2]
+    assert high['risk_difference'] == 1
+    assert high['sign_flip_p'] == 0.5
+    with pytest.raises(ValueError, match='Incomplete world'):
+        survival_contrasts(runs[:-1], protocol)
+    with pytest.raises(ValueError, match='Duplicate world'):
+        survival_contrasts(runs+[runs[0]], protocol)

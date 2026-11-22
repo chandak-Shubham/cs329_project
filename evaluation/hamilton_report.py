@@ -326,6 +326,37 @@ def seed_survival(runs, condition, control='trained'):
     return [all(v) for _, v in sorted(seeds.items())]
 
 
+def survival_contrasts(runs, protocol):
+    """Swap reward labels once per seed across all included benefit/cost levels."""
+    comparisons = {}
+    seeds = protocol['training_seeds']
+    for label, levels in [('all B/C', BC), ('B/C >= 4', ('bc400', 'bc600'))]:
+        counts = {}
+        for reward in ('inclusive', 'energy'):
+            counts[reward] = {s: 0 for s in seeds}
+            for level in levels:
+                worlds = {s: {} for s in seeds}
+                for r in runs:
+                    if (r['condition'], r['control'], r['attack']) != (f'{reward}_{level}', 'trained', False):
+                        continue
+                    block = worlds[r['training_seed']]
+                    if r['world_seed'] in block:
+                        raise ValueError('Duplicate survival world')
+                    block[r['world_seed']] = r['resident_survival']
+                for seed, block in worlds.items():
+                    expected = {seed + 10000 + 1000*k for k in range(protocol['evaluation_worlds_per_seed'])}
+                    if set(block) != expected:
+                        raise ValueError(f'Incomplete world block for {reward}, {level}, seed {seed}')
+                    counts[reward][seed] += all(block.values())
+        n = len(seeds)*len(levels)
+        differences = [counts['inclusive'][s] - counts['energy'][s] for s in seeds]
+        comparisons[label] = dict(inclusive=f"{sum(counts['inclusive'].values())}/{n}",
+                                  energy=f"{sum(counts['energy'].values())}/{n}",
+                                  seeds=seeds, levels=list(levels), count_differences=differences,
+                                  risk_difference=sum(differences)/n, sign_flip_p=sign_flip_p(differences))
+    return comparisons
+
+
 def learning_curves(study, condition):
     curves = {}
     for path in sorted(study.models.glob(f'{condition}_seed_*.json')):
@@ -486,14 +517,13 @@ def write_markdown(study, a):
     pc = a['pooled_contrast']
     L += [f"Pooled over B/C (per-seed mean of the five levels): donation difference {fmt(pc['difference'])}, "
           f"{pc['positive_seeds']}/{len(pc['seeds'])} seeds positive, sign-flip p = {pc['sign_flip_p']:.4f}.", '',
-          '### 2b. Stacked tests over all independently trained runs', '',
-          f"Each (B/C, seed) training run is independent, so the {a['stacked_sign_test']['donations_per_resident_step']['pairs']} inclusive-minus-energy pairs can be stacked.", '',
-          '| Metric | Pairs with inclusive > energy | Exact binomial sign test p |', '| --- | --- | --- |']
-    for metric, t in a['stacked_sign_test'].items():
-        L.append(f"| {metric} | {t['positive']}/{t['pairs']} | {t['sign_test_p']:.2e} |")
-    L += ['', '| B/C levels | Inclusive runs surviving | Energy-only runs surviving | Fisher exact p |', '| --- | --- | --- | --- |']
-    for label, t in a['survival_fisher'].items():
-        L.append(f"| {label} | {t['inclusive']} | {t['energy']} | {t['fisher_p']:.2e} |")
+          '### Survival across benefit/cost levels', '',
+          'One sign per training seed jointly swaps the two reward labels at every included level. '
+          'The exact two-sided test assumes sign exchangeability under the null. The two overlapping summaries are exploratory.', '',
+          '| Levels | Inclusive | Energy only | Difference in survival fraction | Seed-block sign-flip p |',
+          '| --- | --- | --- | --- | --- |']
+    for label, t in a['survival_paired'].items():
+        L.append(f"| {label} | {t['inclusive']} | {t['energy']} | {t['risk_difference']:+.2f} | {t['sign_flip_p']:.5f} |")
     L += ['',
           '## 3. Hamilton regression (decision level, cluster bootstrap over seeds)', '',
           'logit P(choose j) = b0 + b1 r~ + b2 b + b3 (B/C) + b4 r~ x (B/C). Hamilton\'s rule predicts b4 > 0.', '',
@@ -597,24 +627,6 @@ def main():
                 stratified_gap_by_seed(rows, f'{reward}_{k}'), stratified_gap_by_seed(rows, f'{reward}_{k}', 'untrained_ancestors'))
     add('learned gate - fixed gate (noise 0.5, mimics)', 'inclusive_noise050_mimics', 'inclusive_fixedgate_noise050_mimics', 'mimic_donation_share', attack=True)
     add('learned gate - fixed gate (noise 0.5, mimics)', 'inclusive_noise050_mimics', 'inclusive_fixedgate_noise050_mimics', 'duration', attack=True)
-    # Every (B/C, seed) training run is independent, so the 25 inclusive-energy
-    # pairs can be stacked: an exact binomial sign test, plus Fisher's exact test
-    # on the number of runs whose population survived every evaluation world.
-    from scipy.stats import binomtest, fisher_exact
-    stacked = {}
-    for metric in ('donations_per_resident_step', 'duration'):
-        diffs = [d for k in BC for d in (lambda a, b: [a[s]-b[s] for s in sorted(set(a) & set(b))])(
-            seed_means(runs, f'inclusive_{k}', metric=metric), seed_means(runs, f'energy_{k}', metric=metric))]
-        nonzero = [d for d in diffs if d != 0]
-        stacked[metric] = dict(pairs=len(diffs), positive=int(sum(d > 0 for d in diffs)),
-                               sign_test_p=float(binomtest(sum(d > 0 for d in nonzero), len(nonzero), .5).pvalue))
-    survival_tests = {}
-    for label, levels in (('all B/C', BC), ('B/C >= 4', ('bc400', 'bc600'))):
-        si = [x for k in levels for x in seed_survival(runs, f'inclusive_{k}')]
-        se = [x for k in levels for x in seed_survival(runs, f'energy_{k}')]
-        inc, ene = sum(si), sum(se)
-        survival_tests[label] = dict(inclusive=f'{inc}/{len(si)}', energy=f'{ene}/{len(se)}',
-                                     fisher_p=float(fisher_exact([[inc, len(si)-inc], [ene, len(se)-ene]])[1]))
     cue = {c: cue_reliance(rows, c) for c in ('inclusive_bc250', 'inclusive_noise025', 'inclusive_noise050')}
     g0, g5 = cue['inclusive_bc250']['per_seed'], cue['inclusive_noise050']['per_seed']
     secondary['noise 0.5 - noise 0|genetic_choice_coefficient'] = paired(
@@ -622,7 +634,7 @@ def main():
     secondary['noise 0.5 - noise 0|genetic_share'] = paired(
         {s: v['genetic_share'] for s, v in g5.items()}, {s: v['genetic_share'] for s, v in g0.items()})
     analysis = dict(protocol=protocol, summary=summary, primary_contrasts=primary, primary_holm=holm(pvals),
-                    stacked_sign_test=stacked, survival_fisher=survival_tests,
+                    survival_paired=survival_contrasts(runs, protocol),
                     pooled_contrast=paired(pooled['inclusive'], pooled['energy']), secondary_contrasts=secondary,
                     hamilton_regression={r: hamilton_regression(rows, r) for r in ('inclusive', 'energy')},
                     hamilton_choice_regression={r: hamilton_choice_regression(rows, r) for r in ('inclusive', 'energy')},
