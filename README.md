@@ -119,3 +119,23 @@ python frontend/check_web_demo.py --browsers msedge   # optional, needs Playwrig
 ```
 
 The browser engine is tested against the Python environment for identical observations, transitions and action probabilities. The live demo is published by `.github/workflows/pages.yml` (Settings → Pages → Source: GitHub Actions).
+
+## Simulation controls
+
+Hover over or focus the question mark beside a control for an explanation.
+
+| Control | What it does |
+| --- | --- |
+| Training condition | Chooses the experimental setup used to train the checkpoint. |
+| Training seed | Chooses an independently trained checkpoint. |
+| Experiment | Loads a preset of agent behaviour and environment settings. |
+| Agent behaviour | Chooses a trained population or a hand-written rule. |
+| Benefit B | Energy added to the recipient of a gift. |
+| Cost C | Energy spent by the donor on a gift. |
+| Drain | Base energy consumed by each resident per step, before density costs. |
+| Speed | Number of simulation steps played per second. |
+| World seed | Sets the random sequence for the simulated world. |
+| Enforce Hamilton rule | Blocks gifts unless observed relatedness times B exceeds C. This forces the rule. |
+| Select agent | Selects an agent to inspect its current state. |
+| Reproduction condition | Chooses the saved experimental condition to replay across its training seeds. |
+| Worlds per seed | Sets how many evaluation worlds to replay per training seed. |
