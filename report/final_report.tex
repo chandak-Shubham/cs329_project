@@ -186,8 +186,7 @@ Building the proposal exposed one conceptual problem and several technical ones 
 \caption{Changes made while implementing the proposal.}
 \label{tab:fixes}
 \small
-\resizebox{\textwidth}{!}{
-\begin{tabular}{lll}
+\begin{tabular}{p{0.27\textwidth}p{0.33\textwidth}p{0.33\textwidth}}
 \toprule
 \textbf{Proposal} & \textbf{Problem found} & \textbf{Implemented} \\
 \midrule
@@ -199,7 +198,7 @@ Success $=$ drop in $w^g$ & Raw cues bypass the gate & Reliance measured from ac
 Regression without interaction & Cannot express the threshold $rB>C$ & $\tilde r\times B/C$ term and a conditional logit \\
 \texttt{argmin(M == 0)}, ``energy conserved'' & Occupied slot; donations create $B-C$ & First free slot; only mitosis conserves energy \\
 \bottomrule
-\end{tabular}}
+\end{tabular}
 \end{table}
 
 \subsection{Environment}
@@ -252,8 +251,7 @@ We ran three studies (Table~\ref{tab:studies}). Every condition is trained indep
 \caption{Studies (all trained models and evaluation logs are public).}
 \label{tab:studies}
 \small
-\resizebox{\textwidth}{!}{
-\begin{tabular}{lll}
+\begin{tabular}{p{0.05\textwidth}p{0.27\textwidth}p{0.6\textwidth}}
 \toprule
 \textbf{Study} & \textbf{Setup} & \textbf{Conditions} \\
 \midrule
@@ -261,7 +259,7 @@ A & Energy-only reward, 2{,}048 steps, 5 seeds & 19 robustness conditions (gate,
 B & 8{,}192 steps, 10 seeds, 200 models & Energy-only vs inclusive at $B/C\in\{1,1.5,2.5,4,6\}$; noise, mimics, gate, MLP, placement, $\gamma=0.99$ \\
 C & $B/C=4$, 10 seeds, 180 models & Prosocial and kin-blind controls, noise, mimics, gate, MLP, mutation, $\gamma=0.99$ for both rewards, $4\times$ training \\
 \bottomrule
-\end{tabular}}
+\end{tabular}
 \end{table}
 
 % ======================================================================
@@ -303,11 +301,11 @@ $B/C$ & Inclusive & Energy & Untrained & Inclusive & Energy-only & Untrained \\
 \begin{figure}[!htbp]
 \centering
 \includegraphics[width=0.85\textwidth]{learning_curves.png}
-\caption{Residents during training at $B/C=2.5$ (one line per seed): energy-only populations go extinct; inclusive populations persist.}
+\caption{Residents during training at $B/C=2.5$ (one line per seed): energy-only populations go extinct; under the inclusive reward one seed stays at capacity and the others persist at small sizes.}
 \label{fig:curves}
 \end{figure}
 
-\subsection{RQ3: Learned Giving Follows Hamilton's Threshold}
+\subsection{RQ3: Learned Giving and Hamilton's Threshold}
 Under the inclusive reward, learned donation rates were low at the two lowest tested ratios: $B/C=1$ makes $rB>C$ impossible ($r>1$), whereas $B/C=1.5$ requires $r>2/3$. At $B/C=6$ inclusive learners gave more than untrained networks (9/10 seeds). The scripted Hamilton rule using observed cues switches on at a similar point (Fig.~\ref{fig:strat}). Learners choose more related recipients (conditional-logit coefficient 1.72 [0.78, 2.66]); the predicted increase of this effect with $B/C$ was not found ($-0.26$ [$-0.42$, $-0.10$]). One reading is a threshold policy that discriminates less once most neighbours qualify; this is a post-hoc interpretation, not confirmation of the predicted interaction.
 
 \begin{figure}[!htbp]
@@ -354,8 +352,7 @@ Corrupting the genetic cue removed its influence on recipient choice (Fig.~\ref{
 \caption{Assortment, sensitivity and ablations (10 seeds each).}
 \label{tab:sens}
 \small
-\resizebox{\textwidth}{!}{
-\begin{tabular}{lll}
+\begin{tabular}{p{0.26\textwidth}p{0.38\textwidth}p{0.29\textwidth}}
 \toprule
 \textbf{Check} & \textbf{Result} & \textbf{Reading} \\
 \midrule
@@ -366,7 +363,7 @@ Evolution only (no learning), $B/C=4$ & 10/10 survive; learning targets kin bett
 Attention vs MLP, $B/C=4$ & gifts with $rB>C$ $+0.129$ ($p=0.016$) & Attention improved kin targeting here \\
 Mutation 0.20 vs 0.05 & donations $-0.244$ ($p=0.014$), survival 4/10 & Higher mutation reduced cooperation in this condition \\
 \bottomrule
-\end{tabular}}
+\end{tabular}
 \end{table}
 
 No significant assortment difference was detected (Table~\ref{tab:sens}); a likely reason is that survivor selection makes populations near-clonal, so neighbours are related wherever offspring are placed.
@@ -382,7 +379,7 @@ No significant assortment difference was detected (Table~\ref{tab:sens}); a like
     \item \textbf{Shubham Chandak:} Per-family PPO training with inheritance and survivor selection, the reward variants (inclusive, prosocial, kin-blind), the experiment pipeline for Studies A--C, statistical analysis (sign-flip tests, conditional logit, Hamilton gap, assortment), the verification script and the interactive project page.
 \end{itemize}
 
-\textbf{Check everything online, without running anything locally.} The project page \url{https://chandak-shubham.github.io/cs329_project/} runs the committed trained models in the browser: choose one of the supported training conditions (16 conditions of Studies B and C, 10 seeds each), watch the population, add mimics or change $B$ and $C$, and press \emph{Reproduce a result} to rerun all 10 seeds and compare them with the recorded Python evaluation. Its research section, all figures, tables (\texttt{results/}) and the 475 trained models (\texttt{models/}) are in the repository \url{https://github.com/chandak-Shubham/cs329_project}, together with \texttt{evaluation/verify\_hamilton.py}, which verifies the integrity (SHA-256 and training settings) of every Study B and C checkpoint and replays selected checkpoints exactly by default, or all of them with \texttt{--all}.
+\textbf{Check everything online, without running anything locally.} The project page \url{https://chandak-shubham.github.io/cs329_project/} runs the committed trained models in the browser: choose one of the supported training conditions (16 conditions of Studies B and C, 10 seeds each), watch the population, add mimics or change $B$ and $C$, and press \emph{Reproduce a result} to rerun all 10 seeds and compare them with the recorded Python evaluation. Its research section, all figures, tables (\texttt{results/}) and the 475 trained models (\texttt{models/}) are in the repository \url{https://github.com/chandak-Shubham/cs329_project}, together with \texttt{evaluation/verify\_hamilton.py}, which verifies the integrity (SHA-256 and training settings) of every Study B and C checkpoint and replays selected checkpoints exactly by default, or all of them with \texttt{-{}-all}.
 
 \begin{thebibliography}{99}
 \bibitem{veritasium2025} Muller, D. [Veritasium]. (2025). \textit{The Most Controversial Idea In Biology}. YouTube.
