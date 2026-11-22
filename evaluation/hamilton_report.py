@@ -341,7 +341,7 @@ def survival_contrasts(runs, protocol):
                         continue
                     block = worlds[r['training_seed']]
                     if r['world_seed'] in block:
-                        raise ValueError('Duplicate survival world')
+                        raise ValueError(f"Duplicate world {r['world_seed']} for {reward}, {level}")
                     block[r['world_seed']] = r['resident_survival']
                 for seed, block in worlds.items():
                     expected = {seed + 10000 + 1000*k for k in range(protocol['evaluation_worlds_per_seed'])}
