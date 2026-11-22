@@ -6981,6 +6981,43 @@
       "positive_seeds": 7
     }
   },
+  "survival_fisher": {
+    "inclusive vs energy-only (gamma 0.9)": {
+      "a": "7/10",
+      "b": "0/10",
+      "fisher_p": 0.0030959752321981426
+    },
+    "inclusive vs energy-only (gamma 0.99)": {
+      "a": "2/10",
+      "b": "2/10",
+      "fisher_p": 1.0
+    },
+    "inclusive vs prosocial": {
+      "a": "7/10",
+      "b": "10/10",
+      "fisher_p": 0.21052631578947367
+    },
+    "inclusive vs kin-blind": {
+      "a": "7/10",
+      "b": "6/10",
+      "fisher_p": 1.0
+    },
+    "inclusive vs prosocial (mimics)": {
+      "a": "5/10",
+      "b": "10/10",
+      "fisher_p": 0.032507739938080496
+    },
+    "inclusive vs kin-blind (mimics)": {
+      "a": "5/10",
+      "b": "2/10",
+      "fisher_p": 0.34984520123839014
+    },
+    "4x vs 1x training (B/C 2.5)": {
+      "a": "2/10",
+      "b": "1/10",
+      "fisher_p": 1.0
+    }
+  },
   "cue_reliance": {
     "inclusive_bc400": {
       "seeds": [
@@ -59239,210 +59276,5 @@
       "post_invasion_donations": 0,
       "mimic_donation_share": null
     }
-  ],
-  "survival_paired": {
-    "inclusive vs energy-only (gamma 0.9)": {
-      "a": "7/10",
-      "b": "0/10",
-      "seeds": [
-        42,
-        101,
-        202,
-        303,
-        404,
-        505,
-        606,
-        707,
-        808,
-        909
-      ],
-      "count_differences": [
-        1,
-        1,
-        1,
-        1,
-        1,
-        0,
-        0,
-        1,
-        0,
-        1
-      ],
-      "sign_flip_p": 0.015625
-    },
-    "inclusive vs energy-only (gamma 0.99)": {
-      "a": "2/10",
-      "b": "2/10",
-      "seeds": [
-        42,
-        101,
-        202,
-        303,
-        404,
-        505,
-        606,
-        707,
-        808,
-        909
-      ],
-      "count_differences": [
-        1,
-        0,
-        -1,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "sign_flip_p": 1.0
-    },
-    "inclusive vs prosocial": {
-      "a": "7/10",
-      "b": "10/10",
-      "seeds": [
-        42,
-        101,
-        202,
-        303,
-        404,
-        505,
-        606,
-        707,
-        808,
-        909
-      ],
-      "count_differences": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        -1,
-        -1,
-        0,
-        -1,
-        0
-      ],
-      "sign_flip_p": 0.25
-    },
-    "inclusive vs kin-blind": {
-      "a": "7/10",
-      "b": "6/10",
-      "seeds": [
-        42,
-        101,
-        202,
-        303,
-        404,
-        505,
-        606,
-        707,
-        808,
-        909
-      ],
-      "count_differences": [
-        0,
-        1,
-        0,
-        1,
-        0,
-        -1,
-        0,
-        1,
-        -1,
-        0
-      ],
-      "sign_flip_p": 1.0
-    },
-    "inclusive vs prosocial (mimics)": {
-      "a": "5/10",
-      "b": "10/10",
-      "seeds": [
-        42,
-        101,
-        202,
-        303,
-        404,
-        505,
-        606,
-        707,
-        808,
-        909
-      ],
-      "count_differences": [
-        0,
-        0,
-        -1,
-        -1,
-        -1,
-        -1,
-        0,
-        -1,
-        0,
-        0
-      ],
-      "sign_flip_p": 0.0625
-    },
-    "inclusive vs kin-blind (mimics)": {
-      "a": "5/10",
-      "b": "2/10",
-      "seeds": [
-        42,
-        101,
-        202,
-        303,
-        404,
-        505,
-        606,
-        707,
-        808,
-        909
-      ],
-      "count_differences": [
-        0,
-        1,
-        0,
-        0,
-        0,
-        0,
-        1,
-        0,
-        0,
-        1
-      ],
-      "sign_flip_p": 0.25
-    },
-    "4x vs 1x training (B/C 2.5)": {
-      "a": "2/10",
-      "b": "1/10",
-      "seeds": [
-        42,
-        101,
-        202,
-        303,
-        404,
-        505,
-        606,
-        707,
-        808,
-        909
-      ],
-      "count_differences": [
-        0,
-        0,
-        1,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "sign_flip_p": 1.0
-    }
-  }
+  ]
 }

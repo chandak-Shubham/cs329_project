@@ -328,6 +328,13 @@
     #research-results h3 { font-size: 13px; margin: 16px 0 6px; }
     #research-results p { margin: 6px 0; font-size: 13px; color: var(--text); }
     #research-results a { color: var(--blue); }
+    .tools-grid { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 16px; }
+    .tools-grid > div { min-width: 0; }
+    .research-verdict { flex-wrap: wrap; min-width: 0; }
+    @media (max-width: 800px) { .tools-grid { grid-template-columns: minmax(0,1fr); } .topbar { flex-wrap: wrap; } }
+    .conclusions-box { margin: 12px 0; padding: 12px 16px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; }
+    .conclusions-box .conclusions-title { margin: 0 0 6px; font-size: 13px; font-weight: 700; }
+    .conclusions-box ul { margin: 0; padding-left: 18px; font-size: 12.5px; line-height: 1.6; }
     .research-table { overflow-x: auto; margin: 10px 0; border: 1px solid var(--line); border-radius: 6px; }
     .research-table table { min-width: 650px; font-size: 12px; }
     .research-table caption { text-align: left; padding: 6px 10px; font-weight: 600; font-size: 12px; }
@@ -389,8 +396,9 @@
 
         <section class="sidebar-section">
           <h3>Strategy</h3>
-          <div class="field" style="display:none;"><select id="scenario"><option value="custom">Custom</option><option value="learned" selected>Learned</option><option value="cooperation">Cooperation</option><option value="selfish">Selfish</option><option value="kin">Kin</option><option value="invasion">Invasion</option><option value="stress">Stress</option></select><p id="scenario-note"></p></div>
+          <div class="field"><label for="scenario">Experiment</label><select id="scenario"><option value="custom" disabled>Custom settings</option><option value="learned" selected>Trained model: its training ecology</option><option value="cooperation">Rule baseline: recent donors</option><option value="selfish">Rule baseline: never donate</option><option value="kin">Rule baseline: genetic matching</option><option value="invasion">Mimics at step 40</option><option value="stress">Mimics in stress ecology</option></select><p class="fineprint" id="scenario-note"></p></div>
           <div class="field">
+            <label for="strategy">Agent behaviour</label>
             <select id="strategy">
               <option value="neural" selected>Trained PPO Population</option>
               <option value="reputation">Recent Donors Baseline</option>
@@ -398,7 +406,7 @@
               <option value="fixed">Fixed Both Cues</option>
               <option value="selfish">Never Donate (Selfish)</option>
             </select>
-            <p class="fineprint" id="strategy-note" style="display:none;"></p>
+            <p class="fineprint" id="strategy-note"></p>
           </div>
         </section>
 
@@ -500,7 +508,7 @@
               <label for="enforce-hamilton" style="display:flex; align-items:center; gap:6px; margin:8px 0; font-size:12px;">
                 <input id="enforce-hamilton" type="checkbox"> Enforce rB &gt; C rule
               </label>
-              <p class="fineprint" id="hamilton-note" style="display:none;"></p>
+              <p class="fineprint" id="hamilton-note"></p>
               <p class="condition-status" id="condition-status" role="status" aria-live="polite"></p>
 
               <details id="check-details" style="margin-top:10px; border-top:1px solid var(--line); padding-top:8px;">
@@ -545,12 +553,12 @@
         </section>
       </div>
 
-      <details class="panel" id="advanced-tools" style="margin-bottom:16px;">
+      <details class="panel" id="advanced-tools" style="margin-bottom:16px;" open>
         <summary class="panel-header">
           <span style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-muted);">Strategy Comparison &amp; Replication Tools</span>
           <span class="badge-pill">Tools</span>
         </summary>
-        <div class="panel-body" style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+        <div class="panel-body tools-grid">
           <div id="compare-panel" style="padding:10px; background:#f8fafc; border:1px solid var(--line); border-radius:6px;">
             <h4 style="margin:0 0 6px 0; font-size:12px;">5-Strategy Comparison</h4>
             <button type="button" id="compare-strategies">Compare fresh runs</button>
@@ -560,9 +568,10 @@
 
           <div id="reproduce-panel" style="padding:10px; background:#f8fafc; border:1px solid var(--line); border-radius:6px;">
             <section id="reproduce" aria-labelledby="reproduce-heading">
-              <h4 id="reproduce-heading" style="margin:0 0 6px 0; font-size:12px;">Replicate Checkpoints</h4>
+              <h4 id="reproduce-heading" style="margin:0 0 6px 0; font-size:12px;">Reproduce a result from the saved models</h4>
+              <p class="fineprint">Reruns all 10 saved checkpoints of a condition in fresh worlds and shows the outcome next to what the Python evaluation recorded. The browser draws its own random numbers, so single worlds can differ; per-seed behaviour and totals should agree.</p>
               <div class="reproduce-controls">
-                <label for="reproduce-condition">Cond</label><select id="reproduce-condition"></select>
+                <label for="reproduce-condition">Condition</label><select id="reproduce-condition"></select>
                 <label for="reproduce-worlds">Worlds</label>
                 <select id="reproduce-worlds"><option value="1">1 world</option><option value="3" selected>3 worlds</option></select>
                 <button type="button" id="reproduce-run" class="primary">Run 10 seeds</button>
@@ -588,16 +597,15 @@
     </summary>
 <!-- RESEARCH_RESULTS_START -->
 <section id="research-results" aria-labelledby="research-heading"><h2 id="research-heading">Research results</h2>
-<div class="conclusions-box" style="margin: 14px 0; padding: 14px 18px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px;"><p style="margin: 0 0 8px 0; font-size: 13px;"><strong>Key Findings &amp; Conclusions:</strong></p><ul style="margin: 0; padding-left: 18px; font-size: 12px; line-height: 1.6;"><li><strong>Observation: Energy-only populations die out across all ratios (0/50 seeds), while adding kin terms sustains survival at high B/C (17/20 seeds at B/C &ge; 4).</strong></li><li><strong>Conclusion: Survival alone does not require kin discrimination; prosocial equal credit for every gift sustains survival equally well (10/10 seeds).</strong></li><li><strong>Observation: Kin-weighted rewards significantly improve recipient targeting (+0.098 share of qualifying gifts with rB &gt; C, p = 0.0098).</strong></li><li><strong>Conclusion: Under private energy-only rewards, PPO fails to discover kin-directed donation; explicit inclusive credit is required.</strong></li></ul></div>
+<div class="conclusions-box"><p class="conclusions-title">Key findings</p><ul><li><strong>Observation.</strong> Energy-only learners survived in 0/50 seed/ratio runs; with the kin-weighted reward, 18/50 survived, and 17/20 at B/C &ge; 4 (Fisher p = 2.6e-08).</li><li><strong>Observation.</strong> Untrained networks with the same founders survived in 10/10 seeds at B/C = 4, so learning with the energy-only reward removed cooperation that was already present.</li><li><strong>Conclusion.</strong> Survival alone does not need kin information: paying for every gift kept 10/10 seeds alive at B/C = 4, versus 7/10 with the kin-weighted reward.</li><li><strong>Observation.</strong> The kin-weighted reward improved targeting: compared with a kin-blind reward of the same size, the share of gifts satisfying rB &gt; C rose by +0.098 (8/10 seeds, p = 0.0098).</li><li><strong>Conclusion.</strong> Kin information changes <em>whom</em> agents help more than whether the population survives. Learners did not learn to use behavioural history, and they kept feeding genetic mimics.</li></ul></div>
 <p class="fineprint">Every number in this section is generated by <code>frontend/export_web_data.py</code> from <a href="../results/study_b_hamilton/analysis.json">results/study_b_hamilton/analysis.json</a> and <a href="../results/study_c_robustness/analysis.json">results/study_c_robustness/analysis.json</a>. To check them against the models yourself, use <a href="#reproduce">Reproduce a result</a> above, which reruns the saved checkpoints in your browser.</p>
 <h3>Study B: does learning need kinship?</h3>
 <p>20 conditions × 10 independent training seeds, 8,192 transitions per run, 3 fresh evaluation worlds per seed. A seed counts as surviving only if residents are alive at step 300 in all of its worlds.</p>
 <div class="research-table"><table><caption>Seeds whose population survives, and donations per resident-step [95% CI over seeds]</caption><thead><tr><th scope="col">B/C</th><th scope="col">Survive: inclusive</th><th scope="col">Survive: energy-only</th><th scope="col">Survive: untrained</th><th scope="col">Donations: inclusive</th><th scope="col">Donations: energy-only</th><th scope="col">Donations: untrained</th></tr></thead><tbody><tr><td>1</td><td>0/10</td><td>0/10</td><td>0/10</td><td>0.009 [0.006, 0.011]</td><td>0.006 [0.005, 0.007]</td><td>0.322 [0.310, 0.334]</td></tr><tr><td>1.5</td><td>0/10</td><td>0/10</td><td>0/10</td><td>0.011 [0.009, 0.013]</td><td>0.007 [0.006, 0.008]</td><td>0.316 [0.306, 0.327]</td></tr><tr><td>2.5</td><td>1/10</td><td>0/10</td><td>10/10</td><td>0.242 [0.078, 0.406]</td><td>0.005 [0.003, 0.007]</td><td>0.498 [0.473, 0.522]</td></tr><tr><td>4</td><td>7/10</td><td>0/10</td><td>10/10</td><td>0.405 [0.180, 0.629]</td><td>0.016 [0.007, 0.026]</td><td>0.568 [0.532, 0.603]</td></tr><tr><td>6</td><td>10/10</td><td>0/10</td><td>10/10</td><td>0.803 [0.686, 0.920]</td><td>0.032 [0.018, 0.046]</td><td>0.515 [0.481, 0.549]</td></tr></tbody></table></div>
-<p><strong>Observation: Across five ratios, shaped and private rewards yielded 18/50 and 0/50 surviving seed/ratio pairs. At ratios 4 and 6 the counts were 17/20 and 0/20. The paired survival difference was 85% of the tested pairs (two-sided seed-block sign-flip p = 0.00195). Each of the ten training seeds receives one sign across both ratios.</strong></p>
-<p><strong>Conclusion: The predicted increase in marker preference with B/C was absent; private energy-only rewards fail to sustain populations across all ratios.</strong></p>
+<p>Survival over all B/C levels: inclusive 18/50 versus energy-only 0/50 (Fisher exact p = 1.2e-06); at B/C ≥ 4: 17/20 versus 0/20 (p = 2.6e-08). At B/C ≥ 2.5 untrained networks with the same founders also survive, so learning with the energy-only reward <em>destroys</em> cooperation that was already present; the inclusive reward preserves it above the threshold and loses it below.</p>
 <h3>Study C: is it kin information, or any credit for giving?</h3>
 <div class="research-table"><table><caption>Reward controls at B/C = 4 (10 seeds each)</caption><thead><tr><th scope="col">Reward</th><th scope="col">Seeds surviving</th><th scope="col">Donations / resident-step</th><th scope="col">Gifts with rB &gt; C</th><th scope="col">Kin preference of gifts</th></tr></thead><tbody><tr><td>Inclusive (kin-weighted)</td><td>7/10</td><td>0.405 [0.180, 0.629]</td><td>0.499 [0.406, 0.592]</td><td>0.039 [0.001, 0.078]</td></tr><tr><td>Prosocial (+B for any gift)</td><td>10/10</td><td>0.994 [0.988, 1.001]</td><td>0.487 [0.442, 0.532]</td><td>0.009 [0.002, 0.015]</td></tr><tr><td>Kin-blind (mean neighbour r)</td><td>6/10</td><td>0.307 [0.085, 0.529]</td><td>0.401 [0.327, 0.475]</td><td>0.001 [-0.007, 0.010]</td></tr><tr><td>Energy-only</td><td>0/10</td><td>0.016 [0.007, 0.026]</td><td>0.205 [0.101, 0.309]</td><td>-0.042 [-0.081, -0.003]</td></tr></tbody></table></div>
-<p><strong>Conclusion: Crediting every gift keeps populations alive at least as well as kin-weighting does, so survival alone does not need kin information.</strong></p><p><strong>Observation: What kin information changes is <em>whom</em> agents help: inclusive minus kin-blind, share of gifts with rB > C: +0.098 (8/10 seeds, sign-flip p = 0.0098); kin preference: +0.038 (8/10 seeds, sign-flip p = 0.025).</strong></p>
+<p>Crediting every gift keeps populations alive at least as well as kin-weighting does, so survival alone does not need kin information. What kin information changes is <em>whom</em> agents help: inclusive minus kin-blind, share of gifts with rB > C: +0.098 (8/10 seeds, sign-flip p = 0.0098); kin preference: +0.038 (8/10 seeds, sign-flip p = 0.025).</p>
 <div class="research-figures">
 <figure><img src="../plots/study_b_hamilton/bc_sweep.png" loading="lazy" alt="Survival, donations, lifetime and Hamilton gap across five benefit-to-cost ratios"><figcaption>Study B across five B/C levels.</figcaption></figure>
 <figure><img src="../plots/study_b_hamilton/learning_curves.png" loading="lazy" alt="Population size during training under both rewards"><figcaption>Energy-only populations die out during training.</figcaption></figure>
@@ -1344,6 +1352,16 @@
         $("reproduce-status").textContent = location.protocol === "file:" ? "Open the page through GitHub Pages or a local web server (python -m http.server); file:// pages cannot load checkpoints." : `Stopped: ${error.message}`;
       } finally { button.disabled = false; $("reproduce-condition").disabled = false; }
     });
+
+    // Open a collapsed section when a link points into it.
+    function revealHash() {
+      const target = location.hash && document.getElementById(location.hash.slice(1));
+      if (!target) return;
+      for (let node = target; node; node = node.parentElement) if (node.tagName === "DETAILS") node.open = true;
+      target.scrollIntoView();
+    }
+    addEventListener("hashchange", revealHash);
+    revealHash();
 
     $("agent-select").addEventListener("change", e => {
       selectedId = e.target.value === "" ? null : Number(e.target.value);

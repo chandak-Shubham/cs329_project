@@ -1,4 +1,4 @@
-# When does rewarding a gift change whom agents help?
+# Emergent Kin Selection and Spatial Assortment in Multi-Agent Reinforcement Learning
 
 CS329 Multi-Agent Systems · Group 21 · IIT Gandhinagar
 Vansh Barfiwala · Pratham Choksi · Shubham Chandak
@@ -7,15 +7,13 @@ Vansh Barfiwala · Pratham Choksi · Shubham Chandak
 
 ---
 
-[Revised project proposal](report/revised_proposal.md) (retrospective clarification of the original idea review).
-
 ## The question
 
-Agents on an 18 × 18 grid lose energy every step. They can donate energy to a neighbour at a cost $C$, and the neighbour receives $B > C$. Donations are the only source of new energy, so without cooperation the population starves, yet each gift immediately costs its donor energy.
+Agents on an 18 × 18 grid lose energy every step. They can donate energy to a neighbour at a cost $C$, and the neighbour receives $B > C$. Donations are the only source of new energy, so without cooperation the population starves, yet each individual is better off not giving.
 
 Each of 24 founder families owns its own gated-attention network trained with PPO. Children inherit their family's network, and surviving families are selected between episodes. Agents see each neighbour's genetic tag, which may be corrupted, and its recent giving.
 
-**Does private-reward learning sustain cooperation, and does credit for a particular recipient change which neighbours receive help?**
+**Can self-interested learners discover cooperation, and does what they learn follow Hamilton's rule $rB > C$?**
 
 ## Main results
 
@@ -31,10 +29,10 @@ Each of 24 founder families owns its own gated-attention network trained with PP
 | 4.0 | **7/10** | 0/10 | 10/10 | 0.405 | 0.016 |
 | 6.0 | **10/10** | 0/10 | 10/10 | **0.803** | 0.032 |
 
-1. **Private reward reduced cooperation.** At each of five benefit/cost ratios, all ten energy-only policies failed to sustain residents. Untrained networks survived at ratios 2.5, 4 and 6. Study A also found lower giving after learning in 90/90 seed/condition pairs.
-2. **Shaping improved survival at the higher ratios.** At ratios 4 and 6, trained populations survived in 17/20 seed/ratio pairs under donor-specific marker credit and 0/20 under private reward. The 85-percentage-point difference favoured shaping in all ten seed blocks (exact two-sided sign-flip p = 0.00195). Each seed has one sign across ratios. Across all five ratios the difference was 18/50 versus 0/50.
-3. **The predicted interaction failed.** Under marker-weighted credit, learners preferred higher-marker recipients. The estimated change in preference with B/C was negative (-0.26, 95% bootstrap interval -0.42 to -0.10). A rise in population giving at higher ratios cannot establish that individual agents learned the threshold.
-4. **Recipient choice distinguished the rewards.** At B/C = 4, equal credit for any gift sustained 10/10 seeds, marker-weighted credit sustained 7/10, and private reward sustained 0/10. Compared with recipient-blind credit of the same expected size, marker-weighted credit increased the share of gifts satisfying rB > C by 9.8 percentage points (8/10 positive differences, paired p = 0.010).
+1. **Individual reward destroys cooperation.** With the energy-only reward from our proposal, PPO learns to stop giving and no population survives (0/50 runs). Untrained networks with the same founders do survive, so learning removes cooperation that was already there. Study A confirms this in 18 robustness conditions: in all 90/90 runs, trained populations gave less than untrained ones.
+2. **Hamilton's kin term preserves it.** Adding $r_{ij}B$ to the donor's reward: 18/50 runs survive versus 0/50 (Fisher $p = 1.2\times10^{-6}$), and 17/20 versus 0/20 at $B/C \ge 4$ ($p = 2.6\times10^{-8}$).
+3. **Learned giving follows Hamilton's threshold.** Below it ($B/C \le 1.5$) inclusive learners also abandon giving; at $B/C = 6$ they give more than untrained networks in 9/10 seeds.
+4. **Kin information decides *whom* agents help, not whether they survive** (Study C, $B/C = 4$). Paying for every gift (prosocial) keeps all populations alive; only the kin-weighted reward makes agents favour relatives (share of gifts with $rB > C$: +0.10 over a kin-blind reward of the same size, 8/10 seeds, $p = 0.010$).
 5. **Kin recognition is the weak link.** Learners rely less on a corrupted genetic cue but never switch to behavioural history, and they keep feeding genetic mimics, which a simple reputation rule ignores completely.
 6. **Limits.** At $\gamma = 0.99$ both rewards survive equally rarely (2/10 each); 4× more training at $B/C = 2.5$ did not help.
 
@@ -66,13 +64,10 @@ tests/         Python and browser-engine tests
 * **In Python** (about 2 minutes per study):
 
 ```powershell
-python -m pip install "torch==2.5.1" --index-url https://download.pytorch.org/whl/cpu
-python -m pip install "numpy==2.3.2" -r requirements.txt
+python -m pip install -r requirements.txt
 python evaluation/verify_hamilton.py                      # Study B
 python evaluation/verify_hamilton.py --study robustness   # Study C
 ```
-
-Use Python 3.12 for these commands. Stochastic checkpoint replays depend on the sampling implementation. Updating PyTorch can change an entire trajectory despite the same weights and random seed. The tables can also be recomputed from the saved evaluation logs.
 
 The verifier checks every model's SHA-256 and training settings, recomputes the headline numbers from the raw evaluation logs (Study B) or checks that every attack delivered its mimics (Study C), and re-simulates saved models in the same seeded worlds, where every recorded metric must match exactly (`--all` for every model).
 
@@ -95,7 +90,7 @@ python evaluation/report_figures.py                        # extra report figure
 python frontend/export_web_data.py                         # refresh the project page (--check to verify)
 ```
 
-The submitted report is [`report/final_report.pdf`](report/final_report.pdf). Build it from the repository root with `tectonic report/final_report.tex`.
+The submitted report is [`report/final_report.pdf`](report/final_report.pdf). It is compiled from `report/final_report.tex` with the PRIMEarxiv template (for example on Overleaf; `PRIMEarxiv.sty` comes with the template); after editing the source, recompile and replace the PDF.
 
 ## Project page
 

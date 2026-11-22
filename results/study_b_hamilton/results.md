@@ -46,14 +46,19 @@ With 10 pairs the smallest attainable two-sided sign-flip p is 0.001953. The poo
 
 Pooled over B/C (per-seed mean of the five levels): donation difference 0.281 [0.212, 0.349], 10/10 seeds positive, sign-flip p = 0.0020.
 
-### Survival across benefit/cost levels
+### 2b. Stacked tests over all independently trained runs
 
-One sign per training seed jointly swaps the two reward labels at every included level. The exact two-sided test assumes sign exchangeability under the null. The two overlapping summaries are exploratory.
+Each (B/C, seed) training run is independent, so the 50 inclusive-minus-energy pairs can be stacked.
 
-| Levels | Inclusive | Energy only | Difference in survival fraction | Seed-block sign-flip p |
-| --- | --- | --- | --- | --- |
-| all B/C | 18/50 | 0/50 | +0.36 | 0.00195 |
-| B/C >= 4 | 17/20 | 0/20 | +0.85 | 0.00195 |
+| Metric | Pairs with inclusive > energy | Exact binomial sign test p |
+| --- | --- | --- |
+| donations_per_resident_step | 47/50 | 3.71e-11 |
+| duration | 45/50 | 1.34e-12 |
+
+| B/C levels | Inclusive runs surviving | Energy-only runs surviving | Fisher exact p |
+| --- | --- | --- | --- |
+| all B/C | 18/50 | 0/50 | 1.18e-06 |
+| B/C >= 4 | 17/20 | 0/20 | 2.57e-08 |
 
 ## 3. Hamilton regression (decision level, cluster bootstrap over seeds)
 
