@@ -179,7 +179,7 @@ We train the agents using Proximal Policy Optimization (PPO) with shared policy 
 \textbf{Implementation updates relative to the proposal.} The original proposal is retained above. The following sections describe the implemented model, including changes to policy sharing, reward conditions and evaluation methodology.
 
 \subsection{From the Proposal to the Implementation}
-Building the proposal exposed one conceptual problem and several technical ones (Table~\ref{tab:fixes}). The conceptual one: PPO maximises each agent's \emph{own} return, so with $R_i=\Delta E_i$ a relative's gain never enters the gradient, and nothing rewards ``proliferation of weights''. Instead of assuming kin cooperation would emerge, we made the \textbf{reward the experimental variable} and kept everything else fixed.
+Building the proposal exposed one conceptual problem and several technical ones (Table~\ref{tab:fixes}). The conceptual one: PPO maximises each agent's \emph{own} return. With $R_i=\Delta E_i$ the donor's individual reward does not directly credit the recipient's gain, and parameter sharing within a family alone does not guarantee selection for cooperation. Instead of assuming kin cooperation would emerge, we made the \textbf{reward the experimental variable} and kept everything else fixed.
 
 \begin{table}[!htbp]
 \centering
@@ -191,7 +191,7 @@ Building the proposal exposed one conceptual problem and several technical ones 
 \toprule
 \textbf{Proposal} & \textbf{Problem found} & \textbf{Implemented} \\
 \midrule
-Selfish reward makes kin-feeding emerge & A relative's gain never enters the PPO gradient & Reward is the manipulated variable (Section~\ref{sec:reward}) \\
+Selfish reward makes kin-feeding emerge & The donor's reward does not directly credit the recipient's gain & Reward is the manipulated variable (Section~\ref{sec:reward}) \\
 Lineage-shared vs.\ independent PPO & Contradictory designs & One network per founder family, inherited by descendants \\
 Gate input $[\tilde r_{ij}\Vert b_j\Vert E_j]$ & One pair cannot reveal population-level corruption & Gate also sees neighbourhood mean and s.d.\ of the cues \\
 Softmax over give-targets only & Moving/defecting left out & One masked softmax over all 13 actions \\
@@ -214,7 +214,7 @@ All rewards are computed before the mitosis split:
 \text{Prosocial control:}\quad & R_i = \Delta E_i + B\cdot\mathbb{I}(a_i=\text{give}(\cdot))\\
 \text{Kin-blind control:}\quad & R_i = \Delta E_i + \bar r_i\, B\cdot\mathbb{I}(a_i=\text{give}(\cdot))
 \end{align}
-Here $r_{ij}$ is the baseline-corrected similarity of the \emph{true} chromosomes ($r_{ij}=0$ for mimics, which share no ancestry) and $\bar r_i$ is the mean true relatedness of the neighbours $i$ observed. Under the inclusive reward a gift changes the donor's reward by exactly $r_{ij}B-C$, so Hamilton's rule is the immediate incentive, but the agent never sees $r_{ij}$: it must infer whom to help from the noisy cue $\tilde r_{ij}$ and behaviour $b_j$. The two controls separate \emph{kin information} from \emph{any credit for giving}: prosocial pays for every gift, and kin-blind pays the same expected kin credit whoever receives it.
+Here $r_{ij}=\min\!\big(1,\max\!\big(0,\frac{h_{ij}-\bar h}{\max(1-\bar h,\epsilon)}\big)\big)$ is computed from the \emph{true} chromosomes, with $\bar h$ the mean similarity over all distinct pairs of living residents and $\epsilon=10^{-6}$; $r_{ij}=0$ for mimics, which share no ancestry. The cue the agents observe, $\tilde r_{ij}$, uses the same formula on the observed (possibly noisy) chromosomes, with $\bar h$ taken over all distinct pairs of living agents, mimics included ($\bar h=0.5$ if fewer than two agents live). $\bar r_i$ is the mean true relatedness of the neighbours $i$ observed. Under the inclusive reward a gift changes the donor's reward by exactly $r_{ij}B-C$, so Hamilton's rule is the immediate incentive, but the agent never sees $r_{ij}$: it must infer whom to help from the noisy cue $\tilde r_{ij}$ and behaviour $b_j$. The two controls separate \emph{kin information} from \emph{any credit for giving}: prosocial pays for every gift, and kin-blind pays the same expected kin credit whoever receives it. The inclusive-reward experiments therefore test whether learners respond to an explicitly kin-weighted incentive; they do not demonstrate spontaneous emergence of Hamilton's rule from purely individual rewards.
 
 \subsection{Learning Algorithm}
 Each of the 24 founders owns a gated-attention network (gate, neighbour encoder, 2-head attention with $d=32$, policy and value heads) and an Adam optimiser. Descendants act with their family's network, and each network is updated by PPO \cite{schulman2017} only on its own members' transitions (rollout 64, 3 epochs, minibatch 64, learning rate $3\times10^{-4}$, GAE $\lambda=0.95$, clip 0.2, entropy 0.01). Between episodes, \emph{survivor selection} draws the next founders from surviving residents, so successful lineages spread their networks (Algorithm~\ref{alg:train}). Population pooling follows Algorithm~\ref{alg:pooling} with the corrections in Table~\ref{tab:fixes} (first free slot; all deaths before any birth); in Study C six extra slots are reserved for mimics so that every attack delivers all six. Studies B and C use $\gamma=0.9$ by default, a value selected in pilot runs; Study A and the designated sensitivity conditions use $\gamma=0.99$ (Table~\ref{tab:sens}).
@@ -245,7 +245,7 @@ Each of the 24 founders owns a gated-attention network (gate, neighbour encoder,
 \subsection{Experiments, Baselines and Metrics}
 We ran three studies (Table~\ref{tab:studies}). Every condition is trained independently with 10 seeds (Study A: 5) and evaluated with frozen weights in 3 fresh worlds per seed. \textbf{Baselines} run in the same worlds with the same founders: untrained networks, evolution only (selection without learning), and scripted rules: never donate, tag trust ($\tilde r>0.3$), public reputation ($b>0.5$), Tit-for-tat, and a scripted \emph{Hamilton rule using observed cues} (give to the neighbour with the highest observed $\tilde r$ if $\tilde rB>C$).
 
-\textbf{Metrics.} \emph{Survival}: residents alive at step 300 in all 3 worlds of a seed. \emph{Donations} per resident step. \emph{Hamilton-consistent gifts}: share of gifts with $r_{ij}B>C$. \emph{Kin preference}: recipient's $r$ minus the neighbours' mean. \emph{Cue reliance}: per-seed conditional-logit coefficients of the chosen recipient on standardised $\tilde r$ and $b$. \emph{Mimic share}: mimics' share of post-invasion gifts. \emph{Assortment}: true-chromosome similarity of adjacent residents. \textbf{Statistics}: the training seed is the unit; 95\% $t$-intervals, exact sign-flip tests (Holm-corrected for the 10 primary contrasts), Fisher's exact test for survival.
+\textbf{Metrics.} \emph{Survival}: residents alive at step 300 in all 3 worlds of a seed. \emph{Donations} per resident step. \emph{Hamilton-consistent gifts}: share of gifts with $r_{ij}B>C$. \emph{Kin preference}: recipient's $r$ minus the neighbours' mean. \emph{Cue reliance}: per-seed conditional-logit coefficients of the chosen recipient on standardised $\tilde r$ and $b$. \emph{Mimic share}: mimics' share of post-invasion gifts. \emph{Assortment}: true-chromosome similarity of adjacent residents. \textbf{Statistics}: the training seed is the unit of inference, so the three evaluation worlds are first averaged within each seed. Means carry 95\% Student-$t$ intervals over seeds; paired contrasts use exact sign-flip tests; the ten primary contrasts (inclusive minus energy-only, on donation rate and lifetime, at each of the five $B/C$ levels) are Holm-corrected; survival counts use Fisher's exact test; regression intervals come from a bootstrap that resamples training seeds (500 replicates).
 
 \begin{table}[!htbp]
 \centering
@@ -308,7 +308,7 @@ $B/C$ & Inclusive & Energy & Untrained & Inclusive & Energy-only & Untrained \\
 \end{figure}
 
 \subsection{RQ3: Learned Giving Follows Hamilton's Threshold}
-Under the inclusive reward, learning abandons giving below the threshold (a recipient must have $r>C/B$: $r>2/3$ at $B/C=1.5$, and the impossible $r>1$ at $B/C=1$) and gives more than untrained networks at $B/C=6$ (9/10 seeds). The scripted Hamilton rule using observed cues switches on at a similar point (Fig.~\ref{fig:strat}). Learners choose more related recipients (conditional-logit coefficient 1.72 [0.78, 2.66]); the predicted increase of this effect with $B/C$ was not found ($-0.26$ [$-0.42$, $-0.10$]), consistent with a threshold policy that discriminates less once most neighbours qualify.
+Under the inclusive reward, learned donation rates were low at the two lowest tested ratios: $B/C=1$ makes $rB>C$ impossible ($r>1$), whereas $B/C=1.5$ requires $r>2/3$. At $B/C=6$ inclusive learners gave more than untrained networks (9/10 seeds). The scripted Hamilton rule using observed cues switches on at a similar point (Fig.~\ref{fig:strat}). Learners choose more related recipients (conditional-logit coefficient 1.72 [0.78, 2.66]); the predicted increase of this effect with $B/C$ was not found ($-0.26$ [$-0.42$, $-0.10$]). One reading is a threshold policy that discriminates less once most neighbours qualify; this is a post-hoc interpretation, not confirmation of the predicted interaction.
 
 \begin{figure}[!htbp]
 \centering
@@ -322,7 +322,7 @@ Paying for every gift (prosocial) kept all populations alive (Table~\ref{tab:con
 
 \begin{table}[!htbp]
 \centering
-\caption{Study C: reward controls at $B/C=4$ (10 seeds; mean [95\% CI]).}
+\caption{Study C: reward controls at $B/C=4$ (10 seeds; mean [95\% CI]). Intervals are unconstrained Student-$t$ intervals over seeds, so a bound can pass a metric's range (e.g.\ 1.001 for a donation rate near its maximum of 1).}
 \label{tab:controls}
 \small
 \resizebox{\textwidth}{!}{
@@ -339,7 +339,7 @@ Energy-only & 0/10 & 0.016 [0.007, 0.026] & 0.205 [0.101, 0.309] & $-$0.042 [$-$
 \end{table}
 
 \subsection{Phase 3--4 (RQ1): Cue Corruption and Genetic Mimicry}
-Corrupting the genetic cue removed its influence on recipient choice (Fig.~\ref{fig:cue}a; noise 0 vs 0.5: +0.217, 8/10 seeds, $p=0.014$; lower genetic share at noise 0.25 in all 10 seeds, $p=0.002$), which meets the proposal's success criterion. However, agents did \emph{not} shift to behavioural history: its coefficient stayed near zero, and survival fell from 7/10 to 2/10. No learner avoided mimics (Fig.~\ref{fig:cue}b): inclusive learners gave them 17\% of gifts, about what untrained networks give (13\%), while a one-line public-reputation rule gives them nothing because a mimic's giving record is zero. No significant advantage of the learned gate over a fixed gate was detected ($p=0.44$).
+Corrupting the genetic cue removed its influence on recipient choice (Fig.~\ref{fig:cue}a; noise 0 vs 0.5: +0.217, 8/10 seeds, $p=0.014$; lower genetic share at noise 0.25 in all 10 seeds, $p=0.002$), which supports reduced genetic-cue reliance, but not the proposed shift toward behavioural history or resistance to mimicry. Agents did \emph{not} shift to behavioural history: its coefficient stayed near zero, and survival fell from 7/10 to 2/10. No learner avoided mimics (Fig.~\ref{fig:cue}b): inclusive learners gave them 17\% of gifts, about what untrained networks give (13\%), while a one-line public-reputation rule gives them nothing because a mimic's giving record is zero. No significant advantage of the learned gate over a fixed gate was detected ($p=0.44$).
 
 \begin{figure}[!htbp]
 \centering
@@ -359,7 +359,7 @@ Corrupting the genetic cue removed its influence on recipient choice (Fig.~\ref{
 \toprule
 \textbf{Check} & \textbf{Result} & \textbf{Reading} \\
 \midrule
-Local vs random offspring placement & adjacent similarity $+0.083$ ($p=0.31$), $-0.015$ ($p=0.78$) & No assortment (RQ2 not supported) \\
+Local vs random offspring placement & adjacent similarity $+0.083$ ($p=0.31$, $B/C=2.5$); $-0.015$ ($p=0.78$, $B/C=4$) & No significant assortment difference detected \\
 $\gamma=0.99$ for both rewards, $B/C=4$ & survival 2/10 vs 2/10 (Fisher $p=1.0$) & Survival advantage absent at the tested $\gamma=0.99$ \\
 $4\times$ training, $B/C=2.5$ & survival 2/10 vs 1/10 & No improvement detected with $4\times$ training \\
 Evolution only (no learning), $B/C=4$ & 10/10 survive; learning targets kin better (+0.147, $p=0.006$) & Selection keeps giving; learning improves targeting \\
@@ -369,9 +369,9 @@ Mutation 0.20 vs 0.05 & donations $-0.244$ ($p=0.014$), survival 4/10 & Higher m
 \end{tabular}}
 \end{table}
 
-Spatial assortment was not detected (Table~\ref{tab:sens}): survivor selection makes populations near-clonal, so neighbours are related wherever offspring are placed.
+No significant assortment difference was detected (Table~\ref{tab:sens}); a likely reason is that survivor selection makes populations near-clonal, so neighbours are related wherever offspring are placed.
 
-\textbf{Discussion and limitations.} The answer to our question is that the \emph{learning signal}, more than the architecture, decides whether cooperation can be learned: a purely individual reward makes PPO remove cooperation, and Hamilton's kin term restores it where $rB>C$. Kin recognition is the weak link: learners mainly learn \emph{whether} to give rather than \emph{to whom}, did not learn to use behaviour, and kept feeding mimics. Limitations: the inclusive reward uses true relatedness, which real organisms do not observe; the survival advantage was absent at the tested $\gamma=0.99$; ten seeds and 8{,}192 steps per run limit power; mimics are scripted; one environment family is tested.
+\textbf{Discussion and limitations.} The answer to our question is that the \emph{learning signal}, more than the architecture, decides whether cooperation can be learned: a purely individual reward makes PPO remove cooperation, and an explicitly kin-weighted reward restores it where $rB>C$ can be met. These experiments show that learners respond to a kin-weighted incentive; they do not show Hamilton's rule emerging spontaneously from purely individual rewards. Kin recognition is the weak link: learners mainly learn \emph{whether} to give rather than \emph{to whom}, did not learn to use behaviour, and kept feeding mimics. Limitations: the inclusive reward uses true relatedness, which real organisms do not observe; the survival advantage was absent at the tested $\gamma=0.99$; ten seeds and 8{,}192 steps per run limit power; mimics are scripted; one environment family is tested.
 
 % ======================================================================
 \section{Contribution}
@@ -382,7 +382,7 @@ Spatial assortment was not detected (Table~\ref{tab:sens}): survivor selection m
     \item \textbf{Shubham Chandak:} Per-family PPO training with inheritance and survivor selection, the reward variants (inclusive, prosocial, kin-blind), the experiment pipeline for Studies A--C, statistical analysis (sign-flip tests, conditional logit, Hamilton gap, assortment), the verification script and the interactive project page.
 \end{itemize}
 
-\textbf{Check everything online, without running anything locally.} The project page \url{https://chandak-shubham.github.io/cs329_project/} runs the committed trained models in the browser: choose any training condition and seed, watch the population, add mimics or change $B$ and $C$, and press \emph{Reproduce a result} to rerun all 10 seeds and compare them with the recorded Python evaluation. Its research section, all figures, tables (\texttt{results/}) and the 475 trained models (\texttt{models/}) are in the repository \url{https://github.com/chandak-Shubham/cs329_project}, together with \texttt{evaluation/verify\_hamilton.py}, which checks every model's SHA-256 and re-simulates them exactly.
+\textbf{Check everything online, without running anything locally.} The project page \url{https://chandak-shubham.github.io/cs329_project/} runs the committed trained models in the browser: choose one of the supported training conditions (16 conditions of Studies B and C, 10 seeds each), watch the population, add mimics or change $B$ and $C$, and press \emph{Reproduce a result} to rerun all 10 seeds and compare them with the recorded Python evaluation. Its research section, all figures, tables (\texttt{results/}) and the 475 trained models (\texttt{models/}) are in the repository \url{https://github.com/chandak-Shubham/cs329_project}, together with \texttt{evaluation/verify\_hamilton.py}, which verifies the integrity (SHA-256 and training settings) of every Study B and C checkpoint and replays selected checkpoints exactly by default, or all of them with \texttt{--all}.
 
 \begin{thebibliography}{99}
 \bibitem{veritasium2025} Muller, D. [Veritasium]. (2025). \textit{The Most Controversial Idea In Biology}. YouTube.
