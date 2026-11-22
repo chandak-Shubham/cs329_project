@@ -11,7 +11,7 @@ Verifies:
 import pytest
 import numpy as np
 from environment.grid_world import GridWorld, ACTION_GIVE_BASE
-from models.rule_based import (
+from networks.rule_based import (
     AlwaysDefectPolicy,
     KinOnlyPolicy,
     ReciprocalPolicy,

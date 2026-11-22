@@ -1,7 +1,7 @@
 """Figures and seed-level diagnostics for the inherited-policy experiment.
 
 Never substitutes historical shared-policy statistics for a new experiment.
-python evaluation/inheritance_report.py --study-dir results/inheritance_study
+python evaluation/inheritance_report.py
 """
 import argparse
 import hashlib
@@ -9,7 +9,7 @@ import json
 from pathlib import Path
 import sys
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path[:0] = [str(Path(__file__).resolve().parents[1]), str(Path(__file__).resolve().parents[1]/'src')]
 import numpy as np
 import torch
 import matplotlib
@@ -17,8 +17,9 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 from evaluation.uncertainty import mean_ci
-from experiments.inherited_policies import load, forward
-from experiments.inheritance_study import evaluate
+import training.paths as paths
+from training.inherited_policies import load, forward
+from training.inheritance_study import evaluate
 
 
 def common_probe(population):
@@ -95,7 +96,7 @@ def hamilton_regression(root, analysis):
             return output
     for condition in sorted(required):
         for seed in analysis['training_seeds']:
-            population,genomes,metadata = load(root/'checkpoints'/f'{condition}_seed_{seed}.pt')
+            population,genomes,metadata = load(root.models/f'{condition}_seed_{seed}.pt')
             recorder = Recorder(population,seed)
             for replicate in range(analysis['evaluation_worlds_per_seed']):
                 evaluate(recorder,genomes,metadata['environment'],seed+10000+replicate*1000)
@@ -111,7 +112,7 @@ def hamilton_regression(root, analysis):
         selected.extend(rng.choice(indices,size=min(12000,len(indices)),replace=False))
     sampled = data[selected]
     x,y,groups = sampled[:,:4],sampled[:,4],sampled[:,5]
-    np.savez_compressed(root/'hamilton_decisions.npz',X=x,y=y,training_seed=groups)
+    np.savez_compressed(root.results/'hamilton_decisions.npz',X=x,y=y,training_seed=groups)
     if np.linalg.matrix_rank(x) < x.shape[1] or len(np.unique(groups)) < 3:
         return dict(status='not identifiable',reason='Rank-deficient predictors or fewer than three independent seeds.',num_samples=len(x))
     result = fit_logistic_regression(x,y,['intercept','corrected_tag_cue','behavior_history','B_over_C'],groups=groups)
@@ -125,13 +126,13 @@ def hamilton_regression(root, analysis):
 
 def main(root):
     torch.set_num_threads(1)
-    analysis = json.loads((root/'analysis.json').read_text(encoding='utf-8'))
+    analysis = json.loads((root.results/'analysis.json').read_text(encoding='utf-8'))
     conditions = sorted({r['condition'] for r in analysis['runs']})
     records, probes = {}, []
     for condition in conditions:
         records[condition] = []
         for seed in analysis['training_seeds']:
-            population, _, metadata = load(root/'checkpoints'/f'{condition}_seed_{seed}.pt')
+            population, _, metadata = load(root.models/f'{condition}_seed_{seed}.pt')
             records[condition].append(metadata)
             probes.append(dict(condition=condition,training_seed=seed,**common_probe(population)))
     contrasts = {}
@@ -145,14 +146,14 @@ def main(root):
             contrasts[f'{a}_minus_{b}/{metric}'] = mean_ci(differences)
     summary = {c:{key:mean_ci([r[key] for r in probes if r['condition'] == c])
                   for key in ('genetic_tv','behavior_tv','genetic_weight')} for c in conditions}
-    diagnostics = dict(analysis_sha256=hashlib.sha256((root/'analysis.json').read_bytes()).hexdigest(),
+    diagnostics = dict(analysis_sha256=hashlib.sha256((root.results/'analysis.json').read_bytes()).hexdigest(),
                        common_input_probes=probes,common_input_summary=summary,
                        cue_paired_contrasts=contrasts,ecological_paired_contrasts=paired_contrasts(analysis['runs']),
                        interpretation='Full-policy cue permutation is an exploratory off-manifold diagnostic, not causal reliability. Networks within a run are not independent replicates.',
                        hamilton_regression=hamilton_regression(root,analysis))
-    (root/'diagnostics.json').write_text(json.dumps(diagnostics,indent=2,allow_nan=False),encoding='utf-8')
-    figures = root/'figures'
-    figures.mkdir(exist_ok=True)
+    (root.results/'diagnostics.json').write_text(json.dumps(diagnostics,indent=2,allow_nan=False),encoding='utf-8')
+    figures = root.plots
+    figures.mkdir(parents=True, exist_ok=True)
     fig, axes = plt.subplots(2,1,figsize=(10,7),sharex=True,layout='constrained')
     # Keep the overview readable; every condition remains in raw diagnostics.
     overview = {'clean','no_selection','evolution_only','fixed_gate','mlp',
@@ -211,15 +212,12 @@ def main(root):
         text.append('| '+c+' | '+' | '.join(format_row(row[k]) for k in ('genetic_tv','behavior_tv','genetic_weight'))+' |')
     text += ['', 'No genetic-to-behavioural adaptation claim is supported unless clean cooperation and the independently trained cue comparisons succeed.', '',
              'Paired seed-level contrasts and the explicit regression status: [diagnostics.json](diagnostics.json).', '',
-             '![Training curves](figures/learning_curves.png)', '', '![Cue sensitivity](figures/cue_sensitivity.png)']
-    (root/'diagnostics.md').write_text('\n'.join(text)+'\n',encoding='utf-8')
-    manifest = {p.relative_to(root).as_posix():hashlib.sha256(p.read_bytes()).hexdigest()
-                for p in root.rglob('*') if p.suffix in ('.json','.pt','.md','.png','.npz') and p.name != 'manifest.json'}
-    (root/'manifest.json').write_text(json.dumps(manifest,indent=2),encoding='utf-8')
+             '![Training curves](../../plots/study_a_energy/learning_curves.png)', '', '![Cue sensitivity](../../plots/study_a_energy/cue_sensitivity.png)']
+    (root.results/'diagnostics.md').write_text('\n'.join(text)+'\n',encoding='utf-8')
     print(f'Generated figures and seed-level diagnostics in {root}')
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--study-dir',type=Path,default=Path('results/inheritance_study'))
-    main(parser.parse_args().study_dir)
+    parser.add_argument('--study', default=paths.STUDY_A, help='study folder name under models/, results/ and plots/')
+    main(paths.study(parser.parse_args().study))

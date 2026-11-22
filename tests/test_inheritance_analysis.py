@@ -1,4 +1,4 @@
-from experiments.inheritance_study import summarize, feasibility
+from training.inheritance_study import summarize, feasibility
 from evaluation.inheritance_report import paired_contrasts
 
 

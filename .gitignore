@@ -9,20 +9,25 @@ venv/
 .venv/
 env/
 
-# Output of the optional browser checks (visualizer/check_web_*.py)
-.browser_checks/
-
-# Trained checkpoints of all studies are tracked; per-run training logs are not.
-*.pth
-results/*/checkpoints/*.log
-results/*/checkpoints/*.lock
+# Per-run logs and locks written during training and evaluation
+models/*/*.log
+models/*/*.lock
 results/*/evaluations/*.log
-
-# Logs of local command-line runs (historical tracked logs are unaffected)
 results/*_run*.log
 
-# Locally built GitHub Pages site (visualizer/build_site.py; CI builds its own)
+# Output of the optional browser checks (frontend/check_web_*.py)
+.browser_checks/
+
+# Locally built GitHub Pages site (frontend/build_site.py; CI builds its own)
 _site/
+
+# LaTeX build files (compile report/final_report.tex on Overleaf or locally)
+report/*.aux
+report/*.log
+report/*.out
+report/*.synctex.gz
+report/*.fls
+report/*.fdb_latexmk
 
 # IDE
 .vscode/

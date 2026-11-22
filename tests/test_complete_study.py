@@ -3,8 +3,8 @@ import hashlib
 
 import pytest
 
-from experiments.inherited_policies import train, archive_sources, source_hashes
-from experiments.inheritance_study import checkpoint_matches, training_spec
+from training.inherited_policies import train, archive_sources, source_hashes
+from training.inheritance_study import checkpoint_matches, training_spec
 
 
 def test_long_budget_and_optimizer_controls_change_only_declared_factors():

@@ -9,10 +9,10 @@ import pytest
 import torch
 
 from environment.grid_world import GridWorld
-from models.mlp_policy import SimpleMLPPolicy
-from models.attention_policy import GatedAttentionPolicy
-from models.rule_based import FixedWeightPolicy, KinOnlyPolicy, ReciprocalPolicy
-from visualizer.export_web_data import build_payload
+from networks.mlp_policy import SimpleMLPPolicy
+from networks.attention_policy import GatedAttentionPolicy
+from networks.rule_based import FixedWeightPolicy, KinOnlyPolicy, ReciprocalPolicy
+from frontend.export_web_data import build_payload
 
 ROOT = Path(__file__).resolve().parents[1]
 pytestmark = pytest.mark.skipif(shutil.which("node") is None, reason="Node is needed for browser-engine parity tests")
@@ -29,7 +29,7 @@ const result = new Function('fixture', 'embedded', 'require', payload.body)(payl
 process.stdout.write(JSON.stringify(result));
 """
     completed = subprocess.run(
-        ["node", "-e", driver, str(ROOT / "index.html")],
+        ["node", "-e", driver, str(ROOT / "frontend" / "index.html")],
         input=json.dumps({"body": body, "fixture": fixture}), text=True, encoding="utf-8",
         capture_output=True, check=True, timeout=600,
     )

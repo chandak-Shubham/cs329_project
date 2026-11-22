@@ -13,15 +13,14 @@ from pathlib import Path
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
+sys.path[:0] = [str(ROOT), str(ROOT/'src')]
 import numpy as np
 from scipy.stats import binomtest, fisher_exact
 
 from evaluation.uncertainty import mean_ci, proportion_ci
 import evaluation.hamilton_report as hr
+import training.paths as paths
 
-MAIN = ROOT/'results/hamilton_study'
-ROBUST = ROOT/'results/hamilton_robustness'
 BASE = 'inclusive_bc400'
 METRICS = ('donations_per_resident_step', 'duration', 'final_residents', 'hamilton_consistent_fraction',
            'kin_preference', 'adjacent_similarity', 'mimic_donation_share', 'genetic_gate_weight')
@@ -74,15 +73,16 @@ def row(runs, condition, control='trained', attack=False):
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--main-dir', type=Path, default=MAIN)
-    p.add_argument('--robust-dir', type=Path, default=ROBUST)
+    p.add_argument('--main-study', default=paths.STUDY_B, help='Study B folder name (baselines)')
+    p.add_argument('--study', default=paths.STUDY_C, help='Study C folder name')
     args = p.parse_args()
-    main_runs, main_rows = hr.load(args.main_dir)
-    rob_runs, rob_rows = hr.load(args.robust_dir)
+    M, R = paths.study(args.main_study), paths.study(args.study)
+    main_runs, main_rows = hr.load(M)
+    rob_runs, rob_rows = hr.load(R)
     runs = [r for r in main_runs if r['condition'] in (BASE, 'energy_bc400', 'inclusive_bc250')] + rob_runs
     rows = {k: v for k, v in main_rows.items() if k[0] in (BASE, 'energy_bc400', 'inclusive_bc250')}
     rows.update(rob_rows)
-    protocol = json.loads((args.robust_dir/'protocol.json').read_text(encoding='utf-8'))
+    protocol = json.loads((R.results/'protocol.json').read_text(encoding='utf-8'))
     conditions = [BASE, 'energy_bc400', *protocol['conditions'], 'inclusive_bc250']
 
     table = {}
@@ -137,7 +137,7 @@ def main():
             contrasts[f'{a} - {b}|choice_{key}'] = hr.paired({s: v[key] for s, v in cue[a]['per_seed'].items()},
                                                             {s: v[key] for s, v in cue[b]['per_seed'].items()})
 
-    sweep = json.loads((args.robust_dir/'strategy_sweep.json').read_text(encoding='utf-8'))
+    sweep = json.loads((R.results/'strategy_sweep.json').read_text(encoding='utf-8'))
     strategies = {}
     for ecology, rule in sorted({(r['ecology'], r['rule']) for r in sweep}):
         sel = [r for r in sweep if (r['ecology'], r['rule']) == (ecology, rule)]
@@ -147,21 +147,21 @@ def main():
             **{m: mean_ci([r[m] for r in sel]) for m in ('donations_per_resident_step', 'duration',
                                                           'hamilton_consistent_fraction', 'mimic_donation_share')})
 
-    analysis = dict(protocol=protocol, baseline_source=str(args.main_dir.relative_to(ROOT).as_posix()),
+    analysis = dict(protocol=protocol, baseline_source=M.results.relative_to(ROOT).as_posix(),
                     summary=table, contrasts=contrasts, survival_fisher=survival_tests, cue_reliance=cue,
                     strategy_sweep=strategies, runs=[{k: v for k, v in r.items() if k != 'curve'} for r in rob_runs])
-    (args.robust_dir/'analysis.json').write_text(json.dumps(analysis, indent=2, allow_nan=False), encoding='utf-8')
-    hr.write_csv(args.robust_dir, rob_runs, protocol)
-    with (args.robust_dir/'strategy_sweep.csv').open('w', newline='', encoding='utf-8') as f:
+    (R.results/'analysis.json').write_text(json.dumps(analysis, indent=2, allow_nan=False), encoding='utf-8')
+    hr.write_csv(R, rob_runs, protocol)
+    with (R.results/'strategy_sweep.csv').open('w', newline='', encoding='utf-8') as f:
         w = csv.writer(f)
         cols = ['duration', 'final_residents', 'resident_survival', 'donations_per_resident_step',
                 'hamilton_consistent_fraction', 'mimic_donation_share']
         w.writerow(['ecology', 'b_over_c', 'strategy', 'world_seed', 'mimic_attack', *cols])
         for r in sweep:
             w.writerow([r['ecology'], r['b_over_c'], r['rule'], r['world_seed'], r['attack'], *('' if r[c] is None else r[c] for c in cols)])
-    figures(args.robust_dir, analysis, main_runs)
-    markdown(args.robust_dir, analysis)
-    print(f'Wrote {args.robust_dir/"results.md"}')
+    figures(R, analysis, main_runs)
+    markdown(R, analysis)
+    print(f'Wrote {R.results/"results.md"}')
 
 
 def hr_rules(runs, condition):
@@ -172,8 +172,8 @@ def figures(out_dir, a, main_runs):
     import matplotlib
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
-    out = out_dir/'figures'
-    out.mkdir(exist_ok=True)
+    out = out_dir.plots
+    out.mkdir(parents=True, exist_ok=True)
     colors = dict(inclusive='#2a6fdb', energy='#e07b39', untrained='#8a8f98', hamilton_rule='#2e9e5b',
                   reputation='#9b59b6', tag_trust='#c0392b', dyadic_tit_for_tat='#16a085')
 
@@ -239,7 +239,7 @@ def markdown(out_dir, a):
          'the `mimics_injected` column of `evaluation_runs.csv` records this for each episode. '
          'The five mimic conditions were trained and evaluated with this reserve (source archived in `source/`). '
          'The other conditions have no mimics, so the reserve never applies to them; they were trained with the '
-         'previous version of `experiments/hamilton_robustness.py` (archived in `source_v1/`, identical apart from the reserve), '
+         'previous version of the Study C training script (archived in `source_v1/`, identical apart from the reserve), '
          'and `evaluation/verify_hamilton.py --study robustness` re-simulates them exactly with the current code.', '',
          '## 1. All conditions (trained policies)', '',
          '| Condition | Evaluation | Seeds surviving | Donations / step | Lifetime | Share of gifts with rB > C | Kin preference | Mimic share | Gate w^g |',
@@ -281,8 +281,8 @@ def markdown(out_dir, a):
                  f"{fmt(v['duration'], 1)} | {fmt(v['hamilton_consistent_fraction'])} | {fmt(v['mimic_donation_share'])} |")
     L += ['', '## Spreadsheets', '', '[seed_summary.csv](seed_summary.csv), [evaluation_runs.csv](evaluation_runs.csv), '
           '[strategy_sweep.csv](strategy_sweep.csv).', '', '## Figures', '',
-          '![Reward controls](figures/reward_controls.png)', '', '![Strategies across B/C](figures/strategies_vs_bc.png)', '']
-    (out_dir/'results.md').write_text('\n'.join(L), encoding='utf-8')
+          f'![Reward controls](../../plots/{out_dir.name}/reward_controls.png)', '', f'![Strategies across B/C](../../plots/{out_dir.name}/strategies_vs_bc.png)', '']
+    (out_dir.results/'results.md').write_text('\n'.join(L), encoding='utf-8')
 
 
 if __name__ == '__main__':

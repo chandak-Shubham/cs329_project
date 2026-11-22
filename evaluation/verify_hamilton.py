@@ -7,7 +7,7 @@ python evaluation/verify_hamilton.py --study robustness   # Study C (B/C = 4 con
 1. Integrity: every committed checkpoint matches the SHA-256 in its sidecar and
    was trained with the protocol's budget, discount and B/C.
 2. Recomputation: headline numbers are recomputed directly from the raw
-   evaluation logs (results/hamilton_study/evaluations/*.json), independently
+   evaluation logs (results/study_b_hamilton/evaluations/*.json), independently
    of evaluation/hamilton_report.py, and compared with analysis.json.
    For Study C, step 2 instead checks that every attacked evaluation episode
    received its 6 mimics.
@@ -22,11 +22,12 @@ import sys
 import time
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
+sys.path[:0] = [str(ROOT), str(ROOT/'src')]
 import numpy as np
 import torch
 
-STUDIES = dict(main=ROOT/'results/hamilton_study', robustness=ROOT/'results/hamilton_robustness')
+import training.paths as paths
+STUDIES = dict(main=paths.study(paths.STUDY_B), robustness=paths.study(paths.STUDY_C))
 STUDY = STUDIES['main']
 LEVELS = ('bc100', 'bc150', 'bc250', 'bc400', 'bc600')
 METRICS = ('duration', 'final_residents', 'resident_survival', 'donations_per_resident_step', 'late_donation_rate',
@@ -36,7 +37,7 @@ METRICS = ('duration', 'final_residents', 'resident_survival', 'donations_per_re
 
 def check_integrity(protocol):
     problems = 0
-    for sidecar in sorted((STUDY/'checkpoints').glob('*.json')):
+    for sidecar in sorted(STUDY.models.glob('*.json')):
         meta = json.loads(sidecar.read_text(encoding='utf-8'))
         condition = sidecar.stem.rsplit('_seed_', 1)[0]
         spec = protocol['conditions'][condition]
@@ -49,14 +50,14 @@ def check_integrity(protocol):
         if not ok:
             problems += 1
             print('  INTEGRITY FAILURE', sidecar.name)
-    count = len(list((STUDY/'checkpoints').glob('*.json')))
+    count = len(list(STUDY.models.glob('*.json')))
     expected = len(protocol['conditions'])*len(protocol['training_seeds'])
     print(f'1. Integrity: {count}/{expected} checkpoints present, {problems} problems')
     return problems == 0 and count == expected
 
 
 def recompute(analysis):
-    runs = [r for p in sorted((STUDY/'evaluations').glob('*.json')) for r in json.loads(p.read_text(encoding='utf-8'))]
+    runs = [r for p in sorted(STUDY.evaluations.glob('*.json')) for r in json.loads(p.read_text(encoding='utf-8'))]
 
     def seed_mean(condition, metric, control='trained'):
         out = {}
@@ -99,7 +100,7 @@ def recompute(analysis):
 
 def check_attacks():
     """Every attacked evaluation episode must actually contain its mimics."""
-    runs = [r for p in sorted((STUDY/'evaluations').glob('*.json')) for r in json.loads(p.read_text(encoding='utf-8'))]
+    runs = [r for p in sorted(STUDY.evaluations.glob('*.json')) for r in json.loads(p.read_text(encoding='utf-8'))]
     attacked = [r for r in runs if r['attack']]
     short = [r for r in attacked if r['mimics_injected'] < 6]
     print(f'2. Mimic attacks: {len(attacked)-len(short)}/{len(attacked)} attacked episodes received all 6 mimics')
@@ -107,17 +108,17 @@ def check_attacks():
 
 
 def resimulate(protocol, all_seeds):
-    import experiments.hamilton_study as hs
-    import experiments.inherited_policies as ip
+    import training.hamilton_study as hs
+    import training.inherited_policies as ip
     if STUDY == STUDIES['robustness']:
-        import experiments.hamilton_robustness  # noqa: F401  (installs the reward-control environment)
+        import training.hamilton_robustness  # noqa: F401  (installs the reward-control environment)
     torch.set_num_threads(1)
     seeds = protocol['training_seeds'] if all_seeds else protocol['training_seeds'][:1]
     jobs = [(c, s) for c in protocol['conditions'] for s in seeds]
     mismatches, start = 0, time.time()
     for i, (condition, seed) in enumerate(jobs, 1):
-        stored = json.loads((STUDY/'evaluations'/f'{condition}_seed_{seed}.json').read_text(encoding='utf-8'))
-        population, genomes, meta = ip.load(STUDY/'checkpoints'/f'{condition}_seed_{seed}.pt')
+        stored = json.loads((STUDY.evaluations/f'{condition}_seed_{seed}.json').read_text(encoding='utf-8'))
+        population, genomes, meta = ip.load(STUDY.models/f'{condition}_seed_{seed}.pt')
         world = seed + 10000
         attack = bool(meta['invasion'])
         run, _ = hs.evaluate_world(population, genomes, meta['environment'], world, attack,
@@ -139,8 +140,8 @@ def main():
     args = p.parse_args()
     global STUDY
     STUDY = STUDIES[args.study]
-    protocol = json.loads((STUDY/'protocol.json').read_text(encoding='utf-8'))
-    analysis = json.loads((STUDY/'analysis.json').read_text(encoding='utf-8'))
+    protocol = json.loads((STUDY.results/'protocol.json').read_text(encoding='utf-8'))
+    analysis = json.loads((STUDY.results/'analysis.json').read_text(encoding='utf-8'))
     checks = [check_integrity(protocol)]
     if args.study == 'main':
         checks.append(recompute(analysis))

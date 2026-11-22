@@ -4,7 +4,7 @@ const assert = require('node:assert/strict');
 const {readFileSync} = require('node:fs');
 const {join} = require('node:path');
 const vm = require('node:vm');
-const html = readFileSync(join(__dirname,'../index.html'),'utf8');
+const html = readFileSync(join(__dirname,'../frontend/index.html'),'utf8');
 vm.runInThisContext(html.match(/<script id="simulation-engine">([\s\S]*?)<\/script>/)[1]);
 const {SimulationEngine:Engine, NeuralActor, SeededRandom} = globalThis.Kinship;
 const data = JSON.parse(html.match(/<script id="research-data" type="application\/json">([\s\S]*?)<\/script>/)[1]);

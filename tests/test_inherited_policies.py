@@ -3,7 +3,7 @@ import pytest
 import torch
 
 from environment.grid_world import GridWorld
-from experiments.inherited_policies import LineagePopulation, advantages, train, load, forward, optimize, PPO
+from training.inherited_policies import LineagePopulation, advantages, train, load, forward, optimize, PPO
 
 
 def family_world(architecture='attention'):
@@ -119,7 +119,7 @@ def test_short_training_exact_budget_masks_mimics_and_roundtrips(tmp_path,archit
     assert len(population.policies) == 2 and genomes.shape == (2, 8)
     assert saved == metadata
     assert all(np.isfinite(row['mean_loss']) for row in metadata['learning_curve'])
-    from experiments.inheritance_study import evaluate
+    from training.inheritance_study import evaluate
     first = evaluate(population,genomes,saved['environment'],10007)
     replay = evaluate(population,genomes,saved['environment'],10007)
     assert first == replay

@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from experiments.hamilton_robustness import RewardControlGridWorld, CONDITIONS, ECOLOGIES, training_spec
+from training.hamilton_robustness import RewardControlGridWorld, CONDITIONS, ECOLOGIES, training_spec
 
 
 def world(variant, recipient_is_mimic=False, inclusive=True):
@@ -71,7 +71,7 @@ def test_protocol_definitions():
 
 def test_mimic_reserve_guarantees_the_attack_and_keeps_the_resident_cap():
     """A full population still receives all 6 mimics; residents never exceed 45."""
-    from experiments.config import environment_config
+    from training.config import environment_config
     for name, spec in CONDITIONS.items():
         assert spec.get('invasion', False) == ('mimic_reserve' in spec['config']), name
     cfg = environment_config(**CONDITIONS['b4_prosocial_mimics']['config'])

@@ -1,6 +1,6 @@
-"""Analysis of the Hamilton's-rule study (experiments/hamilton_study.py).
+"""Analysis of the Hamilton's-rule study (src/training/hamilton_study.py).
 
-python evaluation/hamilton_report.py --study-dir results/hamilton_study
+python evaluation/hamilton_report.py
 
 Inference unit: the training seed. Evaluation worlds are averaged within each
 seed first. Decision rows are never treated as independent samples: regression
@@ -13,10 +13,11 @@ from pathlib import Path
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
+sys.path[:0] = [str(ROOT), str(ROOT/'src')]
 import numpy as np
 
 from evaluation.uncertainty import mean_ci, proportion_ci
+import training.paths as paths
 
 BC = ('bc100', 'bc150', 'bc250', 'bc400', 'bc600')
 BC_VALUE = dict(bc100=1.0, bc150=1.5, bc250=2.5, bc400=4.0, bc600=6.0)
@@ -29,7 +30,7 @@ ROW = dict(r_obs=0, r_true=1, b=2, energy_j=3, is_mimic=4, chosen=5, gave_any=6,
 
 def load(study):
     runs, rows = [], {}
-    for path in sorted((study/'evaluations').glob('*_seed_*.json')):
+    for path in sorted(study.evaluations.glob('*_seed_*.json')):
         runs.extend(json.loads(path.read_text(encoding='utf-8')))
         condition, seed = path.stem.rsplit('_seed_', 1)
         with np.load(path.with_name(path.stem+'_rows.npz')) as data:
@@ -327,7 +328,7 @@ def seed_survival(runs, condition, control='trained'):
 
 def learning_curves(study, condition):
     curves = {}
-    for path in sorted((study/'checkpoints').glob(f'{condition}_seed_*.json')):
+    for path in sorted(study.models.glob(f'{condition}_seed_*.json')):
         meta = json.loads(path.read_text(encoding='utf-8'))
         curves[meta['seed']] = [(h['environment_steps'], h['donations_per_step'], h['final_residents'])
                                 for h in meta['learning_curve']]
@@ -338,8 +339,8 @@ def figures(study, runs, analysis):
     import matplotlib
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
-    out = study/'figures'
-    out.mkdir(exist_ok=True)
+    out = study.plots
+    out.mkdir(parents=True, exist_ok=True)
     blue, orange, grey = '#2a6fdb', '#e07b39', '#8a8f98'
 
     def band(ax, xs, rows, color, label):
@@ -418,7 +419,7 @@ def write_csv(study, runs, protocol):
         return spec['config'].get('reward_variant', 'inclusive')
     bc = lambda c: protocol['conditions'][c]['config']['donation_benefit']/protocol['conditions'][c]['config'].get('donation_cost', 2.0)
     ordered = sorted(runs, key=lambda r: (r['condition'], r['control'], r['training_seed'], r['world_seed'], r['attack']))
-    with (study/'evaluation_runs.csv').open('w', newline='', encoding='utf-8') as f:
+    with (study.results/'evaluation_runs.csv').open('w', newline='', encoding='utf-8') as f:
         w = csv.writer(f)
         w.writerow(['condition', 'reward', 'b_over_c', 'actor', 'training_seed', 'world_seed', 'mimic_attack', *CSV_METRICS])
         for r in ordered:
@@ -427,7 +428,7 @@ def write_csv(study, runs, protocol):
     groups = {}
     for r in ordered:
         groups.setdefault((r['condition'], r['control'], r['attack'], r['training_seed']), []).append(r)
-    with (study/'seed_summary.csv').open('w', newline='', encoding='utf-8') as f:
+    with (study.results/'seed_summary.csv').open('w', newline='', encoding='utf-8') as f:
         w = csv.writer(f)
         w.writerow(['condition', 'reward', 'b_over_c', 'actor', 'mimic_attack', 'training_seed', 'worlds',
                     'all_worlds_survived', *(f'mean_{m}' for m in CSV_METRICS if m != 'resident_survival')])
@@ -552,17 +553,17 @@ def write_markdown(study, a):
                  f"{c['sign_flip_p']:.4f} |" if c['sign_flip_p'] is not None else f"| {name} | {metric} | undefined | | |")
     L += ['', '## Spreadsheets', '', '[seed_summary.csv](seed_summary.csv): one row per trained model (or control) and seed, worlds averaged. '
           '[evaluation_runs.csv](evaluation_runs.csv): one row per evaluation episode.']
-    L += ['', '## Figures', '', '![B/C sweep](figures/bc_sweep.png)', '', '![Learning curves](figures/learning_curves.png)', '',
-          '![Cue reliance](figures/cue_reliance.png)', '']
-    (study/'results.md').write_text('\n'.join(L), encoding='utf-8')
+    L += ['', '## Figures', '', f'![B/C sweep](../../plots/{study.name}/bc_sweep.png)', '', f'![Learning curves](../../plots/{study.name}/learning_curves.png)', '',
+          f'![Cue reliance](../../plots/{study.name}/cue_reliance.png)', '']
+    (study.results/'results.md').write_text('\n'.join(L), encoding='utf-8')
 
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--study-dir', type=Path, default=ROOT/'results/hamilton_study')
+    p.add_argument('--study', default=paths.STUDY_B, help='study folder name under models/, results/ and plots/')
     args = p.parse_args()
-    study = args.study_dir
-    protocol = json.loads((study/'protocol.json').read_text(encoding='utf-8'))
+    study = paths.study(args.study)
+    protocol = json.loads((study.results/'protocol.json').read_text(encoding='utf-8'))
     runs, rows = load(study)
     summary = summarize(runs)
     primary, pvals = {}, {}
@@ -632,11 +633,11 @@ def main():
                     cue_reliance=cue,
                     learning_curves={c: learning_curves(study, c) for c in ('energy_bc250', 'inclusive_bc250')},
                     runs=[{k: v for k, v in r.items() if k != 'curve'} for r in runs])
-    (study/'analysis.json').write_text(json.dumps(analysis, indent=2, allow_nan=False), encoding='utf-8')
+    (study.results/'analysis.json').write_text(json.dumps(analysis, indent=2, allow_nan=False), encoding='utf-8')
     figures(study, runs, analysis)
     write_csv(study, runs, protocol)
     write_markdown(study, analysis)
-    print(f'Wrote {study/"results.md"}')
+    print(f'Wrote {study.results/"results.md"}')
 
 
 if __name__ == '__main__':

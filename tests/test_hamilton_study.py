@@ -1,6 +1,6 @@
 import numpy as np
 
-from experiments.hamilton_study import InclusiveGridWorld, HamiltonRule, true_relatedness, CONDITIONS
+from training.hamilton_study import InclusiveGridWorld, HamiltonRule, true_relatedness, CONDITIONS
 from evaluation.hamilton_report import logistic, sign_flip_p, holm, paired
 
 

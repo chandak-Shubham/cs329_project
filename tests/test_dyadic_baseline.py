@@ -1,5 +1,5 @@
 import numpy as np
-from experiments.dyadic_baseline import DyadicTitForTat
+from training.dyadic_baseline import DyadicTitForTat
 
 
 def observation():

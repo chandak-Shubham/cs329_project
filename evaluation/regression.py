@@ -1,8 +1,7 @@
 """Logistic regression with training-seed cluster-robust inference (Study A).
 
 Moved unchanged from the earlier evaluation/analysis.py, whose other functions
-served superseded studies. The version used for Study A is archived in
-results/submission_study/report_source/evaluation/analysis.py.
+served superseded studies.
 """
 from typing import Any, Dict, List
 

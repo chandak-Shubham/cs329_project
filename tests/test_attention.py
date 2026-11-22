@@ -12,7 +12,7 @@ import pytest
 import numpy as np
 import torch
 from environment.grid_world import GridWorld, ACTION_GIVE_BASE
-from models.attention_policy import GatedAttentionPolicy
+from networks.attention_policy import GatedAttentionPolicy
 
 
 def test_no_neighbour_case_zero_neighbors():

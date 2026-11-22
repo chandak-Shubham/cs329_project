@@ -11,7 +11,7 @@ import pytest
 import numpy as np
 import torch
 from environment.grid_world import GridWorld
-from models.gating_policy import GatingNetwork, GatingPolicy
+from networks.gating_policy import GatingNetwork, GatingPolicy
 
 
 def test_gating_network_normalization():

@@ -1,5 +1,5 @@
 # Byte-exact files. Checkpoints record SHA-256 hashes of the exact source files
-# they were trained with, and result manifests hash their files, so git must
-# never convert line endings for these on any operating system.
+# they were trained with, so git must never convert line endings for these.
 *.py -text
+models/** -text
 results/** -text
