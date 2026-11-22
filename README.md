@@ -7,7 +7,7 @@ Vansh Barfiwala, Pratham Choksi, Shubham Chandak
 | --- | --- |
 | **Report** | [final_report.pdf](report/final_report.pdf) (LaTeX source: [final_report.tex](report/final_report.tex)) |
 | **Live demo, no installation** | <https://chandak-shubham.github.io/cs329_project/> |
-| **Result tables** | [Study B](results/study_b_hamilton/results.md), [Study C](results/study_c_robustness/results.md), [Study A](results/study_a_energy/results.md) |
+| **Result tables** | [Study A](results/study_a_energy/results.md), [Study B](results/study_b_hamilton/results.md), [Study C](results/study_c_robustness/results.md) |
 
 ---
 
@@ -16,6 +16,40 @@ Vansh Barfiwala, Pratham Choksi, Shubham Chandak
 Agents on an 18 x 18 grid lose energy every step. An agent can donate energy to a neighbour: the donor pays a cost $C$ and the neighbour receives $B > C$. Donations are the only source of new energy, so without cooperation the population starves, yet each gift costs its donor. Each of 24 founder families owns its own gated-attention network trained with PPO; children inherit their family's network, and surviving families are selected between episodes. Agents see each neighbour's genetic tag, which may be corrupted or copied by non-donating mimics, and its recent giving.
 
 **Can self-interested learners sustain cooperation, and does rewarding the recipient's relatedness (Hamilton's rule $rB > C$) change whom they help?**
+
+## The three studies (A, B, C)
+
+The project ran three studies, one after another. Each answers a question raised by the previous one.
+
+| | Study A: energy-only robustness | Study B: does learning need kinship? (main study) | Study C: kin information or any reward for giving? |
+| --- | --- | --- | --- |
+| **Question** | Does the selfish reward of our proposal sustain cooperation, under any reasonable setting? | Does adding Hamilton's kin term r x B to the reward sustain cooperation, and does giving follow Hamilton's threshold rB > C? | Is it the *kin* information in the reward that matters, or any reward for giving? How robust are the results? |
+| **Rewards** | Energy only | Energy only vs inclusive (energy + r x B per gift) | Inclusive vs prosocial (B for any gift) vs kin-blind (same expected credit, any recipient) |
+| **Setup** | 19 conditions: gate, MLP, cue noise, mimics, B/C, mutation, placement, selection, learning rate, entropy, 4x training; 5 seeds; 2,048 steps per run | 5 B/C levels (1, 1.5, 2.5, 4, 6) for both rewards, plus noise, mimics, gate, MLP, placement and discount checks; 20 conditions; 10 seeds; 8,192 steps per run | B/C = 4; reward controls, noise, mimics, gate, MLP, placement, mutation, discount 0.99 for both rewards, 4x training; 18 conditions; 10 seeds; plus a sweep of scripted strategies |
+| **Trained models** | 95 | 200 | 180 |
+| **Folder name** | `study_a_energy` | `study_b_hamilton` | `study_c_robustness` |
+| **Results** | [results.md](results/study_a_energy/results.md) | [results.md](results/study_b_hamilton/results.md) | [results.md](results/study_c_robustness/results.md) |
+
+### What we observed
+
+**Study A: energy-only robustness**
+- In all 90 of 90 learning runs (18 conditions x 5 seeds), the trained population gave less than the same founders with untrained networks.
+- This held with or without the gate or attention, under cue noise and mimics, at other B/C values and mutation rates, without selection, and with 4x training.
+- Selection without learning kept every population at capacity, so it is the learning that removes cooperation.
+
+**Study B: does learning need kinship? (main study)**
+- With the energy-only reward, no population survived at any B/C (0/50 seed and ratio runs), although untrained networks with the same founders survived at B/C of 2.5 and above.
+- With the inclusive reward, 18/50 runs survived, and 17/20 at B/C of 4 and 6 (Fisher p = 2.6e-8).
+- Giving was almost absent at B/C = 1 (rB > C impossible) and 1.5 (needs r > 2/3), and highest at B/C = 6, where inclusive learners gave more than untrained networks in 9/10 seeds.
+- Learners chose more related recipients, but the predicted increase of this preference with B/C was not found.
+- Learners kept feeding genetic mimics (20 to 25% of gifts), and no spatial clustering of relatives was detected.
+
+**Study C: kin information or any reward for giving? (B/C = 4)**
+- Paying for every gift kept 10/10 populations alive, the inclusive reward 7/10 and the kin-blind reward 6/10; no significant survival difference was detected.
+- The kin-weighted reward improved *whom* agents help: 0.10 more of its gifts went to recipients with rB > C than under the kin-blind reward (8/10 seeds, p = 0.010).
+- Corrupting the genetic cue removed its influence on recipient choice (10/10 seeds at noise 0.25), but agents did not switch to behavioural history.
+- No learner avoided mimics, while a simple reputation rule gave them nothing.
+- With discount 0.99 both rewards survived equally rarely (2/10 each), and 4x training at B/C = 2.5 did not help.
 
 ## Key results
 
@@ -75,12 +109,12 @@ Then open <http://localhost:8000/frontend/>. Opening `frontend/index.html` direc
 Completed runs are reused, so an interrupted run can be restarted.
 
 ```powershell
+python src/training/inheritance_study.py --complete --steps 2048 --workers 3   # Study A
+python evaluation/inheritance_report.py
 python src/training/hamilton_study.py --workers 14         # Study B, about 2 hours on 14 cores
 python evaluation/hamilton_report.py
 python src/training/hamilton_robustness.py --workers 14    # Study C, about 2.5 hours
 python evaluation/robustness_report.py
-python src/training/inheritance_study.py --complete --steps 2048 --workers 3   # Study A
-python evaluation/inheritance_report.py
 python evaluation/report_figures.py                        # extra report figure
 python frontend/export_web_data.py                         # refresh the website (--check to verify)
 ```
@@ -104,11 +138,7 @@ tests/           Python and browser-engine tests
 .github/         workflow that publishes the live demo
 ```
 
-| Study | Folder name | What it tests |
-| --- | --- | --- |
-| A | `study_a_energy` | Energy-only reward in 19 robustness conditions (5 seeds, 95 models) |
-| B | `study_b_hamilton` | Energy-only vs inclusive reward at five B/C levels, plus noise, mimics and ablations (20 conditions, 200 models) |
-| C | `study_c_robustness` | Prosocial and kin-blind reward controls and robustness at B/C = 4, strategy sweep (18 conditions, 180 models) |
+The three studies and their folder names are described in [The three studies](#the-three-studies-a-b-c).
 
 ## Tests
 

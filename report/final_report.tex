@@ -251,16 +251,16 @@ We ran three studies (Table~\ref{tab:studies}). Every condition is trained indep
 
 \begin{table}[!htbp]
 \centering
-\caption{Studies (all trained models and evaluation logs are public).}
+\caption{The three studies, run in order A, B, C (all trained models and evaluation logs are public). Each observation is detailed in Section~6.}
 \label{tab:studies}
 \small
-\begin{tabular}{p{0.05\textwidth}p{0.27\textwidth}p{0.6\textwidth}}
+\begin{tabular}{p{0.05\textwidth}p{0.19\textwidth}p{0.33\textwidth}p{0.35\textwidth}}
 \toprule
-\textbf{Study} & \textbf{Setup} & \textbf{Conditions} \\
+\textbf{Study} & \textbf{Setup} & \textbf{Conditions} & \textbf{Main observation} \\
 \midrule
-A & Energy-only reward, 2{,}048 steps, 5 seeds & 19 robustness conditions (gate, MLP, noise, mimics, $B/C$, mutation, placement, selection, learning rate, entropy, $4\times$ training) \\
-B & 8{,}192 steps, 10 seeds, 200 models & Energy-only vs inclusive at $B/C\in\{1,1.5,2.5,4,6\}$; noise, mimics, gate, MLP, placement, $\gamma=0.99$ \\
-C & $B/C=4$, 10 seeds, 180 models & Prosocial and kin-blind controls, noise, mimics, gate, MLP, mutation, $\gamma=0.99$ for both rewards, $4\times$ training \\
+A & Energy-only reward, 2{,}048 steps, 5 seeds, 95 models & 19 robustness conditions (gate, MLP, noise, mimics, $B/C$, mutation, placement, selection, learning rate, entropy, $4\times$ training) & In 90/90 learning runs, trained populations gave less than untrained ones; selection without learning kept every population alive. \\
+B & 8{,}192 steps, 10 seeds, 200 models & Energy-only vs inclusive at $B/C\in\{1,1.5,2.5,4,6\}$; noise, mimics, gate, MLP, placement, $\gamma=0.99$ & Energy-only: 0/50 runs survive. Inclusive: 18/50, and 17/20 at $B/C\ge4$; giving low at the two lowest ratios and highest at $B/C=6$. \\
+C & $B/C=4$, 10 seeds, 180 models & Prosocial and kin-blind controls, noise, mimics, gate, MLP, mutation, $\gamma=0.99$ for both rewards, $4\times$ training & Any credit for giving rescues survival; kin-weighted credit improves targeting (+0.098 qualifying gifts); no switch to behaviour, mimics still fed. \\
 \bottomrule
 \end{tabular}
 \end{table}
