@@ -145,7 +145,28 @@ The strictly selfish reward function is $R_i^{(t)} = \Delta E_i^{(t)}$.
 
 \textbf{Research questions.} \textbf{(1)} Can agents learn to reduce their reliance on genetic cues when those cues are corrupted, and instead rely more on behavioral history? \textbf{(2)} Does the spatial structure of the population lead to increased genetic or behavioral assortment? \textbf{(3)} Under what conditions does the learned donation behavior become consistent with Hamilton's rule ($rB > C$)?
 
-We train the agents using Proximal Policy Optimization (PPO). Centralized critics (MAPPO) are not used because the population size changes over time; we use a static-capacity Agent Pooling architecture.
+We train the agents using Proximal Policy Optimization (PPO) with shared policy parameters. Standard centralized critics, as used in MAPPO, are not used because the population size changes over time. To handle the changing population in vectorized RL, we use a static-capacity Agent Pooling architecture (Algorithm \ref{alg:pooling}).
+
+\begin{algorithm}[!htbp]
+\caption{Dynamic Agent Pooling and Environment Step}
+\label{alg:pooling}
+\begin{algorithmic}[1]
+\STATE \textbf{Initialize} $\mathcal{N}_{max}$ capacity, mask $\mathbf{M} \in \{0,1\}^{\mathcal{N}_{max}}$, and attributes $(\mathbf{E}, \mathbf{P}, \mathbf{C})$.
+\FOR{$t = 0$ to $T_{max}$}
+    \STATE Compute valid local observations $\Omega_i^{(t)}$ for active agents ($\mathbf{M}_i = 1$) and sample $a_i \sim \pi_\theta(o_i)$
+    \STATE Process $C$ deductions and $B$ allocations; update $\mathbf{E} \leftarrow \mathbf{E} + \Delta\mathbf{E}$
+    \FOR{each active agent $i$}
+        \IF{$\mathbf{E}_i \leq 0$}
+            \STATE $\mathbf{M}_i \leftarrow 0$ \COMMENT{Starvation: return slot to pool}
+        \ELSIF{$\mathbf{E}_i \geq E_{mitosis}$ \AND $\sum \mathbf{M} < \mathcal{N}_{max}$}
+            \STATE $k \leftarrow \operatorname{argmin}(\mathbf{M} == 0)$ \COMMENT{Locate free tensor slot}
+            \STATE $\mathbf{M}_k \leftarrow 1$; $\mathbf{E}_i, \mathbf{E}_k \leftarrow \mathbf{E}_i / 2$ \COMMENT{Strict energy conservation}
+            \STATE Inherit $c_k \leftarrow \text{mutate}(c_i, \mu)$; Spawn $\mathbf{P}_k \leftarrow \text{Adjacent}(\mathbf{P}_i)$
+        \ENDIF
+    \ENDFOR
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
 
 \textbf{Experimental phases.} Phase 1 (selfish baseline) tests whether purely selfish behavior leads to population decline; Phase 2 (adaptive social affinity) verifies that learning can sustain cooperation; Phase 3 (cue reliability) corrupts genetic cues to test whether agents shift toward behavioral history; Phase 4 (genetic mimicry) introduces non-cooperative agents carrying the cooperators' genetic cue.
 
@@ -154,6 +175,8 @@ We train the agents using Proximal Policy Optimization (PPO). Centralized critic
 % ======================================================================
 \section{Methodology}
 % ======================================================================
+
+\textbf{Implementation updates relative to the proposal.} The original proposal is retained above. The following sections describe the implemented model, including changes to policy sharing, reward conditions and evaluation methodology.
 
 \subsection{From the Proposal to the Implementation}
 Building the proposal exposed one conceptual problem and several technical ones (Table~\ref{tab:fixes}). The conceptual one: PPO maximises each agent's \emph{own} return, so with $R_i=\Delta E_i$ a relative's gain never enters the gradient, and nothing rewards ``proliferation of weights''. Instead of assuming kin cooperation would emerge, we made the \textbf{reward the experimental variable} and kept everything else fixed.
@@ -180,7 +203,7 @@ Regression without interaction & Cannot express the threshold $rB>C$ & $\tilde r
 \end{table}
 
 \subsection{Environment}
-An $18\times18$ torus holds at most 45 residents and starts with 24 founders ($E_0=30$, $E_{mitosis}=60$, $C=2$, $c_{base}=0.6$, $c_{dens}=0.08$, $\mu=0.05$, $K=10$, $b_0=0.5$, $\rho=3$). Each agent observes its 8 nearest neighbours. Actions: stay, four moves (not giving is the ``defect'' choice) or give to one of the 8 neighbours; giving is masked unless $E_i>C$. Every donation creates $B-C$ net energy, so a population that does not cooperate starves. Mitosis requires a free adjacent cell. Episodes last 300 steps. With cue noise $\nu$, every observed chromosome bit is flipped with probability $\nu$. \textbf{Mimics} (Phase 4): six non-donating, non-learning agents carrying the most common resident chromosome enter empty cells at step 10.
+An $18\times18$ torus holds at most 45 residents and starts with 24 founders ($E_0=30$, $E_{mitosis}=60$, $C=2$, $c_{base}=0.6$, $c_{dens}=0.08$, $\mu=0.05$, $K=10$, $b_0=0.5$, $\rho=3$). Each agent observes its 8 nearest neighbours. Actions: stay, four moves (not giving is the ``defect'' choice) or give to one of the 8 neighbours; giving is masked unless $E_i>C$. One transition proceeds as follows: all agents act simultaneously; movement conflicts are resolved at random; donations ($-C$ to the donor, $+B$ to the recipient) and metabolic costs are applied; then every agent with $E_i\le0$ dies; only then do agents with $E_i\ge E_{mitosis}$ reproduce, if the population is below capacity and a von Neumann neighbour cell is free: the child takes the first free slot, is placed in that cell, receives half the parent's energy, a mutated chromosome and the family network, and starts with behavioural history $b_0$. Every donation creates $B-C$ net energy, so a population that does not cooperate starves. Episodes last 300 steps or until extinction. With cue noise $\nu$, every observed chromosome bit is flipped with probability $\nu$. \textbf{Mimics} (Phase 4): six non-donating, non-learning agents carrying the most common resident chromosome enter empty cells at step 10.
 
 \subsection{Rewards}
 \label{sec:reward}
@@ -194,7 +217,7 @@ All rewards are computed before the mitosis split:
 Here $r_{ij}$ is the baseline-corrected similarity of the \emph{true} chromosomes ($r_{ij}=0$ for mimics, which share no ancestry) and $\bar r_i$ is the mean true relatedness of the neighbours $i$ observed. Under the inclusive reward a gift changes the donor's reward by exactly $r_{ij}B-C$, so Hamilton's rule is the immediate incentive, but the agent never sees $r_{ij}$: it must infer whom to help from the noisy cue $\tilde r_{ij}$ and behaviour $b_j$. The two controls separate \emph{kin information} from \emph{any credit for giving}: prosocial pays for every gift, and kin-blind pays the same expected kin credit whoever receives it.
 
 \subsection{Learning Algorithm}
-Each of the 24 founders owns a gated-attention network (gate, neighbour encoder, 2-head attention with $d=32$, policy and value heads) and an Adam optimiser. Descendants act with their family's network, and each network is updated by PPO \cite{schulman2017} only on its own members' transitions (rollout 64, 3 epochs, minibatch 64, learning rate $3\times10^{-4}$, $\gamma=0.9$, GAE $\lambda=0.95$, clip 0.2, entropy 0.01). Between episodes, \emph{survivor selection} draws the next founders from surviving residents, so successful lineages spread their networks (Algorithm~\ref{alg:train}). Population pooling follows the proposal's Algorithm~1 with the free-slot fix; in Study C six extra slots are reserved for mimics so that every attack delivers all six. The discount $\gamma=0.9$ was chosen in pilot runs, and $\gamma=0.99$ is tested for both rewards.
+Each of the 24 founders owns a gated-attention network (gate, neighbour encoder, 2-head attention with $d=32$, policy and value heads) and an Adam optimiser. Descendants act with their family's network, and each network is updated by PPO \cite{schulman2017} only on its own members' transitions (rollout 64, 3 epochs, minibatch 64, learning rate $3\times10^{-4}$, GAE $\lambda=0.95$, clip 0.2, entropy 0.01). Between episodes, \emph{survivor selection} draws the next founders from surviving residents, so successful lineages spread their networks (Algorithm~\ref{alg:train}). Population pooling follows Algorithm~\ref{alg:pooling} with the corrections in Table~\ref{tab:fixes} (first free slot; all deaths before any birth); in Study C six extra slots are reserved for mimics so that every attack delivers all six. Studies B and C use $\gamma=0.9$ by default, a value selected in pilot runs; Study A and the designated sensitivity conditions use $\gamma=0.99$ (Table~\ref{tab:sens}).
 
 \begin{algorithm}[!htbp]
 \caption{Per-family PPO with inheritance and survivor selection}
@@ -202,21 +225,25 @@ Each of the 24 founders owns a gated-attention network (gate, neighbour encoder,
 \begin{algorithmic}[1]
 \STATE Create 24 founders; founder $f$ owns network $\pi_{\theta_f}$; family$(f) \leftarrow f$
 \WHILE{fewer than $T$ environment steps have been collected}
-    \FOR{each step of a 64-step rollout}
+    \FOR{each step of a rollout of at most 64 steps}
         \STATE Each resident $i$ samples $a_i \sim \pi_{\theta_{\mathrm{family}(i)}}(o_i)$; mimics stay
-        \STATE Step the environment (pooling, starvation, mitosis); compute $R_i$ (Eqs.~5--8)
+        \STATE Step the environment (one transition); compute $R_i$ (Eqs.~5--8)
         \STATE Each newborn $k$ of parent $i$ inherits family$(k) \leftarrow$ family$(i)$
+        \IF{no resident is left or the step count reaches 300}
+            \STATE Mark the transition terminal and \textbf{break}
+        \ENDIF
     \ENDFOR
-    \STATE For every family $f$: PPO update of $\theta_f$ on its members' transitions only
-    \IF{the episode ended (300 steps or extinction)}
-        \STATE Draw 24 founders with replacement from surviving residents (copy chromosome, network, optimiser)
+    \STATE For every family $f$: PPO update of $\theta_f$ on its members' transitions only (bootstrap value 0 after a terminal step)
+    \IF{the episode ended}
+        \STATE Draw 24 founders with replacement from surviving residents (copy chromosome, network, optimiser); after extinction keep the networks
+        \STATE Reset the environment with these founders
     \ENDIF
 \ENDWHILE
 \end{algorithmic}
 \end{algorithm}
 
 \subsection{Experiments, Baselines and Metrics}
-We ran three studies (Table~\ref{tab:studies}). Every condition is trained independently with 10 seeds (Study A: 5) and evaluated with frozen weights in 3 fresh worlds per seed. \textbf{Baselines} run in the same worlds with the same founders: untrained networks, evolution only (selection without learning), and scripted rules: never donate, tag trust ($\tilde r>0.3$), public reputation ($b>0.5$), Tit-for-tat, and the full-information \emph{Hamilton rule} (give to the most related neighbour if $\tilde rB>C$).
+We ran three studies (Table~\ref{tab:studies}). Every condition is trained independently with 10 seeds (Study A: 5) and evaluated with frozen weights in 3 fresh worlds per seed. \textbf{Baselines} run in the same worlds with the same founders: untrained networks, evolution only (selection without learning), and scripted rules: never donate, tag trust ($\tilde r>0.3$), public reputation ($b>0.5$), Tit-for-tat, and a scripted \emph{Hamilton rule using observed cues} (give to the neighbour with the highest observed $\tilde r$ if $\tilde rB>C$).
 
 \textbf{Metrics.} \emph{Survival}: residents alive at step 300 in all 3 worlds of a seed. \emph{Donations} per resident step. \emph{Hamilton-consistent gifts}: share of gifts with $r_{ij}B>C$. \emph{Kin preference}: recipient's $r$ minus the neighbours' mean. \emph{Cue reliance}: per-seed conditional-logit coefficients of the chosen recipient on standardised $\tilde r$ and $b$. \emph{Mimic share}: mimics' share of post-invasion gifts. \emph{Assortment}: true-chromosome similarity of adjacent residents. \textbf{Statistics}: the training seed is the unit; 95\% $t$-intervals, exact sign-flip tests (Holm-corrected for the 10 primary contrasts), Fisher's exact test for survival.
 
@@ -271,7 +298,7 @@ $B/C$ & Inclusive & Energy & Untrained & Inclusive & Energy-only & Untrained \\
 \label{fig:sweep}
 \end{figure}
 
-\textbf{Mechanism.} Energy-only populations die out \emph{during} training (Fig.~\ref{fig:curves}): every gift is an immediate private loss of $C$ and the benefit is nobody's reward, so each family's gradient removes giving faster than selection can favour givers.
+\textbf{Mechanism.} Energy-only populations die out \emph{during} training (Fig.~\ref{fig:curves}): every gift is an immediate loss of $C$ to the donor, and the donor's reward contains no credit for the recipient's gain. Our hypothesis, not directly tested, is that each family's gradient removes giving faster than survivor selection can favour givers.
 
 \begin{figure}[!htbp]
 \centering
@@ -281,7 +308,7 @@ $B/C$ & Inclusive & Energy & Untrained & Inclusive & Energy-only & Untrained \\
 \end{figure}
 
 \subsection{RQ3: Learned Giving Follows Hamilton's Threshold}
-Under the inclusive reward, learning abandons giving below the threshold ($B/C\le1.5$, where a recipient needs $r>0.67$) and gives more than untrained networks at $B/C=6$ (9/10 seeds). The scripted full-information Hamilton rule switches on at a similar point (Fig.~\ref{fig:strat}). Learners choose more related recipients (conditional-logit coefficient 1.72 [0.78, 2.66]); the predicted increase of this effect with $B/C$ was not found ($-0.26$ [$-0.42$, $-0.10$]), consistent with a threshold policy that discriminates less once most neighbours qualify.
+Under the inclusive reward, learning abandons giving below the threshold (a recipient must have $r>C/B$: $r>2/3$ at $B/C=1.5$, and the impossible $r>1$ at $B/C=1$) and gives more than untrained networks at $B/C=6$ (9/10 seeds). The scripted Hamilton rule using observed cues switches on at a similar point (Fig.~\ref{fig:strat}). Learners choose more related recipients (conditional-logit coefficient 1.72 [0.78, 2.66]); the predicted increase of this effect with $B/C$ was not found ($-0.26$ [$-0.42$, $-0.10$]), consistent with a threshold policy that discriminates less once most neighbours qualify.
 
 \begin{figure}[!htbp]
 \centering
@@ -290,8 +317,8 @@ Under the inclusive reward, learning abandons giving below the threshold ($B/C\l
 \label{fig:strat}
 \end{figure}
 
-\subsection{Kin Information Decides Whom to Help, Not Whether to Survive}
-Paying for every gift (prosocial) keeps all populations alive (Table~\ref{tab:controls}); survival does not differ significantly from the inclusive reward. Kin information changes \emph{targeting}: compared with the kin-blind reward of the same expected size, inclusive learners give more gifts to recipients with $rB>C$ (+0.098, 8/10 seeds, $p=0.010$), prefer more related recipients ($p=0.025$) and rely more on the genetic cue ($p=0.016$; against prosocial $p=0.004$).
+\subsection{Kin-Weighted Rewards Improve Targeting}
+Paying for every gift (prosocial) kept all populations alive (Table~\ref{tab:controls}); no significant survival difference was detected between the inclusive reward and either control. The kin-weighted reward improved \emph{targeting}: compared with the kin-blind reward of the same expected size, inclusive learners give more gifts to recipients with $rB>C$ (+0.098, 8/10 seeds, $p=0.010$), prefer more related recipients ($p=0.025$) and rely more on the genetic cue ($p=0.016$; against prosocial $p=0.004$).
 
 \begin{table}[!htbp]
 \centering
@@ -312,7 +339,7 @@ Energy-only & 0/10 & 0.016 [0.007, 0.026] & 0.205 [0.101, 0.309] & $-$0.042 [$-$
 \end{table}
 
 \subsection{Phase 3--4 (RQ1): Cue Corruption and Genetic Mimicry}
-Corrupting the genetic cue removed its influence on recipient choice (Fig.~\ref{fig:cue}a; noise 0 vs 0.5: +0.217, 8/10 seeds, $p=0.014$; lower genetic share at noise 0.25 in all 10 seeds, $p=0.002$), which meets the proposal's success criterion. However, agents did \emph{not} shift to behavioural history: its coefficient stayed near zero, and survival fell from 7/10 to 2/10. No learner avoided mimics (Fig.~\ref{fig:cue}b): inclusive learners gave them 17\% of gifts, about what untrained networks give (13\%), while a one-line public-reputation rule gives them nothing because a mimic's giving record is zero. The learned gate did not beat a fixed gate ($p=0.44$).
+Corrupting the genetic cue removed its influence on recipient choice (Fig.~\ref{fig:cue}a; noise 0 vs 0.5: +0.217, 8/10 seeds, $p=0.014$; lower genetic share at noise 0.25 in all 10 seeds, $p=0.002$), which meets the proposal's success criterion. However, agents did \emph{not} shift to behavioural history: its coefficient stayed near zero, and survival fell from 7/10 to 2/10. No learner avoided mimics (Fig.~\ref{fig:cue}b): inclusive learners gave them 17\% of gifts, about what untrained networks give (13\%), while a one-line public-reputation rule gives them nothing because a mimic's giving record is zero. No significant advantage of the learned gate over a fixed gate was detected ($p=0.44$).
 
 \begin{figure}[!htbp]
 \centering
@@ -333,18 +360,18 @@ Corrupting the genetic cue removed its influence on recipient choice (Fig.~\ref{
 \textbf{Check} & \textbf{Result} & \textbf{Reading} \\
 \midrule
 Local vs random offspring placement & adjacent similarity $+0.083$ ($p=0.31$), $-0.015$ ($p=0.78$) & No assortment (RQ2 not supported) \\
-$\gamma=0.99$ for both rewards, $B/C=4$ & survival 2/10 vs 2/10 (Fisher $p=1.0$) & Effect needs the short horizon \\
-$4\times$ training, $B/C=2.5$ & survival 2/10 vs 1/10 & More training does not help \\
+$\gamma=0.99$ for both rewards, $B/C=4$ & survival 2/10 vs 2/10 (Fisher $p=1.0$) & Survival advantage absent at the tested $\gamma=0.99$ \\
+$4\times$ training, $B/C=2.5$ & survival 2/10 vs 1/10 & No improvement detected with $4\times$ training \\
 Evolution only (no learning), $B/C=4$ & 10/10 survive; learning targets kin better (+0.147, $p=0.006$) & Selection keeps giving; learning improves targeting \\
-Attention vs MLP, $B/C=4$ & gifts with $rB>C$ $+0.129$ ($p=0.016$) & Attention targets kin better \\
-Mutation 0.20 vs 0.05 & donations $-0.244$ ($p=0.014$), survival 4/10 & Diversity hurts cooperation \\
+Attention vs MLP, $B/C=4$ & gifts with $rB>C$ $+0.129$ ($p=0.016$) & Attention improved kin targeting here \\
+Mutation 0.20 vs 0.05 & donations $-0.244$ ($p=0.014$), survival 4/10 & Higher mutation reduced cooperation in this condition \\
 \bottomrule
 \end{tabular}}
 \end{table}
 
 Spatial assortment was not detected (Table~\ref{tab:sens}): survivor selection makes populations near-clonal, so neighbours are related wherever offspring are placed.
 
-\textbf{Discussion and limitations.} The answer to our question is that the \emph{learning signal}, more than the architecture, decides whether cooperation can be learned: a purely individual reward makes PPO remove cooperation, and Hamilton's kin term restores it where $rB>C$. Kin recognition is the weak link: learners discover \emph{that} giving pays sooner than \emph{to whom}, never learn to use behaviour, and keep feeding mimics. Limitations: the inclusive reward uses true relatedness, which real organisms do not observe; the effect needs $\gamma=0.9$; ten seeds and 8{,}192 steps per run limit power; mimics are scripted; one environment family is tested.
+\textbf{Discussion and limitations.} The answer to our question is that the \emph{learning signal}, more than the architecture, decides whether cooperation can be learned: a purely individual reward makes PPO remove cooperation, and Hamilton's kin term restores it where $rB>C$. Kin recognition is the weak link: learners mainly learn \emph{whether} to give rather than \emph{to whom}, did not learn to use behaviour, and kept feeding mimics. Limitations: the inclusive reward uses true relatedness, which real organisms do not observe; the survival advantage was absent at the tested $\gamma=0.99$; ten seeds and 8{,}192 steps per run limit power; mimics are scripted; one environment family is tested.
 
 % ======================================================================
 \section{Contribution}
